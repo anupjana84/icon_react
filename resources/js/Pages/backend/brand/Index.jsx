@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import Header from "../../../layout/header";
 import { Menu, Trash2, Pencil } from "lucide-react";
 import { Link, useForm } from "@inertiajs/react";
+import PageHeader from "../../../layout/components/pageHeader";
 
 const Index = ({ brands }) => {
-    const {delete:destroy}=useForm()
+    const { delete: destroy } = useForm();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
-    const [postId, setPostId]=useState(0)
+    const [postId, setPostId] = useState(0);
 
     const openModal = (item) => {
         setCurrentItem(item);
@@ -19,8 +20,8 @@ const Index = ({ brands }) => {
     const handleDelete = () => {
         // Perform delete action here
         console.log("Item deleted:", currentItem);
-        destroy(`/brands/${postId}`)
-        setPostId(0)
+        destroy(`/brands/${postId}`);
+        setPostId(0);
         closeModal();
     };
 
@@ -30,17 +31,11 @@ const Index = ({ brands }) => {
                 <Header title={"Home"} />
 
                 <main className="max-w-7xl mx-auto py-1 px-1 lg:px-1">
-                    <div className="flex-1 overflow-auto relative z-10">
-                        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                            <h3 className=""></h3>
-                            <Link
-                                href="/brands/create"
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                            >
-                                Add
-                            </Link>
-                        </div>
-                    </div>
+                    <PageHeader
+                        title="Brands"
+                        link="/brands/create"
+                        linkName="Add Brands"
+                    />
 
                     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                         <div className="max-w-full overflow-x-auto">
@@ -77,15 +72,15 @@ const Index = ({ brands }) => {
                                                         onClick={(e) => {
                                                             e.preventDefault();
                                                             openModal();
-                                                            setPostId(packageItem.id)
+                                                            setPostId(
+                                                                packageItem.id
+                                                            );
                                                         }}
                                                         className="hover:text-primary rounded-lg p-3 bg-red-700"
                                                     >
                                                         <Trash2 color="white" />
                                                     </button>
-                                                    <button
-                                                        className="hover:text-primary rounded-lg p-3 bg-slate-500"
-                                                    >
+                                                    <button className="hover:text-primary rounded-lg p-3 bg-slate-500">
                                                         <Pencil color="white" />
                                                     </button>
                                                 </div>
@@ -107,7 +102,9 @@ const Index = ({ brands }) => {
                                         __html: item.label,
                                     }}
                                     className={`px-4 py-2 rounded hover:bg-blue-600 ${
-                                        item.active ? "bg-blue-500 text-white" : ""
+                                        item.active
+                                            ? "bg-blue-500 text-white"
+                                            : ""
                                     }`}
                                 />
                             ) : (
@@ -126,9 +123,12 @@ const Index = ({ brands }) => {
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-80">
-                        <h2 className="text-lg text-black font-bold mb-4">Are you sure?</h2>
+                        <h2 className="text-lg text-black font-bold mb-4">
+                            Are you sure?
+                        </h2>
                         <p className="mb-4 text-black">
-                            Do you really want to delete this item? This action cannot be undone.
+                            Do you really want to delete this item? This action
+                            cannot be undone.
                         </p>
                         <div className="flex justify-end space-x-4">
                             <button

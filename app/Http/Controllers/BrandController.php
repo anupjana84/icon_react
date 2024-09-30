@@ -15,7 +15,7 @@ class BrandController extends Controller
     { 
         $brands = Brand::latest()->paginate(5);
         return Inertia::render('backend/brand/Index',[
-            'brands' => $brands
+            'brands' => $brands,
         ]);
     }
 
