@@ -16,69 +16,10 @@ class ProductController extends Controller
     public function index()
     {
 
-        $products = [
-            [
-                'id' => 1,
-                'name' => 'Laptop',
-                'model' => 'LAP-1234',
-                'sale_price' => 999.99,
-                'purchase_price' => 750.00,
-                'quantity' => 10,
-                'phone' => '123-456-7890',
-                'hsn_code' => '8471',
-                'product_gst' => 18.00,
-                'point' => 5,
-                'description' => 'High-performance laptop',
-                'free_delivery' => 'yes',
-                'purchase_address' => '123 Tech Lane',
-                'purchase_date' => '2024-01-15',
-                'purchase_receive_date' => '2024-01-20',
-                'discount' => 10.00,
-                'status' => 'active',
-            ],
-            [
-                'id' => 2,
-                'name' => 'Smartphone',
-                'model' => 'SPH-5678',
-                'sale_price' => 499.99,
-                'purchase_price' => 400.00,
-                'quantity' => 25,
-                'phone' => '234-567-8901',
-                'hsn_code' => '8517',
-                'product_gst' => 18.00,
-                'point' => 3,
-                'description' => 'Latest model smartphone',
-                'free_delivery' => 'no',
-                'purchase_address' => '456 Mobile Ave',
-                'purchase_date' => '2024-02-10',
-                'purchase_receive_date' => '2024-02-15',
-                'discount' => 5.00,
-                'status' => 'active',
-            ],
-            [
-                'id' => 3,
-                'name' => 'Wireless Headphones',
-                'model' => 'WHP-9101',
-                'sale_price' => 199.99,
-                'purchase_price' => 150.00,
-                'quantity' => 50,
-                'phone' => '345-678-9012',
-                'hsn_code' => '8518',
-                'product_gst' => 18.00,
-                'point' => 2,
-                'description' => 'Noise-cancelling wireless headphones',
-                'free_delivery' => 'yes',
-                'purchase_address' => '789 Sound St',
-                'purchase_date' => '2024-03-05',
-                'purchase_receive_date' => '2024-03-10',
-                'discount' => 15.00,
-                'status' => 'active',
-            ],
-            // Add more products as needed
-        ];
-        $product = Product::all();
+        
+        $product = Product::paginate(20);
+        // dd($product);
         return Inertia::render('backend/product/Index', [
-            'products' => $products,
             'product' => $product,
         ]);
     }
@@ -106,33 +47,33 @@ class ProductController extends Controller
         //
         // dd($request->all());
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'model' => 'required|string',
-            'quantity' => 'required|integer',
-            'phone' => 'nullable|string',
-            'hsn_code' => 'nullable|string',
-            'product_gst' => 'nullable|numeric',
-            'point' => 'required|integer',
-            'free_delivery' => 'nullable',
-            'pruchase_address' => 'nullable|string',
-            'pruchase_date' => 'nullable|date',
-            'pruchase_receive_date' => 'required|date',
-            'discount' => 'nullable|numeric',
-            'status' => 'nullable|string',
-            'sale_price' => 'required|numeric',
-            'purchase_price' => 'required|numeric',
-            'pruchase_phone' => 'nullable|string',
-            'purchase_gst' => 'nullable|numeric',
-            'purchase_invoice_no' => 'nullable|string',
-            'available_from' => 'nullable|date',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'image_url' => 'nullable|array',
-            'image_url.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'category' => 'required|exists:categories,id',
-            'brand' => 'required|exists:brands,id',
-        ]);
+        // $request->validate([
+        //     'name' => 'required|string|max:255',
+        //     'description' => 'nullable|string',
+        //     'model' => 'required|string',
+        //     'quantity' => 'required|integer',
+        //     'phone' => 'nullable|string',
+        //     'hsn_code' => 'nullable|string',
+        //     'product_gst' => 'nullable|numeric',
+        //     'point' => 'required|integer',
+        //     'free_delivery' => 'nullable',
+        //     'pruchase_address' => 'nullable|string',
+        //     'pruchase_date' => 'nullable|date',
+        //     'pruchase_receive_date' => 'required|date',
+        //     'discount' => 'nullable|numeric',
+        //     'status' => 'nullable|string',
+        //     'sale_price' => 'required|numeric',
+        //     'purchase_price' => 'required|numeric',
+        //     'pruchase_phone' => 'nullable|string',
+        //     'purchase_gst' => 'nullable|numeric',
+        //     'purchase_invoice_no' => 'nullable|string',
+        //     'available_from' => 'nullable|date',
+        //     'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        //     'image_url' => 'nullable|array',
+        //     'image_url.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        //     'category' => 'required|exists:categories,id',
+        //     'brand' => 'required|exists:brands,id',
+        // ]);
         // dd($request->all());
     
         // Initialize variables for thumbnail and image paths
@@ -151,8 +92,8 @@ class ProductController extends Controller
             }
     
             // Store the thumbnail image
-            $thumbnailImage = $request->file('thumbnail')->store('thumbnails', 'public');
-            $thumbnailPath = "/{$baseDir}{$thumbnailImage}"; // Save the path
+            $thumbnailImage = $request->file('thumbnail')->store('product_images/thumbnails', 'public');
+            $thumbnailPath = "/storage/{$thumbnailImage}"; // Save the path
         }
     
         // Handle multiple image uploads
@@ -162,13 +103,16 @@ class ProductController extends Controller
             if (!file_exists($imagesDirectory)) {
                 mkdir($imagesDirectory, 0777, true);
             }
-    
+        
             foreach ($request->file('image_url') as $image) {
                 // Store each image
-                $imagePath = $image->store('images', 'public');
-                $imagePaths[] = "/{$baseDir}{$imagePath}"; // Store the path
+                $imagePath = $image->store('product_images/images', 'public');
+                // Store the path without adding $baseDir again
+                $imagePaths[] = "/storage/{$imagePath}"; 
             }
         }
+        // dd($imagePaths);
+        
     
         // Create a new product with all the data including image paths
         $product = Product::create([
@@ -193,7 +137,7 @@ class ProductController extends Controller
             'purchase_invoice_no' => $request->pruchase_invoice_no,
             'available_from' => $request->available_from,
             'thumbnail_image' => $thumbnailPath, // Save thumbnail path
-            'image' => json_encode($imagePaths), // Save image paths as JSON
+            'image' => json_encode($imagePaths,  JSON_UNESCAPED_SLASHES), // Save image paths as JSON
             'category' => $request->category,
             'brand' => $request->brand,
         ]);
@@ -207,7 +151,12 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        $products = $product->load('category', 'brand');
+        // dd($product);
+
+        return Inertia::render('backend/product/Show', [
+            'product' => $products,
+        ]);
     }
 
     /**

@@ -6,16 +6,17 @@ import { Menu, Trash2, Pencil, ReceiptText } from "lucide-react";
 import { motion } from "framer-motion";
 import PageHeader from "../../../layout/components/pageHeader";
 // import PageHeader from "../../../layout/components/pageHeader";
-const ProductTable = ({ products, product }) => {
+const ProductTable = ({ product }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const openModal = (item) => {
         setIsModalOpen(true);
     };
-    console.log(product);
+    // console.log(product);
     const closeModal = () => setIsModalOpen(false);
     // const handleEdit = (id) => {
     //     // Redirect to the edit page for the product with the given id
-    //     Inertia.get(`/products/edit/${id}`);
+    //     console.log(id);
+    //     Inertia.get(`/products/${id}`);
     // };
 
     // const handleDelete = (id) => {
@@ -34,99 +35,114 @@ const ProductTable = ({ products, product }) => {
                 />
 
                 <div className="overflow-x-auto">
-                    <table className="min-w-full bg-white">
-                        <thead>
-                            <tr className="w-full bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                                <th className="py-3 px-6 text-left">Image</th>
-                                <th className="py-3 px-6 text-left">
-                                    Quantity
-                                </th>
-                                <th className="py-3 px-6 text-left">
-                                    Sale Price
-                                </th>
-                                <th className="py-3 px-6 text-left">Status</th>
-                                <th className="py-3 px-6 text-center">
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="text-gray-600 text-sm font-light">
-                            {product.map((product) => (
-                                <tr
-                                    key={product.id}
-                                    className="border-b border-gray-200 hover:bg-gray-100"
-                                >
-                                    <td className="py-3 px-6 text-left">
-                                        <img
-                                            src={product.thumbnail_image}
-                                            alt={product.name}
-                                            className="h-16 w-16 object-cover"
-                                        />
-                                    </td>
-                                    <td className="py-3 px-6 text-left">
-                                        {product.quantity}
-                                    </td>
-                                    <td className="py-3 px-6 text-left">
-                                        ${product.sale_price}
-                                    </td>
-                                    <td className="py-3 px-6 text-left">
-                                        <span
-                                            className={`inline-block px-2 py-1 text-xs font-bold rounded-full 
-                                            ${
-                                                product.status === "active"
-                                                    ? "bg-green-200 text-green-600"
-                                                    : "bg-red-200 text-red-600"
-                                            }`}
-                                        >
-                                            {product.status}
-                                        </span>
-                                    </td>
-                                    <td className="py-3 px-6 text-center">
-                                        <button
-                                            onClick={() =>
-                                                handleEdit(product.id)
-                                            }
-                                            className="bg-blue-400 text-white rounded px-4 py-1 mr-2"
-                                        >
-                                            <ReceiptText color="white" />
-                                        </button>
-                                        <button
-                                            onClick={() =>
-                                                handleEdit(product.id)
-                                            }
-                                            className="bg-green-500 text-white rounded px-4 py-1 mr-2"
-                                        >
-                                            <Pencil color="white" />
-                                        </button>
-                                        <button
-                                            onClick={() =>
-                                                openModal(product.id)
-                                            }
-                                            className="bg-red-500 text-white rounded px-4 py-1"
-                                        >
-                                            <Trash2 color="white" />
-                                        </button>
-                                    </td>
+                    {product.data && (
+                        <table className="min-w-full bg-white">
+                            <thead>
+                                <tr className="w-full bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                                    <th className="py-3 px-6 text-left">
+                                        Image
+                                    </th>
+                                    <th className="py-3 px-6 text-center">
+                                        Quantity
+                                    </th>
+                                    <th className="py-3 px-6 text-center">
+                                        Sale Price
+                                    </th>
+                                    <th className="py-3 px-6 text-center">
+                                        Status
+                                    </th>
+                                    <th className="py-3 px-6 text-center">
+                                        Actions
+                                    </th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="text-gray-600 text-sm font-light">
+                                {product.data.map((product) => (
+                                    <tr
+                                        key={product.id}
+                                        className="border-b border-gray-200 hover:bg-gray-100"
+                                    >
+                                        <td className="py-3 px-6 text-left">
+                                            <img
+                                                src={product.thumbnail_image}
+                                                alt={product.name}
+                                                className="h-16 w-16 object-cover"
+                                            />
+                                        </td>
+                                        <td className="py-3 px-6 text-center">
+                                            {product.quantity}
+                                        </td>
+                                        <td className="py-3 px-6 text-center">
+                                            ₹
+                                            {Number(product.sale_price).toFixed(
+                                                2
+                                            )}
+                                        </td>
+                                        <td className="py-3 px-6 text-center ">
+                                            <span
+                                                className={`inline-block px-2 py-1 text-xs font-bold rounded-full
+                                        ${
+                                            product.status === "active"
+                                                ? "bg-green-200 text-green-600"
+                                                : "bg-red-200 text-red-600"
+                                        }`}
+                                            >
+                                                {product.status}
+                                            </span>
+                                        </td>
+                                        <td className="py-3 px-6 flex justify-center items-center gap-2">
+                                            <Link
+                                                href={`/products/${product.id}`}
+                                                className="bg-blue-500 w-14 hover:bg-blue-600 text-white rounded-md px-4 py-2 transition duration-300 ease-in-out flex items-center"
+                                            >
+                                                <ReceiptText color="white" />
+                                            </Link>
+
+                                            <button
+                                                // onClick={() =>
+                                                //     handleEdit(product.id)
+                                                // }
+                                                className="bg-green-500 text-white rounded px-4 py-2 mr-2"
+                                            >
+                                                <Pencil color="white" />
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    openModal(product.id)
+                                                }
+                                                className="bg-red-500 text-white rounded px-4 py-2"
+                                            >
+                                                <Trash2 color="white" />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
+                    {!product.data && (
+                        <div className="flex justify-center items-center h-screen">
+                            <p className="text-center text-gray-600">
+                                No products found.
+                            </p>
+                        </div>
+                    )}
                 </div>
             </main>
 
-            {products.links && (
+            {product.links && (
                 <div className="flex justify-center mt-4">
                     <nav>
                         <ul className="flex space-x-2">
-                            {products.links.map((link, index) => (
+                            {product.links.map((link, index) => (
                                 <li key={index}>
-                                    <button
-                                        onClick={() => Inertia.get(link.url)}
-                                        className={`px-4 py-2 rounded ${
+                                    <Link
+                                        href={link.url}
+                                        className={`px-4 py-2 rounded-lg transition duration-300 ease-in-out transform ${
                                             link.active
-                                                ? "bg-blue-500 text-white"
-                                                : "bg-gray-200 text-gray-700"
-                                        } hover:bg-blue-600`}
+                                                ? "bg-blue-600 text-white shadow-lg"
+                                                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                        }`}
                                         dangerouslySetInnerHTML={{
                                             __html: link.label,
                                         }}
@@ -162,7 +178,7 @@ const ProductTable = ({ products, product }) => {
                         </p>
                         <div className="flex justify-center space-x-4">
                             <button
-                                onClick={handleDelete}
+                                // onClick={handleDelete}
                                 className="px-6 py-3 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-opacity-50 transform hover:scale-105"
                             >
                                 Delete
