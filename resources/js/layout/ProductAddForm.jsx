@@ -1,14 +1,22 @@
 // src/components/ProductForm.js
 
-import { useForm } from "@inertiajs/react";
+import { useForm, router } from "@inertiajs/react";
 import React, { useState } from "react";
 import { OctagonX } from "lucide-react";
+import Alert from "./components/AlertMessage";
+
 const ProductAddForm = ({ category, brands }) => {
     // console.log(category);
-    const { data, setData, post, processing, errors } = useForm({
+    const [message, setMessage] = useState({
+        visible: false,
+        description: "",
+        type: "",
+        title: "",
+    });
+    const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
-        sale_price: 0,
-        puchage_price: 0,
+        sale_price: "",
+        purchase_price: "",
         quantity: "",
         category: "",
         brand: "",
@@ -16,9 +24,9 @@ const ProductAddForm = ({ category, brands }) => {
         hsn_code: "",
         product_gst: "",
         point: "",
-        Phone: "",
+        phone: "",
         description: "",
-        free_delivery: "inactive",
+        free_delivery: "no",
         pruchase_address: "",
         pruchase_phone: "",
         pruchase_gst: "",
@@ -64,7 +72,7 @@ const ProductAddForm = ({ category, brands }) => {
 
     const handleThumbnailChange = (e) => {
         const file = e.target.files[0];
-        console.log(file);
+        // console.log(file);
 
         // if (file.size > 1024 * 1024) {
         //     errorMessage("File size must be less than 1MB");
@@ -75,7 +83,7 @@ const ProductAddForm = ({ category, brands }) => {
 
         const reader = new FileReader();
         reader.readAsDataURL(file);
-        console.log(reader);
+        // console.log(reader);
         reader.onload = () => {
             setFormData({
                 ...formData,
@@ -88,9 +96,24 @@ const ProductAddForm = ({ category, brands }) => {
         e.preventDefault();
         data.image_url = formData.image_url;
         data.thumbnail = formData.thumbnail;
-        data.name = "dddddd";
-        console.log(data);
+        // console.log(data);
         post("/products");
+        router.on("success", (event) => {
+            document.querySelector('input[type="file"]').value = null; // Clear file input
+            document.querySelector('input[type="date"]').value = ""; // Clear date input
+            setFormData({
+                image_url: [],
+                image_url_thum: null,
+                thumbnail: "",
+            });
+            reset(); // Reset the form
+            setMessage({
+                visible: true,
+                description: "Product created successfully!",
+                type: "success",
+                title: "🎉 Success",
+            });
+        });
     };
 
     // const handleImagesChange = (e) => {
@@ -137,7 +160,6 @@ const ProductAddForm = ({ category, brands }) => {
                                     : "border-gray-300 focus:ring-blue-400"
                             }`}
                             placeholder="Enter Product Name"
-                            required
                         />
                         {errors.name && (
                             <p className="text-red-500 text-sm mt-1">
@@ -165,7 +187,6 @@ const ProductAddForm = ({ category, brands }) => {
                                     : "border-gray-300 focus:ring-blue-400"
                             }`}
                             placeholder="Enter Model"
-                            required
                         />
                         {errors.model && (
                             <p className="text-red-500 text-sm mt-1">
@@ -197,7 +218,6 @@ const ProductAddForm = ({ category, brands }) => {
                             }
                             className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
                             placeholder="0"
-                            required
                         />
                         {errors.sale_price && (
                             <p className="text-red-500 text-sm mt-1">
@@ -218,7 +238,7 @@ const ProductAddForm = ({ category, brands }) => {
                             type="number"
                             id="purchase_price"
                             name="purchase_price"
-                            value={data.puchage_price}
+                            value={data.purchase_price}
                             onChange={(e) =>
                                 setData(
                                     "purchase_price",
@@ -227,7 +247,6 @@ const ProductAddForm = ({ category, brands }) => {
                             }
                             className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
                             placeholder="0"
-                            required
                         />
                         {errors.purchase_price && (
                             <p className="text-red-500 text-sm mt-1">
@@ -256,7 +275,6 @@ const ProductAddForm = ({ category, brands }) => {
                             }
                             className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
                             placeholder="0"
-                            required
                         />
                         {errors.quantity && (
                             <p className="text-red-500 text-sm mt-1">
@@ -283,7 +301,6 @@ const ProductAddForm = ({ category, brands }) => {
                             }
                             className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
                             placeholder="Category"
-                            required
                         >
                             <option value="">Select Brand</option>
                             {category &&
@@ -355,11 +372,10 @@ const ProductAddForm = ({ category, brands }) => {
                         <input
                             id="Phone"
                             name="Phone"
-                            value={data.Phone}
-                            onChange={(e) => setData("Phone", e.target.value)}
+                            value={data.phone}
+                            onChange={(e) => setData("phone", e.target.value)}
                             className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
                             placeholder="Model"
-                            required
                         />
                         {errors.Phone && (
                             <p className="text-red-500 text-sm mt-1">
@@ -387,7 +403,6 @@ const ProductAddForm = ({ category, brands }) => {
                             }
                             className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
                             placeholder="HSN Code"
-                            required
                         />
                         {errors.hsn_code && (
                             <p className="text-red-500 text-sm mt-1">
@@ -447,34 +462,7 @@ const ProductAddForm = ({ category, brands }) => {
                         )}
                     </div>
 
-                    {/* Description */}
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label
-                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="description"
-                        >
-                            Description
-                        </label>
-                        <textarea
-                            id="description"
-                            name="description"
-                            value={data.description}
-                            onChange={(e) =>
-                                setData("description", e.target.value)
-                            }
-                            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                            placeholder="Description"
-                        />
-                        {errors.description && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.description}
-                            </p>
-                        )}
-                    </div>
-                </div>
-
-                {/* Free Delivery */}
-                <div className="grid md:grid-cols-2 md:gap-6">
+                    {/* Free Delivery */}
                     <div className="relative z-0 w-full mb-5 group">
                         <label
                             className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
@@ -497,6 +485,33 @@ const ProductAddForm = ({ category, brands }) => {
                         {errors.free_delivery && (
                             <p className="text-red-500 text-sm mt-1">
                                 {errors.free_delivery}
+                            </p>
+                        )}
+                    </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 md:gap-6">
+                    {/* Description */}
+                    <div className="relative z-0 w-full mb-5 group">
+                        <label
+                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
+                            htmlFor="description"
+                        >
+                            Description
+                        </label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            value={data.description}
+                            onChange={(e) =>
+                                setData("description", e.target.value)
+                            }
+                            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
+                            placeholder="Description"
+                        />
+                        {errors.description && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors.description}
                             </p>
                         )}
                     </div>
@@ -755,8 +770,10 @@ const ProductAddForm = ({ category, brands }) => {
                         <select
                             id="status"
                             name="status"
-                            value={formData.status}
-                            onChange={handleChange}
+                            value={data.status}
+                            onChange={(e) => {
+                                setData("status", e.target.value);
+                            }}
                             className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
                         >
                             <option value="active" className="text-black">
@@ -785,8 +802,10 @@ const ProductAddForm = ({ category, brands }) => {
                             type="date"
                             id="available_from"
                             name="available_from"
-                            value={formData.available_from}
-                            onChange={handleChange}
+                            value={data.available_from}
+                            onChange={(e) => {
+                                setData("available_from", e.target.value);
+                            }}
                             className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
                         />
                         {errors.available_from && (
@@ -909,6 +928,14 @@ const ProductAddForm = ({ category, brands }) => {
                     </button>
                 </div>
             </form>
+            {message.visible && (
+                <Alert
+                    type={message.type} // You can change this to "error", "warning", or "info"
+                    title={message.title}
+                    description={message.description}
+                    // onClose={handleClose}
+                />
+            )}
         </div>
     );
 };

@@ -9,7 +9,7 @@ import {
     Users,
     Trello,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link, usePage } from "@inertiajs/react";
 
@@ -37,13 +37,32 @@ const SIDEBAR_ITEMS = [
 const Sidebar = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const { url } = usePage();
-    // console.log(url);
+
+    // Handle window resize to collapse sidebar on md screen
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 768) {
+                setIsSidebarOpen(true); // Sidebar stays open on md and above
+            } else {
+                setIsSidebarOpen(false); // Sidebar collapses below md
+            }
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        // Call it once on mount to set the initial state
+        handleResize();
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
 
     return (
         <motion.div
             className={`relative z-10 transition-all duration-300 ease-in-out flex-shrink-0 ${
                 isSidebarOpen ? "w-64" : "w-20"
-            }`}
+            } md:w-64`} // Default width on md screens
             animate={{ width: isSidebarOpen ? 256 : 80 }}
         >
             <div className="h-full bg-gray-800 bg-opacity-50 backdrop-blur-md p-4 flex flex-col border-r border-gray-700">
@@ -106,4 +125,5 @@ const Sidebar = () => {
         </motion.div>
     );
 };
+
 export default Sidebar;

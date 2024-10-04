@@ -1,12 +1,9 @@
-import React from 'react'
-import Header from '../../../layout/header'
+import React from "react";
+import Header from "../../../layout/header";
 
 const Edit = () => {
-  return (
-    <>
-<div className="flex-1 overflow-auto relative z-10 bg-gray-900">
-            <Header title={"Home"} />
-
+    return (
+        <>
             <main className="max-w-7xl mx-auto py-1 px-1 lg:px-1">
                 <div className="flex-1 overflow-auto relative z-10">
                     <div
@@ -27,10 +24,8 @@ const Edit = () => {
                     <h4>page</h4>
                 </div>
             </main>
-        </div>
+        </>
+    );
+};
 
-    </>
-  )
-}
-
-export default Edit
+export default Edit;

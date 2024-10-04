@@ -14,9 +14,7 @@ const Create = ({ category, brands }) => {
     // };
     const [count, setCount] = useState(0);
     return (
-        <div className="flex-1 overflow-auto relative z-10 bg-gray-900">
-            <Header title={"Home"} />
-
+        <>
             <main className="max-w-7xl mx-auto py-1 px-1 lg:px-1">
                 <PageHeader
                     title="Product > Add"
@@ -27,11 +25,11 @@ const Create = ({ category, brands }) => {
                 {/* <p>content</p> */}
                 <ProductAddForm category={category} brands={brands} />
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                     <h4>page</h4>
-                </div>
+                </div> */}
             </main>
-        </div>
+        </>
     );
 };
 

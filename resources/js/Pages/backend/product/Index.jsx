@@ -6,119 +6,114 @@ import { Menu, Trash2, Pencil, ReceiptText } from "lucide-react";
 import { motion } from "framer-motion";
 import PageHeader from "../../../layout/components/pageHeader";
 // import PageHeader from "../../../layout/components/pageHeader";
-const ProductTable = ({ products }) => {
+const ProductTable = ({ products, product }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const openModal = (item) => {
         setIsModalOpen(true);
     };
+    console.log(product);
     const closeModal = () => setIsModalOpen(false);
-    const handleEdit = (id) => {
-        // Redirect to the edit page for the product with the given id
-        Inertia.get(`/products/edit/${id}`);
-    };
+    // const handleEdit = (id) => {
+    //     // Redirect to the edit page for the product with the given id
+    //     Inertia.get(`/products/edit/${id}`);
+    // };
 
-    const handleDelete = (id) => {
-        if (confirm("Are you sure you want to delete this product?")) {
-            Inertia.delete(`/products/${id}`);
-        }
-    };
+    // const handleDelete = (id) => {
+    //     if (confirm("Are you sure you want to delete this product?")) {
+    //         Inertia.delete(`/products/${id}`);
+    //     }
+    // };
 
     return (
         <>
-            <div className="flex-1 overflow-auto relative z-10 bg-gray-900">
-                <Header title={"Product"} />
-                <main className="max-w-7xl mx-auto py-1 px-1 lg:px-1">
-                    <PageHeader
-                        title="Product"
-                        link="/products/create"
-                        linkName="Add Product"
-                    />
+            <main className="max-w-7xl mx-auto py-1 px-1 lg:px-1">
+                <PageHeader
+                    title="Product"
+                    link="/products/create"
+                    linkName="Add Product"
+                />
 
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full bg-white">
-                            <thead>
-                                <tr className="w-full bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                                    <th className="py-3 px-6 text-left">
-                                        Image
-                                    </th>
-                                    <th className="py-3 px-6 text-left">
-                                        Quantity
-                                    </th>
-                                    <th className="py-3 px-6 text-left">
-                                        Sale Price
-                                    </th>
-                                    <th className="py-3 px-6 text-left">
-                                        Status
-                                    </th>
-                                    <th className="py-3 px-6 text-center">
-                                        Actions
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="text-gray-600 text-sm font-light">
-                                {products.map((product) => (
-                                    <tr
-                                        key={product.id}
-                                        className="border-b border-gray-200 hover:bg-gray-100"
-                                    >
-                                        <td className="py-3 px-6 text-left">
-                                            <img
-                                                src={product.image}
-                                                alt={product.name}
-                                                className="h-16 w-16 object-cover"
-                                            />
-                                        </td>
-                                        <td className="py-3 px-6 text-left">
-                                            {product.quantity}
-                                        </td>
-                                        <td className="py-3 px-6 text-left">
-                                            ${product.sale_price.toFixed(2)}
-                                        </td>
-                                        <td className="py-3 px-6 text-left">
-                                            <span
-                                                className={`inline-block px-2 py-1 text-xs font-bold rounded-full 
+                <div className="overflow-x-auto">
+                    <table className="min-w-full bg-white">
+                        <thead>
+                            <tr className="w-full bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                                <th className="py-3 px-6 text-left">Image</th>
+                                <th className="py-3 px-6 text-left">
+                                    Quantity
+                                </th>
+                                <th className="py-3 px-6 text-left">
+                                    Sale Price
+                                </th>
+                                <th className="py-3 px-6 text-left">Status</th>
+                                <th className="py-3 px-6 text-center">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className="text-gray-600 text-sm font-light">
+                            {product.map((product) => (
+                                <tr
+                                    key={product.id}
+                                    className="border-b border-gray-200 hover:bg-gray-100"
+                                >
+                                    <td className="py-3 px-6 text-left">
+                                        <img
+                                            src={product.thumbnail_image}
+                                            alt={product.name}
+                                            className="h-16 w-16 object-cover"
+                                        />
+                                    </td>
+                                    <td className="py-3 px-6 text-left">
+                                        {product.quantity}
+                                    </td>
+                                    <td className="py-3 px-6 text-left">
+                                        ${product.sale_price}
+                                    </td>
+                                    <td className="py-3 px-6 text-left">
+                                        <span
+                                            className={`inline-block px-2 py-1 text-xs font-bold rounded-full 
                                             ${
                                                 product.status === "active"
                                                     ? "bg-green-200 text-green-600"
                                                     : "bg-red-200 text-red-600"
                                             }`}
-                                            >
-                                                {product.status}
-                                            </span>
-                                        </td>
-                                        <td className="py-3 px-6 text-center">
-                                            <button
-                                                onClick={() =>
-                                                    handleEdit(product.id)
-                                                }
-                                                className="bg-blue-400 text-white rounded px-4 py-1 mr-2"
-                                            >
-                                                <ReceiptText color="white" />
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    handleEdit(product.id)
-                                                }
-                                                className="bg-green-500 text-white rounded px-4 py-1 mr-2"
-                                            >
-                                                <Pencil color="white" />
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    openModal(product.id)
-                                                }
-                                                className="bg-red-500 text-white rounded px-4 py-1"
-                                            >
-                                                <Trash2 color="white" />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </main>
-            </div>
+                                        >
+                                            {product.status}
+                                        </span>
+                                    </td>
+                                    <td className="py-3 px-6 text-center">
+                                        <button
+                                            onClick={() =>
+                                                handleEdit(product.id)
+                                            }
+                                            className="bg-blue-400 text-white rounded px-4 py-1 mr-2"
+                                        >
+                                            <ReceiptText color="white" />
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                                handleEdit(product.id)
+                                            }
+                                            className="bg-green-500 text-white rounded px-4 py-1 mr-2"
+                                        >
+                                            <Pencil color="white" />
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                                openModal(product.id)
+                                            }
+                                            className="bg-red-500 text-white rounded px-4 py-1"
+                                        >
+                                            <Trash2 color="white" />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+
             {products.links && (
                 <div className="flex justify-center mt-4">
                     <nav>
