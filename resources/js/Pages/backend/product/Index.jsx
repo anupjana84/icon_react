@@ -1,29 +1,60 @@
 // resources/js/Pages/ProductTable.jsx
 import React, { useState } from "react";
 import Header from "../../../layout/header";
-import { Link } from "@inertiajs/react";
+import { Link, useForm, router } from "@inertiajs/react";
 import { Menu, Trash2, Pencil, ReceiptText } from "lucide-react";
 import { motion } from "framer-motion";
 import PageHeader from "../../../layout/components/pageHeader";
+import Alert from "../../../layout/components/AlertMessage";
+import BarcodeComponent from "../../../layout/components/Barcode";
 // import PageHeader from "../../../layout/components/pageHeader";
 const ProductTable = ({ product }) => {
+    console.log(product);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const openModal = (item) => {
+    const [postId, setPostId] = useState(null);
+    const [message, setMessage] = useState({
+        visible: false,
+        description: "",
+        type: "",
+        title: "",
+    });
+    const {
+        delete: destroy,
+        processing,
+        recentlySuccessful,
+        errors,
+    } = useForm({});
+
+    const openModal = (id) => {
         setIsModalOpen(true);
+        setPostId(id);
     };
     // console.log(product);
     const closeModal = () => setIsModalOpen(false);
-    // const handleEdit = (id) => {
-    //     // Redirect to the edit page for the product with the given id
-    //     console.log(id);
-    //     Inertia.get(`/products/${id}`);
-    // };
 
-    // const handleDelete = (id) => {
-    //     if (confirm("Are you sure you want to delete this product?")) {
-    //         Inertia.delete(`/products/${id}`);
-    //     }
-    // };
+    const handleDelete = (id) => {
+        destroy(`/products/${id}`);
+        router.on("success", () => {
+            setPostId(null);
+            closeModal();
+            setMessage({
+                visible: true,
+                description: "Product deleted successfully!",
+                type: "success",
+                title: "Success",
+            });
+        });
+        router.on("error", () => {
+            setPostId(null);
+            closeModal();
+            setMessage({
+                visible: true,
+                description: "Failed to delete product!",
+                type: "error",
+                title: "Error",
+            });
+        });
+    };
 
     return (
         <>
@@ -35,12 +66,15 @@ const ProductTable = ({ product }) => {
                 />
 
                 <div className="overflow-x-auto">
-                    {product.data && (
+                    {product.data && product.data.length > 0 && (
                         <table className="min-w-full bg-white">
                             <thead>
                                 <tr className="w-full bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                                     <th className="py-3 px-6 text-left">
                                         Image
+                                    </th>
+                                    <th className="py-3 px-6 text-center">
+                                        Code
                                     </th>
                                     <th className="py-3 px-6 text-center">
                                         Quantity
@@ -67,6 +101,11 @@ const ProductTable = ({ product }) => {
                                                 src={product.thumbnail_image}
                                                 alt={product.name}
                                                 className="h-16 w-16 object-cover"
+                                            />
+                                        </td>
+                                        <td className="py-3 px-6 text-center">
+                                            <BarcodeComponent
+                                                code={product.code}
                                             />
                                         </td>
                                         <td className="py-3 px-6 text-center">
@@ -120,7 +159,7 @@ const ProductTable = ({ product }) => {
                             </tbody>
                         </table>
                     )}
-                    {!product.data && (
+                    {product.data.length <= 0 && (
                         <div className="flex justify-center items-center h-screen">
                             <p className="text-center text-gray-600">
                                 No products found.
@@ -130,7 +169,7 @@ const ProductTable = ({ product }) => {
                 </div>
             </main>
 
-            {product.links && (
+            {product.links && product.data && product.data.length > 0 && (
                 <div className="flex justify-center mt-4">
                     <nav>
                         <ul className="flex space-x-2">
@@ -178,7 +217,9 @@ const ProductTable = ({ product }) => {
                         </p>
                         <div className="flex justify-center space-x-4">
                             <button
-                                // onClick={handleDelete}
+                                onClick={() => {
+                                    handleDelete(postId);
+                                }}
                                 className="px-6 py-3 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-opacity-50 transform hover:scale-105"
                             >
                                 Delete
@@ -192,6 +233,14 @@ const ProductTable = ({ product }) => {
                         </div>
                     </motion.div>
                 </motion.div>
+            )}
+            {message.visible && (
+                <Alert
+                    type={message.type} // You can change this to "error", "warning", or "info"
+                    title={message.title}
+                    description={message.description}
+                    // onClose={handleClose}
+                />
             )}
         </>
     );

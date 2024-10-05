@@ -27,6 +27,7 @@ const ProductAddForm = ({ category, brands }) => {
         phone: "",
         description: "",
         free_delivery: "no",
+        pruchase_name: "",
         pruchase_address: "",
         pruchase_phone: "",
         pruchase_gst: "",
@@ -98,7 +99,7 @@ const ProductAddForm = ({ category, brands }) => {
         data.thumbnail = formData.thumbnail;
         // console.log(data);
         post("/products");
-        router.on("success", (event) => {
+        router.on("success", () => {
             document.querySelector('input[type="file"]').value = null; // Clear file input
             document.querySelector('input[type="date"]').value = ""; // Clear date input
             setFormData({
@@ -542,7 +543,64 @@ const ProductAddForm = ({ category, brands }) => {
                         )}
                     </div>
                 </div>
+                {/* purchase name*/}
+                <div className="grid md:grid-cols-2 md:gap-6">
+                    {/* Purchase Name */}
+                    <div className="relative z-0 w-full mb-5 group">
+                        <label
+                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
+                            htmlFor="pruchase_name"
+                        >
+                            Purchase Name
+                        </label>
+                        <input
+                            type="text"
+                            id="pruchase_name"
+                            value={data.pruchase_name}
+                            onChange={(e) =>
+                                setData("pruchase_name", e.target.value)
+                            }
+                            className={`w-full px-4 py-2 text-black border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                                errors.pruchase_name
+                                    ? "border-red-500 focus:ring-red-400"
+                                    : "border-gray-300 focus:ring-blue-400"
+                            }`}
+                            placeholder="Enter Purchase Name"
+                        />
+                        {errors.pruchase_name && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors.pruchase_name}
+                            </p>
+                        )}
+                    </div>
 
+                    {/* Model */}
+                    <div className="relative z-0 w-full mb-5 group">
+                        {/* <label
+                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
+                            htmlFor="model"
+                        >
+                            Model
+                        </label>
+                        <input
+                            type="text"
+                            id="model"
+                            value={data.model}
+                            onChange={(e) => setData("model", e.target.value)}
+                            className={`w-full px-4 py-2 text-black border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                                errors.model
+                                    ? "border-red-500 focus:ring-red-400"
+                                    : "border-gray-300 focus:ring-blue-400"
+                            }`}
+                            placeholder="Enter Model"
+                        />
+                        {errors.model && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors.model}
+                            </p>
+                        )} */}
+                    </div>
+                </div>
                 {/* Purchase Phone */}
                 <div className="grid md:grid-cols-2 md:gap-6">
                     <div className="relative z-0 w-full mb-5 group">

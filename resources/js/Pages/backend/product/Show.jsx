@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import PageHeader from "../../../layout/components/pageHeader";
+import BarcodeComponent from "../../../layout/components/Barcode";
 
 const ProductDetails = ({ product }) => {
     const [activeTab, setActiveTab] = useState("details");
@@ -31,12 +32,15 @@ const ProductDetails = ({ product }) => {
                 <div className="lg:flex gap-6">
                     {/* Left Section - Product Images */}
                     <div className="lg:w-1/2 w-full">
-                        <div className="bg-gray-100 p-4 rounded-lg">
+                        <div className="bg-gray-100 p-4 rounded-lg relative">
                             <img
                                 src={thumbnail}
                                 alt={product.name}
                                 className="w-full object-cover rounded-lg"
                             />
+                            <div className="px-2 py-2 absolute top-5 left-5 bg-white text-black rounded-lg">
+                                <BarcodeComponent code={product.code} />
+                            </div>
                         </div>
                         <div className=" flex justify-between md:grid md:grid-cols-4 space-x-2 mt-4">
                             {/* Thumbnail Images */}
@@ -147,6 +151,10 @@ const ProductDetails = ({ product }) => {
                             {activeTab === "details" && (
                                 <div>
                                     <ul className="text-sm text-gray-600 space-y-1">
+                                        <li>
+                                            <strong>Purchase Name:</strong>{" "}
+                                            {product.purchase_name}
+                                        </li>
                                         <li>
                                             <strong>Purchase Address:</strong>{" "}
                                             {product.purchase_address}

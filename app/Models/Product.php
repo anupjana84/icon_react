@@ -35,6 +35,8 @@ class Product extends Model
         'image',
         'category',
         'brand',
+        'purchase_name',
+        'code'
     ];
 
     public function category(){

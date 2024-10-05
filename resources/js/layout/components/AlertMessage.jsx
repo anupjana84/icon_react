@@ -98,7 +98,7 @@ function Alert({
 
     return (
         <div
-            className={` z-50 flex items-center bg-gradient-to-r ${COLORS[type]} text-white p-6 rounded-2xl shadow-2xl transform transition-all duration-300 ease-in-out max-w-lg w-full alert-slide-down fixed top-4 left-auto `}
+            className={` z-50 flex items-center bg-gradient-to-r ${COLORS[type]} text-white p-6 rounded-2xl shadow-2xl transform transition-all duration-300 ease-in-out max-w-lg w-full alert-slide-down fixed top-4 right-9 `}
             style={{
                 transform: visible ? "translateY(0)" : "translateY(-100%)",
                 opacity: visible ? 1 : 0,
