@@ -34,12 +34,15 @@ const ProductDetails = ({ product }) => {
                     <div className="lg:w-1/2 w-full">
                         <div className="bg-gray-100 p-4 rounded-lg relative">
                             <img
-                                src={thumbnail}
+                                src={thumbnail ?? "/thumbnail.png"}
                                 alt={product.name}
                                 className="w-full object-cover rounded-lg"
                             />
                             <div className="px-2 py-2 absolute top-5 left-5 bg-white text-black rounded-lg">
-                                <BarcodeComponent code={product.code} />
+                                <BarcodeComponent
+                                    code={product.code}
+                                    product={product}
+                                />
                             </div>
                         </div>
                         <div className=" flex justify-between md:grid md:grid-cols-4 space-x-2 mt-4">
@@ -49,7 +52,7 @@ const ProductDetails = ({ product }) => {
                                     <img
                                         onClick={() => setThumbnail(img)}
                                         key={index}
-                                        src={img}
+                                        src={img || "public/thumbnail.png"}
                                         alt={`Product Thumbnail ${index}`}
                                         className="w-20 h-20 object-cover border p-1 rounded-lg m-auto"
                                     />
@@ -100,20 +103,23 @@ const ProductDetails = ({ product }) => {
                         {/* Stock & Info */}
                         <div className="mt-4">
                             <p className="text-sm text-gray-600">
-                                HSN Code: {product.hsn_code}
+                                HSN Code: {product.hsn_code ?? "N/A"}
                             </p>
                             <p className="text-sm text-gray-600">
-                                GST: {product.product_gst}%
+                                GST: {product.product_gst ?? 0}%
                             </p>
                             <p className="text-sm text-gray-600">
                                 Available From:{" "}
-                                {formatDate(product.available_from)}
+                                {formatDate(product.available_from) ?? "N/A"}
                             </p>
                             <p className="text-sm text-gray-600">
                                 Free Delivery: {product.free_delivery}
                             </p>
                             <p className="text-sm text-gray-600">
                                 Quantity: {product.quantity}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                                Warranty: {product.warranty ?? "N/A"}
                             </p>
                         </div>
 
@@ -157,21 +163,26 @@ const ProductDetails = ({ product }) => {
                                         </li>
                                         <li>
                                             <strong>Purchase Address:</strong>{" "}
-                                            {product.purchase_address}
+                                            {product.purchase_address ??
+                                                "No purchase address"}
                                         </li>
                                         <li>
                                             <strong>Purchase Phone:</strong>{" "}
-                                            {product.purchase_phone}
+                                            {product.purchase_phone ??
+                                                "No purchease phone"}
                                         </li>
                                         <li>
                                             <strong>
                                                 Purchase Invoice No:
                                             </strong>{" "}
-                                            {product.purchase_invoice_no}
+                                            {product.purchase_invoice_no ??
+                                                "No purchease invoice"}
                                         </li>
                                         <li>
                                             <strong>Purchase Date:</strong>{" "}
-                                            {formatDate(product.purchase_date)}
+                                            {formatDate(
+                                                product.purchase_date
+                                            ) ?? "N/A"}
                                         </li>
                                         <li>
                                             <strong>
@@ -188,7 +199,8 @@ const ProductDetails = ({ product }) => {
                             {activeTab === "description" && (
                                 <div>
                                     <p className="text-gray-600">
-                                        {product.description}
+                                        {product.description ??
+                                            "No description"}
                                     </p>
                                 </div>
                             )}

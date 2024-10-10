@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Header from "@/layout/header";
 import ProductAddForm from "@/layout/ProductAddForm";
 import PageHeader from "../../../layout/components/pageHeader";
+import DynamicTableForm from "../../../layout/products/ProductChuncUplod";
 
 const Create = ({ category, brands }) => {
     // console.log(category);
@@ -15,7 +16,7 @@ const Create = ({ category, brands }) => {
     const [count, setCount] = useState(0);
     return (
         <>
-            <main className="max-w-7xl mx-auto py-1 px-1 lg:px-1">
+            <main className=" mx-auto py-1 px-1 lg:px-1">
                 <PageHeader
                     title="Product > Add"
                     link="/products"
@@ -23,7 +24,8 @@ const Create = ({ category, brands }) => {
                 />
 
                 {/* <p>content</p> */}
-                <ProductAddForm category={category} brands={brands} />
+                {/* <ProductAddForm category={category} brands={brands} /> */}
+                <DynamicTableForm category={category} brands={brands} />
 
                 {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                     <h4>page</h4>

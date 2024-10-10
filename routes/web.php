@@ -14,6 +14,8 @@ Route::get('/', function () {
 Route::get('/about', function () {  
     return Inertia::render('About');
 });
+
+Route::post('/create-multiple', [ProductController::class, 'storeChunk']);
 // Route::get('user1','App\Http\Controllers\HomeController@index')->name('wolecome');
 
 

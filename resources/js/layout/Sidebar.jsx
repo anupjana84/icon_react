@@ -8,6 +8,7 @@ import {
     TrendingUp,
     Users,
     Trello,
+    PackageSearch,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -19,6 +20,12 @@ const SIDEBAR_ITEMS = [
         icon: BarChart2,
         color: "#6366f1",
         href: "/",
+    },
+    {
+        name: "Purchase",
+        icon: PackageSearch,
+        color: "#8B5CF6",
+        href: "/products",
     },
     {
         name: "Products",

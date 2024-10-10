@@ -5,7 +5,8 @@ import React, { useState } from "react";
 import { OctagonX } from "lucide-react";
 import Alert from "./components/AlertMessage";
 
-const ProductAddForm = ({ category, brands }) => {
+const ProductEditForm = ({ category, brands, product }) => {
+    console.log(product);
     const [message, setMessage] = useState({
         visible: false,
         description: "",
@@ -18,37 +19,30 @@ const ProductAddForm = ({ category, brands }) => {
         thumbnail: "",
     });
     const { data, setData, post, processing, errors, reset } = useForm({
-        name: "",
-        sale_price: "",
-        purchase_price: "",
-        quantity: "",
-        category: "",
-        brand: "",
-        model: "",
-        hsn_code: "",
-        product_gst: "",
-        point: "",
-        phone: "",
-        description: "",
-        free_delivery: "no",
-        pruchase_name: "",
-        pruchase_address: "",
-        pruchase_phone: "",
-        pruchase_gst: "",
-        pruchase_invoice_no: "",
-        pruchase_date: "",
-        pruchase_receive_date: "",
-        stock: "",
-        sku: "",
-        weight: "",
-        color: "",
-        discount: "",
-        image_url: [],
-        image_url_thum: null,
-        status: "active",
-        available_from: "",
-        thumbnail: "",
-        warranty: "",
+        name: product.name,
+        sale_price: product.sale_price,
+        purchase_price: product.purchase_price,
+        quantity: product.quantity,
+        category: product.category.id,
+        brand: product.brand.id,
+        description: product.description,
+        status: product.status,
+        available_from: product.available_from,
+        thumbnail: product.thumbnail,
+        warranty: product.warranty,
+        image_url: product.image,
+        model: product.model,
+        phone: product.phone,
+        hsn_code: product.hsn_code,
+        product_gst: product.product_gst,
+        point: product.point,
+        pruchase_name: product.purchase_name,
+        pruchase_address: product.purchase_address,
+        pruchase_phone: product.purchase_phone,
+        pruchase_gst: product.purchase_gst,
+        pruchase_invoice_no: product.purchase_invoice_no,
+        pruchase_date: product.purchase_date,
+        pruchase_receive_date: product.purchase_receive_date,
     });
 
     // console.log(brands);
@@ -101,8 +95,10 @@ const ProductAddForm = ({ category, brands }) => {
         data.thumbnail = formData.thumbnail;
         // console.log(data);
 
-        post("/products");
+        // post("/products");
         router.on("success", () => {
+            document.querySelector('input[type="file"]').value = null; // Clear file input
+            document.querySelector('input[type="date"]').value = ""; // Clear date input
             setFormData({
                 image_url: [],
                 image_url_thum: null,
@@ -998,40 +994,10 @@ const ProductAddForm = ({ category, brands }) => {
                 <div className="w-full">
                     <button
                         type="submit"
-                        className={`bg-blue-500 w-full text-white px-4 py-2 rounded-lg ${
-                            processing
-                                ? "opacity-70 cursor-not-allowed"
-                                : "hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
-                        }`}
-                        disabled={processing}
+                        className="bg-blue-500
+                        w-full text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
                     >
-                        {processing ? (
-                            <div className="flex items-center justify-center">
-                                <svg
-                                    className="animate-spin h-5 w-5 mr-2 text-white"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <circle
-                                        className="opacity-25"
-                                        cx="12"
-                                        cy="12"
-                                        r="10"
-                                        stroke="currentColor"
-                                        strokeWidth="4"
-                                    ></circle>
-                                    <path
-                                        className="opacity-75"
-                                        fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                    ></path>
-                                </svg>
-                                Uploading...
-                            </div>
-                        ) : (
-                            "Submit"
-                        )}
+                        Submit
                     </button>
                 </div>
             </form>
@@ -1047,4 +1013,4 @@ const ProductAddForm = ({ category, brands }) => {
     );
 };
 
-export default ProductAddForm;
+export default ProductEditForm;

@@ -2,17 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
+use Inertia\Inertia;
 use App\Models\Brand;
+use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use App\Services\CloudinaryService;
+use Illuminate\Container\Attributes\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ProductController extends Controller
 {
+    protected $cloudinaryService;
+
+    public function __construct(CloudinaryService $cloudinaryService)
+    {
+        $this->cloudinaryService = $cloudinaryService;
+    }
+
 
     private function generateBarcodeNumber($dateString, $companyName, $purchaseRate, $gstStatus)
 {
+    date_default_timezone_set('Asia/Kolkata');
+    $time = date('H:i:s');  // Example time: 02:30:15
+    list($hours, $minutes, $seconds) = explode(':', $time);
     // Extract day, month, and year from the date
     $date = new \DateTime($dateString);
     $day = $date->format('d'); // e.g., "27"
@@ -29,7 +42,7 @@ class ProductController extends Controller
     $gst = $gstStatus ? 'GY' : 'GN'; // e.g., "GY"
 
     // Concatenate all parts to form the barcode number
-    return "{$day}{$companyInitials}{$formattedRate}{$month}{$year}{$gst}";
+    return "{$day}{$companyInitials}{$formattedRate}{$month}{$year}{$gst}{$hours}{$minutes}{$seconds}";
 }
 
     /**
@@ -39,7 +52,7 @@ class ProductController extends Controller
     {
 
         
-        $product = Product::paginate(20);
+        $product = Product::with('brand')->paginate(20);
         // dd($product);
         return Inertia::render('backend/product/Index', [
             'product' => $product,
@@ -61,14 +74,51 @@ class ProductController extends Controller
         ]);
     }
 
+
+//     public function store(Request $request)
+// {
+//     // Check if the thumbnail file exists in the request
+//     if ($request->hasFile('thumbnail')) {
+//         // Upload the file to Cloudinary with transformation and folder specification
+//         try {
+//             $uploadedFile = cloudinary()->upload($request->file('thumbnail')->getRealPath(), [
+//                 'folder' => 'uploads',
+//                 'transformation' => [
+//                     'width' => 400,
+//                     'height' => 400,
+//                     'crop' => 'fill'
+//                 ]
+//             ]);
+
+//             // Get the secure URL of the uploaded file
+//             $uploadedFileUrl = $uploadedFile->getSecurePath();
+//             $publicId = $uploadedFile->getPublicId();
+
+//             // Check if the file exists on Cloudinary
+//             $exists = cloudinary()->resource($publicId)->exists();
+
+//             // Debugging output
+//             dd([
+//                 'uploadedFileUrl' => $uploadedFileUrl,
+//                 'fileExists' => $exists
+//             ]);
+
+//         } catch (\Exception $e) {
+//             return response()->json(['error' => $e->getMessage()], 500);
+//         }
+//     } else {
+//         return response()->json(['error' => 'No thumbnail file uploaded'], 400);
+//     }
+// }
+
+
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
-        // dd($request->all());
- try {
+    
+        
     $request->validate([
         'name' => 'required|string|max:255',
         'description' => 'nullable|string',
@@ -96,44 +146,33 @@ class ProductController extends Controller
         'category' => 'required|exists:categories,id',
         'brand' => 'required|exists:brands,id',
         'pruchase_name'=> 'required|string',
+        'warranty' => 'nullable|string',
     ]);
-    // dd($request->all());
+    
 
-    // Initialize variables for thumbnail and image paths
     $thumbnailPath = null;
     $imagePaths = [];
 
-    // Define the base directory for product images
-    $baseDir = 'product_images/';
 
     // Handle thumbnail image upload
     if ($request->hasFile('thumbnail')) {
-        // Create thumbnail directory if it doesn't exist
-        $thumbnailDirectory = public_path("storage/{$baseDir}thumbnails");
-        if (!file_exists($thumbnailDirectory)) {
-            mkdir($thumbnailDirectory, 0777, true);
-        }
-
-        // Store the thumbnail image
-        $thumbnailImage = $request->file('thumbnail')->store('product_images/thumbnails', 'public');
-        $thumbnailPath = "/storage/{$thumbnailImage}"; // Save the path
+        $folderPath = 'icon_computer/product_images/thumbnail';
+        $thumbnail = $this->cloudinaryService->uploadImage($request->file('thumbnail'), $folderPath);
+        $thumbnailPath = $thumbnail;
     }
 
     // Handle multiple image uploads
     if ($request->hasFile('image_url')) {
-        // Create images directory if it doesn't exist
-        $imagesDirectory = public_path("storage/{$baseDir}images");
-        if (!file_exists($imagesDirectory)) {
-            mkdir($imagesDirectory, 0777, true);
-        }
-    
         foreach ($request->file('image_url') as $image) {
-            // Store each image
-            $imagePath = $image->store('product_images/images', 'public');
+            $folderPath = 'icon_computer/product_images/images';
+            $image_url = $this->cloudinaryService->uploadImage($image, $folderPath);
             // Store the path without adding $baseDir again
-            $imagePaths[] = "/storage/{$imagePath}"; 
+            $imagePaths[] =$image_url; 
         }
     }
+
+// dd($imagePaths);
+
     // dd($imagePaths);
 
     // Generate barcode number
@@ -167,16 +206,63 @@ class ProductController extends Controller
         'category' => $request->category,
         'brand' => $request->brand,
         'purchase_name'=> $request->pruchase_name,  // Added new field for purchase name.
-        'code'=> $barcodeNumber,  // Added new field for barcode number.  // Added new field for barcode number.
+        'code'=> $barcodeNumber,  // Added new field for barcode number.  
+        'warranty'=> $request->warranty,  // Added new field for wear and tear. 
     ]);
 
     // Redirect back with success message
     return back()->with('success', 'Product created successfully.');
- } catch (\Throwable $th) {
-    // Redirect back with error message
-    return back()->with('error', 'An error occurred while creating the product. Please try again.');
- }
        
+    }
+
+    public function storeChunk(Request $request){
+       
+
+    $request->validate(
+            [
+                'pruchase_name' => 'required|string|max:255',
+                'pruchase_date' => 'required|date',
+                'gst_number'=> 'required|string',
+                'pruchase_receive_date' => 'required|date',
+                'address' => 'nullable|string',
+                'pruchase_phone' => 'required|string',
+                'pruchase_invoice_no' => 'required|string',
+                'rows' => 'required|array',
+                'gst'=> 'nullable|string',
+                'rows.*.category' => 'required|exists:categories,id',
+                'rows.*.brand' => 'required|exists:brands,id',
+                'rows.*.model' => 'required|string|max:255',
+                'rows.*.hsnCode' => 'nullable|string|max:255',
+                'rows.*.quantity' => 'required|integer|min:1',
+                'rows.*.rate' => 'required|numeric|min:0',
+                'rows.*.saleRate' => 'required|numeric|min:0',
+                'rows.*.total' => 'required|numeric|min:0',
+                'rows.*.point' => 'required|string|max:255',
+                'rows.*.freeDelivery' => 'required|in:yes,no',
+            ]
+        ); 
+        // dd($request->all());
+
+        foreach( $request->rows as $row ){
+            // dd($row);
+            $barcodeNumber = $this->generateBarcodeNumber($request->pruchase_receive_date, $request->pruchase_name, $row['rate'], $request->gst === 'yes' ? 1 : 0);
+            // dd($barcodeNumber);
+            Product::create([
+               'model' => $row['model'],
+                'quantity' => $row['quantity'],
+                'purchase_phone' => $request->pruchase_phone,
+                'hsn_code' => $row['hsnCode'],
+                'gst' => $request->gst,
+                'point' => $row['point'],
+                'free_delivery' => $row['freeDelivery'],
+                'purchase_address' => $request->address,
+                'purchase_date' => $request->pruchase_date,
+                'purchase_receive_date' => $request->pruchase_receive_date,
+                'code' => $barcodeNumber
+            ]);
+        }
+
+        return back()->with('success', 'Products created successfully.');
     }
 
     /**
@@ -197,7 +283,15 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-
+        $category = Category::all();
+        $brands = Brand::all();
+        $product = $product->load('category', 'brand');
+        // dd($product);
+        return Inertia::render('backend/product/Edit', [
+            'product' => $product,
+            'category' => $category,
+            'brands' => $brands
+        ]);
     }
 
     /**
@@ -213,31 +307,21 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        try {
         $thumbnail = $product->thumbnail_image;
         $imagePaths = json_decode($product->image, true);
 
         // Delete the thumbnail image if it exists
-        if ($thumbnail && file_exists(public_path($thumbnail))) {
-            //  dd($thumbnail);
-            unlink(public_path($thumbnail));
+        if ($thumbnail) {
+            $this->cloudinaryService->deleteImage($thumbnail);
         }
         // Delete all image paths
         foreach ($imagePaths as $imagePath) {
-            if (file_exists(public_path($imagePath))) {
-                // dd($imagePath);
-                unlink(public_path($imagePath));
-            }
+            $this->cloudinaryService->deleteImage($imagePath);  
         }
 
         // Delete the product from the database
         $product->delete();
 
         return back()->with('success', 'Product deleted successfully.');
-        } catch (\Throwable $th) {
-            return back()->with('error', 'Failed to delete product.');
-        }
-       
-
     }
 }
