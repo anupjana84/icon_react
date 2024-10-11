@@ -1,8 +1,7 @@
 import { useForm, router } from "@inertiajs/react";
 import React, { useState } from "react";
 import Alert from "../components/AlertMessage";
-
-const DynamicTableForm = ({ brands, category, company }) => {
+export default function PurchaseForm({ brands, category, company }) {
     console.log(company);
     const [saved, setSeved] = useState(false);
     const [message, setMessage] = useState({
@@ -12,10 +11,7 @@ const DynamicTableForm = ({ brands, category, company }) => {
         title: "",
     });
     const { data, setData, post, errors, processing, reset } = useForm({
-        pruchase_name: "",
-        address: "",
-        pruchase_phone: "",
-        gst_number: "",
+        company: "",
         pruchase_invoice_no: "",
         pruchase_date: "",
         pruchase_receive_date: "",
@@ -25,11 +21,9 @@ const DynamicTableForm = ({ brands, category, company }) => {
                 category: "",
                 brand: "",
                 model: "",
-                hsnCode: "",
                 quantity: "",
                 rate: "",
                 saleRate: "",
-                total: 0,
                 point: "",
                 freeDelivery: "no",
             },
@@ -46,14 +40,13 @@ const DynamicTableForm = ({ brands, category, company }) => {
                 category: "",
                 brand: "",
                 model: "",
-                hsnCode: "",
                 quantity: "",
                 rate: "",
                 saleRate: "",
-                total: 0,
                 point: "",
                 freeDelivery: "no",
             });
+            setSeved(false);
         }
 
         // Remove the row if all values are empty
@@ -80,30 +73,28 @@ const DynamicTableForm = ({ brands, category, company }) => {
         if (data.rows.length > 1) {
             setSeved(true);
         }
-        post("/create-multiple");
+    };
+
+    const handelSubmit = () => {
+        // e.preventDefault();
+        post("/purchase/store");
     };
 
     router.on("success", () => {
-        reset(); // Reset the form
         setData({
             company: "",
-            pruchase_name: "",
-            address: "",
-            pruchase_phone: "",
-            gst_number: "",
             pruchase_invoice_no: "",
             pruchase_date: "",
             pruchase_receive_date: "",
+            gst: "no",
             rows: [
                 {
                     category: "",
                     brand: "",
                     model: "",
-                    hsnCode: "",
                     quantity: "",
                     rate: "",
                     saleRate: "",
-                    total: 0,
                     point: "",
                     freeDelivery: "no",
                 },
@@ -208,9 +199,9 @@ const DynamicTableForm = ({ brands, category, company }) => {
                             {errors.pruchase_phone}
                         </p>
                     )}
-                </div>
+                </div> */}
 
-                <div className="relative z-0 w-full group">
+                {/* <div className="relative z-0 w-full group">
                     <label className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500">
                         GST Number
                     </label>
@@ -232,7 +223,7 @@ const DynamicTableForm = ({ brands, category, company }) => {
                             {errors.pruchase_invoice_no}
                         </p>
                     )}
-                </div>
+                </div> */}
                 <div className="relative z-0 w-full group">
                     <label className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500">
                         Purchase Invoice No
@@ -257,7 +248,7 @@ const DynamicTableForm = ({ brands, category, company }) => {
                             {errors.pruchase_invoice_no}
                         </p>
                     )}
-                </div> */}
+                </div>
                 <div className="relative z-0 w-full  group">
                     <label
                         className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
@@ -616,7 +607,7 @@ const DynamicTableForm = ({ brands, category, company }) => {
                 <div className="w-full">
                     <button
                         onClick={() => {
-                            handleSave();
+                            handelSubmit();
                         }}
                         type="submit"
                         className={`bg-blue-500 w-full text-white px-4 py-2 rounded-lg ${
@@ -667,6 +658,4 @@ const DynamicTableForm = ({ brands, category, company }) => {
             )}
         </div>
     );
-};
-
-export default DynamicTableForm;
+}

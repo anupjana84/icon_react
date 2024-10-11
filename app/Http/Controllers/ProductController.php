@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Brand;
+use App\Models\Company;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -67,10 +68,13 @@ class ProductController extends Controller
     { 
         $category = Category::all();
         $brands = Brand::all();
+        $company = Company::all();
+        // dd($company);
     //    return $category;
         return Inertia::render('backend/product/Create',[
             'category' => $category,
-            'brands' => $brands
+            'brands' => $brands,
+            'company' => $company
         ]);
     }
 
@@ -285,6 +289,7 @@ class ProductController extends Controller
     {
         $category = Category::all();
         $brands = Brand::all();
+        
         $product = $product->load('category', 'brand');
         // dd($product);
         return Inertia::render('backend/product/Edit', [

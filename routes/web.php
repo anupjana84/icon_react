@@ -1,9 +1,10 @@
 <?php
 
+use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\ProductController;
-use Inertia\Inertia;
+use App\Http\Controllers\PurchaseController;
 
 Route::resource('/brands', BrandController::class);
 Route::resource('/products', ProductController::class);
@@ -16,7 +17,10 @@ Route::get('/about', function () {
 });
 
 Route::post('/create-multiple', [ProductController::class, 'storeChunk']);
-// Route::get('user1','App\Http\Controllers\HomeController@index')->name('wolecome');
+Route::get('/purchase/create', [PurchaseController::class, 'create']);
+Route::post('/purchase/store', [PurchaseController::class,'store']);
+Route::get('/purchase', [PurchaseController::class, 'index']);
+
 
 
 

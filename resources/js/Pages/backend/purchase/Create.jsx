@@ -1,31 +1,21 @@
-import React, { useState } from "react";
-
-import Header from "@/layout/header";
-import ProductAddForm from "@/layout/ProductAddForm";
-import PageHeader from "../../../layout/components/pageHeader";
+import React from "react";
 import DynamicTableForm from "../../../layout/products/ProductChuncUplod";
+import PageHeader from "../../../layout/components/pageHeader";
+import PurchaseForm from "../../../layout/purchase/PurchaseForm";
 
-const Create = ({ category, brands, company }) => {
-    // console.log(category);
-
-    // const handleSubmit = (e) => {
-    //     e.preventDefault();
-    //     // Handle form submission logic here
-    //     post('/brands')
-    // };
-    const [count, setCount] = useState(0);
+export default function Create({ category, brands, company }) {
     return (
         <>
             <main className=" mx-auto py-1 px-1 lg:px-1">
                 <PageHeader
-                    title="Product > Add"
-                    link="/products"
+                    title="Purchase > Add"
+                    link="/purchase"
                     linkName="Back"
                 />
 
                 {/* <p>content</p> */}
                 {/* <ProductAddForm category={category} brands={brands} /> */}
-                <DynamicTableForm
+                <PurchaseForm
                     category={category}
                     brands={brands}
                     company={company}
@@ -37,6 +27,4 @@ const Create = ({ category, brands, company }) => {
             </main>
         </>
     );
-};
-
-export default Create;
+}

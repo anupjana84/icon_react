@@ -25,7 +25,7 @@ const SIDEBAR_ITEMS = [
         name: "Purchase",
         icon: PackageSearch,
         color: "#8B5CF6",
-        href: "/products",
+        href: "/purchase",
     },
     {
         name: "Products",
