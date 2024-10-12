@@ -12,9 +12,9 @@ export default function PurchaseForm({ brands, category, company }) {
     });
     const { data, setData, post, errors, processing, reset } = useForm({
         company: "",
-        pruchase_invoice_no: "",
-        pruchase_date: "",
-        pruchase_receive_date: "",
+        purchase_invoice_no: "",
+        purchase_date: "",
+        purchase_receive_date: "",
         gst: "no",
         rows: [
             {
@@ -73,19 +73,20 @@ export default function PurchaseForm({ brands, category, company }) {
         if (data.rows.length > 1) {
             setSeved(true);
         }
-    };
-
-    const handelSubmit = () => {
-        // e.preventDefault();
         post("/purchase/store");
     };
+
+    // const handelSubmit = () => {
+    //     // e.preventDefault();
+    //     post("/purchase/store");
+    // };
 
     router.on("success", () => {
         setData({
             company: "",
-            pruchase_invoice_no: "",
-            pruchase_date: "",
-            pruchase_receive_date: "",
+            purchase_invoice_no: "",
+            purchase_date: "",
+            purchase_receive_date: "",
             gst: "no",
             rows: [
                 {
@@ -232,20 +233,20 @@ export default function PurchaseForm({ brands, category, company }) {
                         type="text"
                         id="pruchase_invoice_no"
                         name="pruchase_invoice_no"
-                        value={data.pruchase_invoice_no}
+                        value={data.purchase_invoice_no}
                         onChange={(e) =>
-                            setData("pruchase_invoice_no", e.target.value)
+                            setData("purchase_invoice_no", e.target.value)
                         }
                         className={`w-full px-4 py-2 text-black border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                            errors.pruchase_invoice_no
+                            errors.purchase_invoice_no
                                 ? "border-red-500 focus:ring-red-400"
                                 : "border-gray-300 focus:ring-blue-400"
                         }`}
                         placeholder="Purchase Invoice No"
                     />
-                    {errors.pruchase_invoice_no && (
+                    {errors.purchase_invoice_no && (
                         <p className="text-red-500 text-sm mt-1">
-                            {errors.pruchase_invoice_no}
+                            {errors.purchase_invoice_no}
                         </p>
                     )}
                 </div>
@@ -260,19 +261,19 @@ export default function PurchaseForm({ brands, category, company }) {
                         type="date"
                         id="pruchase_date"
                         name="pruchase_date"
-                        value={data.pruchase_date}
+                        value={data.purchase_date}
                         onChange={(e) =>
-                            setData("pruchase_date", e.target.value)
+                            setData("purchase_date", e.target.value)
                         }
                         className={`w-full px-4 py-2 text-black border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                            errors.pruchase_date
+                            errors.purchase_date
                                 ? "border-red-500 focus:ring-red-400"
                                 : "border-gray-300 focus:ring-blue-400"
                         }`}
                     />
                     {errors.pruchase_date && (
                         <p className="text-red-500 text-sm mt-1">
-                            {errors.pruchase_date}
+                            {errors.purchase_date}
                         </p>
                     )}
                 </div>
@@ -287,19 +288,19 @@ export default function PurchaseForm({ brands, category, company }) {
                         type="date"
                         id="pruchase_receive_date"
                         name="pruchase_receive_date"
-                        value={data.pruchase_receive_date}
+                        value={data.purchase_receive_date}
                         onChange={(e) =>
-                            setData("pruchase_receive_date", e.target.value)
+                            setData("purchase_receive_date", e.target.value)
                         }
                         className={`w-full px-4 py-2 text-black border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                            errors.pruchase_receive_date
+                            errors.purchase_receive_date
                                 ? "border-red-500 focus:ring-red-400"
                                 : "border-gray-300 focus:ring-blue-400"
                         }`}
                     />
-                    {errors.pruchase_receive_date && (
+                    {errors.purchase_receive_date && (
                         <p className="text-red-500 text-sm mt-1">
-                            {errors.pruchase_receive_date}
+                            {errors.purchase_receive_date}
                         </p>
                     )}
                 </div>
@@ -607,7 +608,7 @@ export default function PurchaseForm({ brands, category, company }) {
                 <div className="w-full">
                     <button
                         onClick={() => {
-                            handelSubmit();
+                            handleSave();
                         }}
                         type="submit"
                         className={`bg-blue-500 w-full text-white px-4 py-2 rounded-lg ${

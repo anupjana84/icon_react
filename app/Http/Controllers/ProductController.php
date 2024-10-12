@@ -22,7 +22,7 @@ class ProductController extends Controller
     }
 
 
-    private function generateBarcodeNumber($dateString, $companyName, $purchaseRate, $gstStatus)
+private function generateBarcodeNumber($dateString, $companyName, $purchaseRate, $gstStatus)
 {
     date_default_timezone_set('Asia/Kolkata');
     $time = date('H:i:s');  // Example time: 02:30:15

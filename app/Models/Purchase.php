@@ -17,7 +17,7 @@ class Purchase extends Model
         'gst'
     ];
 
-    public function product(){
+    public function products(){
         return $this->belongsTo(Product::class);
     }
     public function company(){
