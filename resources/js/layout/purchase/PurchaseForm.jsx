@@ -1,5 +1,5 @@
 import { useForm, router } from "@inertiajs/react";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Alert from "../components/AlertMessage";
 export default function PurchaseForm({ brands, category, company }) {
     console.log(company);
@@ -10,6 +10,28 @@ export default function PurchaseForm({ brands, category, company }) {
         type: "",
         title: "",
     });
+    const tableRef = useRef(null);
+
+    useEffect(() => {
+        const handleWheel = (e) => {
+            // Prevent the default vertical scroll
+            e.preventDefault();
+            // Scroll horizontally
+            if (tableRef.current) {
+                tableRef.current.scrollLeft += e.deltaY;
+            }
+        };
+
+        const tableElement = tableRef.current;
+
+        // Add wheel event listener
+        tableElement.addEventListener("wheel", handleWheel, { passive: false });
+
+        // Clean up the event listener on component unmount
+        return () => {
+            tableElement.removeEventListener("wheel", handleWheel);
+        };
+    }, []);
     const { data, setData, post, errors, processing, reset } = useForm({
         company: "",
         purchase_invoice_no: "",
@@ -363,173 +385,177 @@ export default function PurchaseForm({ brands, category, company }) {
             </div>
 
             {/* Dynamic Table */}
-            <table className="min-w-full bg-white border border-gray-200 mb-4 mt-4">
-                <thead>
-                    <tr>
-                        {[
-                            "ITEM",
-                            "COMPANY",
-                            "MODEL",
-                            "QUANTITY",
-                            "RATE",
-                            "SALE RATE",
-                            "POINT",
-                            "DELIVERY",
-                        ].map((header, idx) => (
-                            <th
-                                key={idx}
-                                className="px-4 py-1 border-x bg-gray-100 border-b text-left text-sm font-medium text-gray-700"
-                            >
-                                {header}
-                            </th>
-                        ))}
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {data.rows.map((row, index) => (
-                        <tr key={index} className="border-b">
-                            {/* SLNO - row number */}
-                            <td className="px-2 py-2 border-x">
-                                <select
-                                    type="text"
-                                    id="category"
-                                    name="category"
-                                    value={row.category}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            index,
-                                            "category",
-                                            e.target.value
-                                        )
-                                    }
-                                    className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                                        errors[`rows.${index}.category`]
-                                            ? "border-red-500 focus:ring-red-400"
-                                            : "border-gray-300 focus:ring-blue-400"
-                                    }`}
-                                    placeholder="Item"
+            <div
+                className="overflow-x-auto max-h-[400px] hover:overflow-y-hidden"
+                ref={tableRef}
+            >
+                <table className=" bg-white border border-gray-200 mb-4 mt-4 min-w-[1100px]">
+                    <thead>
+                        <tr>
+                            {[
+                                "ITEM",
+                                "COMPANY",
+                                "MODEL",
+                                "QUANTITY",
+                                "RATE",
+                                "SALE RATE",
+                                "POINT",
+                                "DELIVERY",
+                            ].map((header, idx) => (
+                                <th
+                                    key={idx}
+                                    className="px-4 py-1 border-x bg-gray-100 border-b text-left text-sm font-medium text-gray-700"
                                 >
-                                    <option value="">Select</option>
-                                    {category &&
-                                        category.map((category) => (
-                                            <option
-                                                key={category.id}
-                                                value={category.id}
-                                            >
-                                                {category.name}
-                                            </option>
-                                        ))}
-                                </select>
-                            </td>
-                            <td className="px-2 py-2 border-x">
-                                <select
-                                    id="brand"
-                                    name="brand"
-                                    value={row.brand}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            index,
-                                            "brand",
-                                            e.target.value
-                                        )
-                                    }
-                                    className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                                        errors[`rows.${index}.brand`]
-                                            ? "border-red-500 focus:ring-red-400"
-                                            : "border-gray-300 focus:ring-blue-400"
-                                    }`}
-                                >
-                                    <option value="">Select</option>
-                                    {brands &&
-                                        brands.map((brand) => (
-                                            <option
-                                                key={brand.id}
-                                                value={brand.id}
-                                            >
-                                                {brand.name}
-                                            </option>
-                                        ))}
-                                </select>
-                            </td>
-                            <td className="px-2 py-2 border-x">
-                                <input
-                                    type="text"
-                                    value={row.model}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            index,
-                                            "model",
-                                            e.target.value
-                                        )
-                                    }
-                                    className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                                        errors[`rows.${index}.model`]
-                                            ? "border-red-500 focus:ring-red-400"
-                                            : "border-gray-300 focus:ring-blue-400"
-                                    }`}
-                                    placeholder="Model"
-                                />
-                            </td>
+                                    {header}
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
 
-                            <td className="px-2 py-2 border-x">
-                                <input
-                                    type="number"
-                                    value={row.quantity}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            index,
-                                            "quantity",
-                                            e.target.value
-                                        )
-                                    }
-                                    className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                                        errors[`rows.${index}.quantity`]
-                                            ? "border-red-500 focus:ring-red-400"
-                                            : "border-gray-300 focus:ring-blue-400"
-                                    }`}
-                                    placeholder="Quantity"
-                                />
-                            </td>
-                            <td className="px-2 py-2 border-x">
-                                <input
-                                    type="number"
-                                    value={row.rate}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            index,
-                                            "rate",
-                                            e.target.value
-                                        )
-                                    }
-                                    className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                                        errors[`rows.${index}.rate`]
-                                            ? "border-red-500 focus:ring-red-400"
-                                            : "border-gray-300 focus:ring-blue-400"
-                                    }`}
-                                    placeholder="Rate"
-                                />
-                            </td>
-                            <td className="px-2 py-2 border-x">
-                                <input
-                                    type="number"
-                                    value={row.saleRate}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            index,
-                                            "saleRate",
-                                            e.target.value
-                                        )
-                                    }
-                                    className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                                        errors[`rows.${index}.saleRate`]
-                                            ? "border-red-500 focus:ring-red-400"
-                                            : "border-gray-300 focus:ring-blue-400"
-                                    }`}
-                                    placeholder="Sale Rate"
-                                />
-                            </td>
-                            {/* <td className="px-2 py-2 border-x">
+                    <tbody>
+                        {data.rows.map((row, index) => (
+                            <tr key={index} className="border-b">
+                                {/* SLNO - row number */}
+                                <td className="px-2 py-2 border-x">
+                                    <select
+                                        type="text"
+                                        id="category"
+                                        name="category"
+                                        value={row.category}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                index,
+                                                "category",
+                                                e.target.value
+                                            )
+                                        }
+                                        className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                                            errors[`rows.${index}.category`]
+                                                ? "border-red-500 focus:ring-red-400"
+                                                : "border-gray-300 focus:ring-blue-400"
+                                        }`}
+                                        placeholder="Item"
+                                    >
+                                        <option value="">Select</option>
+                                        {category &&
+                                            category.map((category) => (
+                                                <option
+                                                    key={category.id}
+                                                    value={category.id}
+                                                >
+                                                    {category.name}
+                                                </option>
+                                            ))}
+                                    </select>
+                                </td>
+                                <td className="px-2 py-2 border-x">
+                                    <select
+                                        id="brand"
+                                        name="brand"
+                                        value={row.brand}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                index,
+                                                "brand",
+                                                e.target.value
+                                            )
+                                        }
+                                        className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                                            errors[`rows.${index}.brand`]
+                                                ? "border-red-500 focus:ring-red-400"
+                                                : "border-gray-300 focus:ring-blue-400"
+                                        }`}
+                                    >
+                                        <option value="">Select</option>
+                                        {brands &&
+                                            brands.map((brand) => (
+                                                <option
+                                                    key={brand.id}
+                                                    value={brand.id}
+                                                >
+                                                    {brand.name}
+                                                </option>
+                                            ))}
+                                    </select>
+                                </td>
+                                <td className="px-2 py-2 border-x">
+                                    <input
+                                        type="text"
+                                        value={row.model}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                index,
+                                                "model",
+                                                e.target.value
+                                            )
+                                        }
+                                        className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                                            errors[`rows.${index}.model`]
+                                                ? "border-red-500 focus:ring-red-400"
+                                                : "border-gray-300 focus:ring-blue-400"
+                                        }`}
+                                        placeholder="Model"
+                                    />
+                                </td>
+
+                                <td className="px-2 py-2 border-x">
+                                    <input
+                                        type="number"
+                                        value={row.quantity}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                index,
+                                                "quantity",
+                                                e.target.value
+                                            )
+                                        }
+                                        className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                                            errors[`rows.${index}.quantity`]
+                                                ? "border-red-500 focus:ring-red-400"
+                                                : "border-gray-300 focus:ring-blue-400"
+                                        }`}
+                                        placeholder="Quantity"
+                                    />
+                                </td>
+                                <td className="px-2 py-2 border-x">
+                                    <input
+                                        type="number"
+                                        value={row.rate}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                index,
+                                                "rate",
+                                                e.target.value
+                                            )
+                                        }
+                                        className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                                            errors[`rows.${index}.rate`]
+                                                ? "border-red-500 focus:ring-red-400"
+                                                : "border-gray-300 focus:ring-blue-400"
+                                        }`}
+                                        placeholder="Rate"
+                                    />
+                                </td>
+                                <td className="px-2 py-2 border-x">
+                                    <input
+                                        type="number"
+                                        value={row.saleRate}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                index,
+                                                "saleRate",
+                                                e.target.value
+                                            )
+                                        }
+                                        className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                                            errors[`rows.${index}.saleRate`]
+                                                ? "border-red-500 focus:ring-red-400"
+                                                : "border-gray-300 focus:ring-blue-400"
+                                        }`}
+                                        placeholder="Sale Rate"
+                                    />
+                                </td>
+                                {/* <td className="px-2 py-2 border-x">
                                 <input
                                     type="number"
                                     value={row.gst}
@@ -548,49 +574,51 @@ export default function PurchaseForm({ brands, category, company }) {
                                     placeholder="GST"
                                 />
                             </td> */}
-                            <td className="px-2 py-2 border-x">
-                                <input
-                                    type="number"
-                                    value={row.point}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            index,
-                                            "point",
-                                            e.target.value
-                                        )
-                                    }
-                                    className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                                        errors[`rows.${index}.point`]
-                                            ? "border-red-500 focus:ring-red-400"
-                                            : "border-gray-300 focus:ring-blue-400"
-                                    }`}
-                                    placeholder="Point"
-                                />
-                            </td>
-                            <td className="px-2 py-2 border-x">
-                                <select
-                                    value={row.freeDelivery}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            index,
-                                            "freeDelivery",
-                                            e.target.value
-                                        )
-                                    }
-                                    className={`w-full px-2 py-[6px] text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                                        errors[`rows.${index}.freeDelivery`]
-                                            ? "border-red-500 focus:ring-red-400"
-                                            : "border-gray-300 focus:ring-blue-400"
-                                    }`}
-                                >
-                                    <option value="no">No</option>
-                                    <option value="yes">Yes</option>
-                                </select>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                                <td className="px-2 py-2 border-x">
+                                    <input
+                                        type="number"
+                                        value={row.point}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                index,
+                                                "point",
+                                                e.target.value
+                                            )
+                                        }
+                                        className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                                            errors[`rows.${index}.point`]
+                                                ? "border-red-500 focus:ring-red-400"
+                                                : "border-gray-300 focus:ring-blue-400"
+                                        }`}
+                                        placeholder="Point"
+                                    />
+                                </td>
+                                <td className="px-2 py-2 border-x">
+                                    <select
+                                        value={row.freeDelivery}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                index,
+                                                "freeDelivery",
+                                                e.target.value
+                                            )
+                                        }
+                                        className={`w-full px-2 py-[6px] text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                                            errors[`rows.${index}.freeDelivery`]
+                                                ? "border-red-500 focus:ring-red-400"
+                                                : "border-gray-300 focus:ring-blue-400"
+                                        }`}
+                                    >
+                                        <option value="no">No</option>
+                                        <option value="yes">Yes</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
             {!saved ? (
                 <div className="w-full">
                     <button

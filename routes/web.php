@@ -20,6 +20,7 @@ Route::post('/create-multiple', [ProductController::class, 'storeChunk']);
 Route::get('/purchase/create', [PurchaseController::class, 'create']);
 Route::post('/purchase/store', [PurchaseController::class,'store']);
 Route::get('/purchase', [PurchaseController::class, 'index']);
+Route::get('/purchases/{company_id}/{date}', [PurchaseController::class, 'show']);
 
 
 

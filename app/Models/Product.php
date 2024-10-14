@@ -46,8 +46,8 @@ class Product extends Model
     public function brand(){
         return $this->belongsTo(Brand::class, 'brand');
     }
-    public function purchase()
-    {
-        return $this->belongsTo(Purchase::class);
+
+    public function purchases(){
+        return $this->hasMany(Purchase::class);
     }
 }

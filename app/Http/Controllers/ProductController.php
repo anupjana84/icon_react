@@ -53,7 +53,7 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
     {
 
         
-        $product = Product::with('brand')->paginate(20);
+        $product = Product::with('brand')->paginate(5);
         // dd($product);
         return Inertia::render('backend/product/Index', [
             'product' => $product,

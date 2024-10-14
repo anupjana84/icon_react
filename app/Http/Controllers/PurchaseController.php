@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Purchase;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PurchaseController extends Controller
 {
@@ -36,19 +37,39 @@ class PurchaseController extends Controller
     // Concatenate all parts to form the barcode number
     return "{$day}{$companyInitials}{$formattedRate}{$month}{$year}{$gst}{$hours}{$minutes}{$seconds}";
 }
-    public function index(){
-        $purchase = Purchase::with('products', 'company')
+public function index()
+{
+    // Fetch and group the purchases
+    $groupedPurchases = Purchase::with('products', 'company', 'products.category')
         ->orderBy('purchase_receive_date', 'desc')
         ->get()
         ->groupBy(function ($item) {
             return $item->purchase_receive_date . '-' . $item->company_id;
         });
-    
+
+    // Get the current page from the request (default is 1)
+    $currentPage = request()->get('page', 1);
+
+    // Define how many items you want to display per page
+    $perPage = 10;
+
+    // Slice the grouped data to get only the items for the current page
+    $currentItems = $groupedPurchases->slice(($currentPage - 1) * $perPage, $perPage)->all();
+
+    // Create a paginator instance
+    $paginatedItems = new LengthAwarePaginator(
+        $currentItems,
+        $groupedPurchases->count(), // Total number of items
+        $perPage,
+        $currentPage,
+        ['path' => request()->url(), 'query' => request()->query()]
+    );
+
+    // Return the paginated items to your Inertia view
     return Inertia::render('backend/purchase/Index', [
-        'purchase' => $purchase,
+        'purchase' => $paginatedItems,
     ]);
-    
-    }
+}
     public function create(){
         $category = Category::all();
         $brands = Brand::all();
@@ -110,5 +131,11 @@ class PurchaseController extends Controller
         });
 
         return back()->with('success','Purchase Created Successfully!');
+    }
+    public function show($company_id, $date){
+        $purchase = Purchase::with('products', 'company', 'products.category', 'products.brand')->where('company_id', $company_id)->where('purchase_receive_date', $date)->get();
+        return Inertia::render('backend/purchase/Show',[
+            'purchases' => $purchase
+        ]);
     }
 }
