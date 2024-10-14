@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import PageHeader from "../../../layout/components/pageHeader";
 import PageHeader2 from "../../../layout/components/PageHeader2";
 import { Link, useForm } from "@inertiajs/react";
 import { ItemModal } from "./components/Form";
@@ -7,7 +6,7 @@ import Alert from "../../../layout/components/AlertMessage";
 import { Pencil, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function Index({ items }) {
+export default function Index({ company }) {
     const [isOpen, setIsOpen] = useState(false);
     const [postId, setPostId] = useState(null);
     // console.log(isOpen, postId);
@@ -26,20 +25,20 @@ export default function Index({ items }) {
         setIsModalOpen(true);
     };
 
-    const handleEditItem = (item) => {
-        setCurrentItem(item); // Set the item to be edited
+    const handleEditItem = (company) => {
+        setCurrentItem(company); // Set the item to be edited
         setIsModalOpen(true);
     };
     const handleDelete = (id) => {
         setPostId(null);
         setIsOpen(false);
-        destroy(`/items/${id}`, {
+        destroy(`/companies/${id}`, {
             onSuccess: () => {
                 setPostId(null);
                 setIsOpen(false);
                 setMessage({
                     visible: true,
-                    description: "Item deleted successfully!",
+                    description: "Company deleted successfully!",
                     type: "success",
                     title: "Success",
                 });
@@ -67,42 +66,54 @@ export default function Index({ items }) {
     return (
         <main className="max-w-7xl mx-auto py-1 px-1 lg:px-1">
             <PageHeader2
-                title="Items"
+                title="Companies"
                 setOpen={handleAddNewItem}
                 setMessage={setMessage}
-                name="Add Items"
+                name="Add Company"
             />
-            {items.data && items.data.length > 0 && (
+            {company.data && company.data.length > 0 && (
                 <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
                     <thead>
                         <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                             <th className="py-3 px-6 text-center">Sl No.</th>
                             <th className="py-3 px-6 text-center">Name</th>
-                            <th className="py-3 px-6 text-center">HSN Code</th>
+                            <th className="py-3 px-6 text-center">Address</th>
 
-                            <th className="py-3 px-6 text-center">GST</th>
+                            <th className="py-3 px-6 text-center">
+                                Phone Number
+                            </th>
+                            <th className="py-3 px-6 text-center">
+                                GST Number
+                            </th>
+                            <th className="py-3 px-6 text-center">Due</th>
                             <th className="py-3 px-6 text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="text-gray-600 text-sm font-light">
-                        {items.data.map((item, index) => (
-                            <tr key={item.id}>
+                        {company.data.map((company, index) => (
+                            <tr key={company.id}>
                                 <td className="py-3 px-6 text-center whitespace-nowrap">
                                     {index + 1}.
                                 </td>
                                 <td className="py-3 px-6 text-center whitespace-nowrap">
-                                    {item.name}
+                                    {company.name}
                                 </td>
                                 <td className="py-3 px-6 text-center">
-                                    {item.hsn_code}
+                                    {company.address}
                                 </td>
                                 <td className="py-3 px-6 text-center">
-                                    {item.gst}
+                                    {company.phone_number}
+                                </td>
+                                <td className="py-3 px-6 text-center">
+                                    {company.gst_number}
+                                </td>
+                                <td className="py-3 px-6 text-center">
+                                    {company.total_due}
                                 </td>
                                 <td className="py-3 px-6 flex gap-2 justify-center">
                                     <button
                                         onClick={() => {
-                                            handleEditItem(item);
+                                            handleEditItem(company);
                                             setMessage({
                                                 visible: false,
                                                 description: "",
@@ -115,7 +126,9 @@ export default function Index({ items }) {
                                         <Pencil color="white" />
                                     </button>
                                     <button
-                                        onClick={() => handleOpenModal(item.id)}
+                                        onClick={() =>
+                                            handleOpenModal(company.id)
+                                        }
                                         className="bg-red-500 text-white rounded px-4 py-2"
                                     >
                                         <Trash2 color="white" />
@@ -126,7 +139,7 @@ export default function Index({ items }) {
                     </tbody>
                 </table>
             )}
-            {items.data.length <= 0 && (
+            {company.data.length <= 0 && (
                 <div className="flex justify-center items-center h-screen">
                     <p className="text-center text-gray-600">
                         No products found.
@@ -134,11 +147,11 @@ export default function Index({ items }) {
                 </div>
             )}
 
-            {items.links && items.data && items.data.length > 0 && (
+            {company.links && company.data && company.data.length > 0 && (
                 <div className="flex justify-center mt-4">
                     <nav>
                         <ul className="flex space-x-2">
-                            {items.links.map((link, index) => (
+                            {company.links.map((link, index) => (
                                 <li key={index}>
                                     <Link
                                         href={link.url}
@@ -160,7 +173,7 @@ export default function Index({ items }) {
             <ItemModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                item={currentItem}
+                company={currentItem}
                 setMessage={setMessage}
             />
 

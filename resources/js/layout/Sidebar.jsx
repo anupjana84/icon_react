@@ -9,6 +9,8 @@ import {
     Users,
     Trello,
     PackageSearch,
+    ListChecks,
+    Building2,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -30,15 +32,22 @@ const SIDEBAR_ITEMS = [
     {
         name: "Products",
         icon: ShoppingBag,
-        color: "#8B5CF6",
+        color: "#22d3ee",
         href: "/products",
     },
     { name: "Users", icon: Users, color: "#EC4899", href: "/" },
     { name: "Sales", icon: DollarSign, color: "#10B981", href: "/about" },
     { name: "Orders", icon: ShoppingCart, color: "#F59E0B", href: "/" },
-    { name: "Analytics", icon: TrendingUp, color: "#3B82F6", href: "/about" },
-    { name: "Settings", icon: Settings, color: "#6EE7B7", href: "/" },
-    { name: "Brands", icon: Trello, color: "#6EE7B7", href: "/brands" },
+    { name: "Analytics", icon: TrendingUp, color: "#84cc16", href: "/about" },
+    { name: "Items", icon: ListChecks, color: "#16a34a", href: "/items" },
+    { name: "Brands", icon: Trello, color: "#be185d", href: "/brands" },
+    {
+        name: "Companies",
+        icon: Building2,
+        color: "#86198f",
+        href: "/companies",
+    },
+    { name: "Settings", icon: Settings, color: "#a3a3a3", href: "/" },
 ];
 
 const Sidebar = () => {

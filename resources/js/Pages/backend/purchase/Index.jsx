@@ -81,7 +81,9 @@ function Index({ purchase }) {
                                                 total +
                                                 parseFloat(
                                                     item.products
-                                                        .purchase_price || 0
+                                                        .purchase_price *
+                                                        item.products
+                                                            .quantity || 0
                                                 )
                                             ); // Convert to a number
                                         }, 0);
@@ -137,12 +139,12 @@ function Index({ purchase }) {
                                                 >
                                                     <ReceiptText color="white" />
                                                 </Link>
-                                                <Link className="bg-green-500 hover:bg-green-600 text-white rounded-md px-4 py-2 transition duration-300 ease-in-out">
+                                                {/* <Link className="bg-green-500 hover:bg-green-600 text-white rounded-md px-4 py-2 transition duration-300 ease-in-out">
                                                     <Pencil color="white" />
                                                 </Link>
                                                 <button className="bg-red-500 hover:bg-red-600 text-white rounded-md px-4 py-2 transition duration-300 ease-in-out">
                                                     <Trash2 color="white" />
-                                                </button>
+                                                </button> */}
                                             </td>
                                         </tr>
                                     );
