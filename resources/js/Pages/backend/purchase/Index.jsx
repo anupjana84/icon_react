@@ -9,22 +9,26 @@ function Index({ purchase }) {
     const tableRef = useRef(null);
 
     useEffect(() => {
-        const handleWheel = (e) => {
-            e.preventDefault();
-            if (tableRef.current) {
-                tableRef.current.scrollLeft += e.deltaY; // Scroll horizontally
-            }
-        };
+        if (tableRef) {
+            const handleWheel = (e) => {
+                e.preventDefault();
+                if (tableRef.current) {
+                    tableRef.current.scrollLeft += e.deltaY; // Scroll horizontally
+                }
+            };
 
-        const tableElement = tableRef.current;
+            const tableElement = tableRef.current;
 
-        // Add wheel event listener
-        tableElement.addEventListener("wheel", handleWheel, { passive: false });
+            // Add wheel event listener
+            tableElement.addEventListener("wheel", handleWheel, {
+                passive: false,
+            });
 
-        // Clean up the event listener on component unmount
-        return () => {
-            tableElement.removeEventListener("wheel", handleWheel);
-        };
+            // Clean up the event listener on component unmount
+            return () => {
+                tableElement.removeEventListener("wheel", handleWheel);
+            };
+        }
     }, []);
 
     useEffect(() => {
@@ -36,6 +40,7 @@ function Index({ purchase }) {
             setPurchases(mappedKeys);
         }
     }, [purchase]);
+    console.log(purcheses);
 
     return (
         <>
@@ -155,7 +160,7 @@ function Index({ purchase }) {
 
                     {purcheses.length <= 0 && (
                         <div className="flex justify-center items-center h-screen">
-                            <p className="text-center text-gray-600">
+                            <p className="text-center text-gray-100">
                                 No products found.
                             </p>
                         </div>
@@ -163,47 +168,50 @@ function Index({ purchase }) {
                 </div>
 
                 {/* Pagination Controls */}
-                <div className="flex justify-center gap-3 mt-4">
-                    {purchase.prev_page_url ? (
-                        <Link
-                            href={purchase.prev_page_url}
-                            className="bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2 transition duration-300 ease-in-out flex items-center shadow-md"
-                        >
-                            <span className="mr-2">« Previous</span>
-                        </Link>
-                    ) : (
-                        <button
-                            className="bg-gray-300 text-gray-500 rounded-md px-4 py-2 cursor-not-allowed shadow-md"
-                            disabled
-                        >
-                            <span className="mr-2">« Previous</span>
-                            {/* Left Arrow for Previous */}
-                        </button>
-                    )}
-                    <div className="flex items-center space-x-2">
-                        {/* Optional: Add current page indicator */}
-                        <span className="text-gray-600">
-                            Page {purchase.current_page} of {purchase.last_page}
-                        </span>
+                {purcheses && purcheses.length > 0 && (
+                    <div className="flex justify-center gap-3 mt-4">
+                        {purchase.prev_page_url ? (
+                            <Link
+                                href={purchase.prev_page_url}
+                                className="bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2 transition duration-300 ease-in-out flex items-center shadow-md"
+                            >
+                                <span className="mr-2">« Previous</span>
+                            </Link>
+                        ) : (
+                            <button
+                                className="bg-gray-300 text-gray-500 rounded-md px-4 py-2 cursor-not-allowed shadow-md"
+                                disabled
+                            >
+                                <span className="mr-2">« Previous</span>
+                                {/* Left Arrow for Previous */}
+                            </button>
+                        )}
+                        <div className="flex items-center space-x-2">
+                            {/* Optional: Add current page indicator */}
+                            <span className="text-gray-600">
+                                Page {purchase.current_page} of{" "}
+                                {purchase.last_page}
+                            </span>
+                        </div>
+                        {purchase.next_page_url ? (
+                            <Link
+                                href={purchase.next_page_url}
+                                className="bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2 transition duration-300 ease-in-out flex items-center shadow-md"
+                            >
+                                <span className="ml-2">Next »</span>{" "}
+                                {/* Right Arrow for Next */}
+                            </Link>
+                        ) : (
+                            <button
+                                className="bg-gray-300 text-gray-500 rounded-md px-4 py-2 cursor-not-allowed shadow-md"
+                                disabled
+                            >
+                                <span className="ml-2">Next »</span>{" "}
+                                {/* Right Arrow for Next */}
+                            </button>
+                        )}
                     </div>
-                    {purchase.next_page_url ? (
-                        <Link
-                            href={purchase.next_page_url}
-                            className="bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2 transition duration-300 ease-in-out flex items-center shadow-md"
-                        >
-                            <span className="ml-2">Next »</span>{" "}
-                            {/* Right Arrow for Next */}
-                        </Link>
-                    ) : (
-                        <button
-                            className="bg-gray-300 text-gray-500 rounded-md px-4 py-2 cursor-not-allowed shadow-md"
-                            disabled
-                        >
-                            <span className="ml-2">Next »</span>{" "}
-                            {/* Right Arrow for Next */}
-                        </button>
-                    )}
-                </div>
+                )}
             </main>
         </>
     );

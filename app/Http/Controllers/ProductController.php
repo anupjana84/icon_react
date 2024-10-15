@@ -24,9 +24,6 @@ class ProductController extends Controller
 
 private function generateBarcodeNumber($dateString, $companyName, $purchaseRate, $gstStatus)
 {
-    date_default_timezone_set('Asia/Kolkata');
-    $time = date('H:i:s');  // Example time: 02:30:15
-    list($hours, $minutes, $seconds) = explode(':', $time);
     // Extract day, month, and year from the date
     $date = new \DateTime($dateString);
     $day = $date->format('d'); // e.g., "27"
@@ -37,13 +34,19 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
     $companyInitials = strtoupper(substr($companyName, 0, 2)); // e.g., "IC"
 
     // Format the purchase rate as a 7-digit number by padding with zeros if necessary
-    $formattedRate = str_pad($purchaseRate, 7, '0', STR_PAD_LEFT); // e.g., "15000" becomes "0015000"
-
+    $rate = str_pad($purchaseRate, 7, '0', STR_PAD_LEFT); // e.g., "15000" becomes "0015000"
+    $formattedRate = preg_replace_callback('/^0+/', function ($matches) {
+        $length = strlen($matches[0]);
+        $randomChars = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomChars .= chr(rand(65, 90)); // Replace each leading zero with a random uppercase letter (A-Z)
+        }
+        return $randomChars;
+    }, $rate);
     // Determine GST status (GY for yes, GN for no)
     $gst = $gstStatus ? 'GY' : 'GN'; // e.g., "GY"
-
     // Concatenate all parts to form the barcode number
-    return "{$day}{$companyInitials}{$formattedRate}{$month}{$year}{$gst}{$hours}{$minutes}{$seconds}";
+    return "{$day}{$companyInitials}{$formattedRate}{$month}{$year}{$gst}";
 }
 
     /**
@@ -124,32 +127,20 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
     
         
     $request->validate([
-        'name' => 'required|string|max:255',
         'description' => 'nullable|string',
         'model' => 'required|string',
         'quantity' => 'required|integer',
-        'phone' => 'nullable|string',
-        'hsn_code' => 'nullable|string',
-        'product_gst' => 'nullable|numeric',
         'point' => 'required|integer',
         'free_delivery' => 'nullable',
-        'pruchase_address' => 'nullable|string',
-        'pruchase_date' => 'nullable|date',
-        'pruchase_receive_date' => 'required|date',
         'discount' => 'nullable|numeric',
         'status' => 'nullable|string',
         'sale_price' => 'required|numeric',
         'purchase_price' => 'required|numeric',
-        'pruchase_phone' => 'nullable|string',
-        'purchase_gst' => 'nullable|numeric',
-        'purchase_invoice_no' => 'nullable|string',
-        'available_from' => 'nullable|date',
         'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         'image_url' => 'nullable|array',
         'image_url.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         'category' => 'required|exists:categories,id',
         'brand' => 'required|exists:brands,id',
-        'pruchase_name'=> 'required|string',
         'warranty' => 'nullable|string',
     ]);
     
@@ -180,37 +171,25 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
     // dd($imagePaths);
 
     // Generate barcode number
-    $barcodeNumber = $this->generateBarcodeNumber($request->pruchase_receive_date, $request->pruchase_name, $request->purchase_price, $request->product_gst);
+    // $barcodeNumber = $this->generateBarcodeNumber($request->pruchase_receive_date, $request->pruchase_name, $request->purchase_price, $request->product_gst);
     // dd($barcodeNumber);
 
     // Create a new product with all the data including image paths
     $product = Product::create([
-        'name' => $request->name,
+        
         'description' => $request->description,
         'model' => $request->model,
         'quantity' => $request->quantity,
-        'phone' => $request->phone,
-        'hsn_code' => $request->hsn_code,
-        'product_gst' => $request->product_gst,
         'point' => $request->point,
         'free_delivery' => $request->free_delivery,
-        'purchase_address' => $request->pruchase_address,
-        'purchase_date' => $request->pruchase_date,
-        'purchase_receive_date' => $request->pruchase_receive_date,
         'discount' => $request->discount,
         'status' => $request->status,
         'sale_price' => $request->sale_price,
         'purchase_price' => $request->purchase_price,
-        'purchase_phone' => $request->pruchase_phone,
-        'purchase_gst' => $request->pruchase_gst,
-        'purchase_invoice_no' => $request->pruchase_invoice_no,
-        'available_from' => $request->available_from,
         'thumbnail_image' => $thumbnailPath, // Save thumbnail path
         'image' => json_encode($imagePaths,  JSON_UNESCAPED_SLASHES), // Save image paths as JSON
         'category' => $request->category,
         'brand' => $request->brand,
-        'purchase_name'=> $request->pruchase_name,  // Added new field for purchase name.
-        'code'=> $barcodeNumber,  // Added new field for barcode number.  
         'warranty'=> $request->warranty,  // Added new field for wear and tear. 
     ]);
 

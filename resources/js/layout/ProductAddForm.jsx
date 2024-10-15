@@ -18,35 +18,18 @@ const ProductAddForm = ({ category, brands }) => {
         thumbnail: "",
     });
     const { data, setData, post, processing, errors, reset } = useForm({
-        name: "",
         sale_price: "",
         purchase_price: "",
         quantity: "",
         category: "",
         brand: "",
         model: "",
-        hsn_code: "",
-        product_gst: "",
         point: "",
-        phone: "",
         description: "",
         free_delivery: "no",
-        pruchase_name: "",
-        pruchase_address: "",
-        pruchase_phone: "",
-        pruchase_gst: "",
-        pruchase_invoice_no: "",
-        pruchase_date: "",
-        pruchase_receive_date: "",
-        stock: "",
-        sku: "",
-        weight: "",
-        color: "",
         discount: "",
         image_url: [],
-        image_url_thum: null,
         status: "active",
-        available_from: "",
         thumbnail: "",
         warranty: "",
     });
@@ -141,157 +124,14 @@ const ProductAddForm = ({ category, brands }) => {
         <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
             <h1 className="text-2xl text-black font-bold mb-6">Product Form</h1>
             <form onSubmit={handleSubmit}>
-                {/* Sale Price */}
                 <div className="grid md:grid-cols-2 md:gap-6">
-                    {/* Product Name */}
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label
-                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="name"
-                        >
-                            Product Name
-                        </label>
-                        <input
-                            type="text"
-                            id="name"
-                            value={data.name}
-                            onChange={(e) => setData("name", e.target.value)}
-                            className={`w-full px-4 py-2 text-black border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                                errors.name
-                                    ? "border-red-500 focus:ring-red-400"
-                                    : "border-gray-300 focus:ring-blue-400"
-                            }`}
-                            placeholder="Enter Product Name"
-                        />
-                        {errors.name && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.name}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Model */}
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label
-                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="model"
-                        >
-                            Model
-                        </label>
-                        <input
-                            type="text"
-                            id="model"
-                            value={data.model}
-                            onChange={(e) => setData("model", e.target.value)}
-                            className={`w-full px-4 py-2 text-black border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                                errors.model
-                                    ? "border-red-500 focus:ring-red-400"
-                                    : "border-gray-300 focus:ring-blue-400"
-                            }`}
-                            placeholder="Enter Model"
-                        />
-                        {errors.model && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.model}
-                            </p>
-                        )}
-                    </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 md:gap-6">
-                    {/* Sale Price */}
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label
-                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="sale_price"
-                        >
-                            Sale Price
-                        </label>
-                        <input
-                            type="number"
-                            id="sale_price"
-                            name="sale_price"
-                            value={data.sale_price}
-                            onChange={(e) =>
-                                setData(
-                                    "sale_price",
-                                    parseFloat(e.target.value)
-                                )
-                            }
-                            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                            placeholder="0"
-                        />
-                        {errors.sale_price && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.sale_price}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Purchase Price */}
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label
-                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="purchase_price"
-                        >
-                            Purchase Price
-                        </label>
-                        <input
-                            type="number"
-                            id="purchase_price"
-                            name="purchase_price"
-                            value={data.purchase_price}
-                            onChange={(e) =>
-                                setData(
-                                    "purchase_price",
-                                    parseFloat(e.target.value)
-                                )
-                            }
-                            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                            placeholder="0"
-                        />
-                        {errors.purchase_price && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.purchase_price}
-                            </p>
-                        )}
-                    </div>
-                </div>
-
-                {/* Quantity */}
-                <div className="grid md:grid-cols-2 md:gap-6">
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label
-                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="quantity"
-                        >
-                            Quantity
-                        </label>
-                        <input
-                            type="number"
-                            id="quantity"
-                            name="quantity"
-                            value={data.quantity}
-                            onChange={(e) =>
-                                setData("quantity", e.target.value)
-                            }
-                            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                            placeholder="0"
-                        />
-                        {errors.quantity && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.quantity}
-                            </p>
-                        )}
-                    </div>
-
                     {/* Category */}
                     <div className="relative z-0 w-full mb-5 group">
                         <label
                             className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
                             htmlFor="category"
                         >
-                            Category
+                            Item
                         </label>
                         <select
                             type="text"
@@ -302,9 +142,9 @@ const ProductAddForm = ({ category, brands }) => {
                                 setData("category", e.target.value)
                             }
                             className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                            placeholder="Category"
+                            placeholder="Item"
                         >
-                            <option value="">Select Brand</option>
+                            <option value="">Select Item</option>
                             {category &&
                                 category.map((category) => (
                                     <option
@@ -321,10 +161,7 @@ const ProductAddForm = ({ category, brands }) => {
                             </p>
                         )}
                     </div>
-                </div>
-
-                {/* Brand */}
-                <div className="grid md:grid-cols-2 md:gap-6">
+                    {/* Brand */}
                     <div className="relative z-0 w-full mb-5 group">
                         <label
                             className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
@@ -362,78 +199,115 @@ const ProductAddForm = ({ category, brands }) => {
                             placeholder="Brand"
                         /> */}
                     </div>
-
+                </div>
+                <div className="grid md:grid-cols-2 md:gap-6">
                     {/* Model */}
                     <div className="relative z-0 w-full mb-5 group">
                         <label
                             className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
                             htmlFor="model"
                         >
-                            Phone
+                            Model
                         </label>
                         <input
-                            id="Phone"
-                            name="Phone"
-                            value={data.phone}
-                            onChange={(e) => setData("phone", e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                            placeholder="Model"
+                            type="text"
+                            id="model"
+                            value={data.model}
+                            onChange={(e) => setData("model", e.target.value)}
+                            className={`w-full px-4 py-2 text-black border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                                errors.model
+                                    ? "border-red-500 focus:ring-red-400"
+                                    : "border-gray-300 focus:ring-blue-400"
+                            }`}
+                            placeholder="Enter Model"
                         />
-                        {errors.Phone && (
+                        {errors.model && (
                             <p className="text-red-500 text-sm mt-1">
-                                {errors.Phone}
+                                {errors.model}
+                            </p>
+                        )}
+                    </div>
+                    {/* Quantity */}
+                    <div className="relative z-0 w-full mb-5 group">
+                        <label
+                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
+                            htmlFor="quantity"
+                        >
+                            Quantity
+                        </label>
+                        <input
+                            type="number"
+                            id="quantity"
+                            name="quantity"
+                            value={data.quantity}
+                            onChange={(e) =>
+                                setData("quantity", e.target.value)
+                            }
+                            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
+                            placeholder="0"
+                        />
+                        {errors.quantity && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors.quantity}
                             </p>
                         )}
                     </div>
                 </div>
 
-                {/* HSN Code */}
                 <div className="grid md:grid-cols-2 md:gap-6">
+                    {/* Purchase Price */}
                     <div className="relative z-0 w-full mb-5 group">
                         <label
                             className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="hsn_code"
+                            htmlFor="purchase_price"
                         >
-                            HSN Code
+                            Purchase Price
                         </label>
                         <input
-                            id="hsn_code"
-                            name="hsn_code"
-                            value={data.hsn_code}
+                            type="number"
+                            id="purchase_price"
+                            name="purchase_price"
+                            value={data.purchase_price}
                             onChange={(e) =>
-                                setData("hsn_code", e.target.value)
+                                setData(
+                                    "purchase_price",
+                                    parseFloat(e.target.value)
+                                )
                             }
                             className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                            placeholder="HSN Code"
+                            placeholder="0"
                         />
-                        {errors.hsn_code && (
+                        {errors.purchase_price && (
                             <p className="text-red-500 text-sm mt-1">
-                                {errors.hsn_code}
+                                {errors.purchase_price}
                             </p>
                         )}
                     </div>
-
-                    {/* Product GST */}
+                    {/* Sale Price */}
                     <div className="relative z-0 w-full mb-5 group">
                         <label
                             className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="product_gst"
+                            htmlFor="sale_price"
                         >
-                            Product GST
+                            Sale Price
                         </label>
                         <input
-                            id="product_gst"
-                            name="product_gst"
-                            value={data.product_gst}
+                            type="number"
+                            id="sale_price"
+                            name="sale_price"
+                            value={data.sale_price}
                             onChange={(e) =>
-                                setData("product_gst", e.target.value)
+                                setData(
+                                    "sale_price",
+                                    parseFloat(e.target.value)
+                                )
                             }
                             className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                            placeholder="Product GST"
+                            placeholder="0"
                         />
-                        {errors.product_gst && (
+                        {errors.sale_price && (
                             <p className="text-red-500 text-sm mt-1">
-                                {errors.product_gst}
+                                {errors.sale_price}
                             </p>
                         )}
                     </div>
@@ -517,195 +391,6 @@ const ProductAddForm = ({ category, brands }) => {
                             </p>
                         )}
                     </div>
-
-                    {/* Purchase Address */}
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label
-                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="pruchase_address"
-                        >
-                            Purchase Address
-                        </label>
-                        <textarea
-                            type="text"
-                            id="pruchase_address"
-                            name="pruchase_address"
-                            value={data.pruchase_address}
-                            onChange={(e) =>
-                                setData("pruchase_address", e.target.value)
-                            }
-                            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                            placeholder="Purchase Address"
-                        />
-                        {errors.pruchase_address && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.pruchase_address}
-                            </p>
-                        )}
-                    </div>
-                </div>
-                {/* purchase name*/}
-                <div className="grid md:grid-cols-2 md:gap-6">
-                    {/* Purchase Name */}
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label
-                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="pruchase_name"
-                        >
-                            Purchase Name
-                        </label>
-                        <input
-                            type="text"
-                            id="pruchase_name"
-                            value={data.pruchase_name}
-                            onChange={(e) =>
-                                setData("pruchase_name", e.target.value)
-                            }
-                            className={`w-full px-4 py-2 text-black border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                                errors.pruchase_name
-                                    ? "border-red-500 focus:ring-red-400"
-                                    : "border-gray-300 focus:ring-blue-400"
-                            }`}
-                            placeholder="Enter Purchase Name"
-                        />
-                        {errors.pruchase_name && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.pruchase_name}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Purchase Phone */}
-                    <div className="relative z-0 w-full mb-5 group">
-                        <div className="relative z-0 w-full mb-5 group">
-                            <label
-                                className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                                htmlFor="pruchase_phone"
-                            >
-                                Purchase Phone
-                            </label>
-                            <input
-                                type="tel"
-                                id="pruchase_phone"
-                                name="pruchase_phone"
-                                value={data.pruchase_phone}
-                                onChange={(e) =>
-                                    setData("pruchase_phone", e.target.value)
-                                }
-                                className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                                placeholder="Purchase Phone"
-                            />
-                            {errors.pruchase_phone && (
-                                <p className="text-red-500 text-sm mt-1">
-                                    {errors.pruchase_phone}
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 md:gap-6">
-                    {/* Purchase GST */}
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label
-                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="pruchase_gst"
-                        >
-                            Purchase GST
-                        </label>
-                        <input
-                            type="text"
-                            id="pruchase_gst"
-                            name="pruchase_gst"
-                            value={data.pruchase_gst}
-                            onChange={(e) =>
-                                setData("pruchase_gst", e.target.value)
-                            }
-                            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                            placeholder="Purchase GST"
-                        />
-                        {errors.pruchase_gst && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.pruchase_gst}
-                            </p>
-                        )}
-                    </div>
-                    {/* Purchase Invoice No */}
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500">
-                            Purchase Invoice No
-                        </label>
-                        <input
-                            type="text"
-                            id="pruchase_invoice_no"
-                            name="pruchase_invoice_no"
-                            value={data.pruchase_invoice_no}
-                            onChange={(e) =>
-                                setData("pruchase_invoice_no", e.target.value)
-                            }
-                            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                            placeholder="Purchase Invoice No"
-                        />
-                        {errors.pruchase_invoice_no && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.pruchase_invoice_no}
-                            </p>
-                        )}
-                    </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 md:gap-6">
-                    {/* Purchase Date */}
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label
-                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="pruchase_date"
-                        >
-                            Purchase Date
-                        </label>
-                        <input
-                            type="date"
-                            id="pruchase_date"
-                            name="pruchase_date"
-                            value={data.pruchase_date}
-                            onChange={(e) =>
-                                setData("pruchase_date", e.target.value)
-                            }
-                            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                        />
-                        {errors.pruchase_date && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.pruchase_date}
-                            </p>
-                        )}
-                    </div>
-                    {/* Purchase Receive Date */}
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label
-                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="pruchase_receive_date"
-                        >
-                            Purchase Receive Date
-                        </label>
-                        <input
-                            type="date"
-                            id="pruchase_receive_date"
-                            name="pruchase_receive_date"
-                            value={data.pruchase_receive_date}
-                            onChange={(e) =>
-                                setData("pruchase_receive_date", e.target.value)
-                            }
-                            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                        />
-                        {errors.pruchase_receive_date && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.pruchase_receive_date}
-                            </p>
-                        )}
-                    </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 md:gap-6">
                     {/* Purchase Discount */}
                     <div className="relative z-0 w-full mb-5 group">
                         <label
@@ -732,31 +417,9 @@ const ProductAddForm = ({ category, brands }) => {
                             </p>
                         )}
                     </div>
-                    {/* Available From */}
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label
-                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="available_from"
-                        >
-                            Available From
-                        </label>
-                        <input
-                            type="date"
-                            id="available_from"
-                            name="available_from"
-                            value={data.available_from}
-                            onChange={(e) => {
-                                setData("available_from", e.target.value);
-                            }}
-                            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                        />
-                        {errors.available_from && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.available_from}
-                            </p>
-                        )}
-                    </div>
                 </div>
+
+                <div className="grid md:grid-cols-2 md:gap-6"></div>
 
                 {/* SKU */}
                 {/* <div className="mb-4">

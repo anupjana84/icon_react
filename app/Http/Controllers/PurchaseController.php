@@ -15,9 +15,7 @@ class PurchaseController extends Controller
 {
     private function generateBarcodeNumber($dateString, $companyId, $purchaseRate, $gstStatus)
 {
-    date_default_timezone_set('Asia/Kolkata');
-    $time = date('H:i:s');  // Example time: 02:30:15
-    list($hours, $minutes, $seconds) = explode(':', $time);
+    
     // Extract day, month, and year from the date
     $date = new \DateTime($dateString);
     $day = $date->format('d'); // e.g., "27"
@@ -29,13 +27,21 @@ class PurchaseController extends Controller
     $companyInitials = strtoupper(substr($companyName, 0, 2)); // e.g., "IC"
 
     // Format the purchase rate as a 7-digit number by padding with zeros if necessary
-    $formattedRate = str_pad($purchaseRate, 7, '0', STR_PAD_LEFT); // e.g., "15000" becomes "0015000"
+    $rate = str_pad($purchaseRate, 7, '0', STR_PAD_LEFT); // e.g., "15000" becomes "0015000"
+    $formattedRate = preg_replace_callback('/^0+/', function ($matches) {
+        $length = strlen($matches[0]);
+        $randomChars = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomChars .= chr(rand(65, 90)); // Replace each leading zero with a random uppercase letter (A-Z)
+        }
+        return $randomChars;
+    }, $rate);
 
     // Determine GST status (GY for yes, GN for no)
     $gst = $gstStatus ? 'GY' : 'GN'; // e.g., "GY"
 
     // Concatenate all parts to form the barcode number
-    return "{$day}{$companyInitials}{$formattedRate}{$month}{$year}{$gst}{$hours}{$minutes}{$seconds}";
+    return "{$day}{$companyInitials}{$formattedRate}{$month}{$year}{$gst}";
 }
 public function index()
 {

@@ -22,7 +22,7 @@ class BrandController extends Controller
     
     public function create()
     {
-        return Inertia::render('backend/brand/Create');
+        //
     }
 
     /**
@@ -34,7 +34,7 @@ class BrandController extends Controller
             'name' => 'required|string|unique:brands,name',
         ]);
         $brand = Brand::create($request->all());
-        return redirect()->route('brands.index');
+        return back();
     }
 
     /**
@@ -56,18 +56,22 @@ class BrandController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Brand $brand)
+    public function update(Request $request,  $brand)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|unique:brands,name',
+        ]);
+        Brand::find($brand)->update($request->all());
+        return back();
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Brand $brand)
+    public function destroy($brand)
     {
-        //
+        $brand = Brand::find($brand);
         $brand->delete();
-        return redirect()->route('brands.index');
+        return back();
     }
 }

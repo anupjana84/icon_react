@@ -13,7 +13,7 @@ const Create = ({ category, brands, company }) => {
     //     // Handle form submission logic here
     //     post('/brands')
     // };
-    const [count, setCount] = useState(0);
+    // const [count, setCount] = useState(0);
     return (
         <>
             <main className=" mx-auto py-1 px-1 lg:px-1">
@@ -25,7 +25,7 @@ const Create = ({ category, brands, company }) => {
 
                 {/* <p>content</p> */}
                 {/* <ProductAddForm category={category} brands={brands} /> */}
-                <DynamicTableForm
+                <ProductAddForm
                     category={category}
                     brands={brands}
                     company={company}
