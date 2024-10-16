@@ -82,7 +82,7 @@ const ProductAddForm = ({ category, brands }) => {
         e.preventDefault();
         data.image_url = formData.image_url;
         data.thumbnail = formData.thumbnail;
-        // console.log(data);
+        console.log(data);
 
         post("/products");
         router.on("success", () => {

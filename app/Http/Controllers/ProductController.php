@@ -125,6 +125,7 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
     public function store(Request $request)
     {
     
+        dd($request->all());
         
     $request->validate([
         'description' => 'nullable|string',
@@ -141,7 +142,7 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
         'image_url.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         'category' => 'required|exists:categories,id',
         'brand' => 'required|exists:brands,id',
-        'warranty' => 'nullable|string',
+        'warranty' => 'nullable|date',
     ]);
     
 
@@ -253,7 +254,7 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
      */
     public function show(Product $product)
     {
-        $products = $product->load('category', 'brand');
+        $products = $product->load('category', 'brand', 'purchases', 'purchases.company');
         // dd($product);
 
         return Inertia::render('backend/product/Show', [
@@ -283,7 +284,12 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
      */
     public function update(Request $request, Product $product)
     {
-        //
+        dd($request->all());
+
+    }
+     
+    public function updateProduct (Request $request, $id){
+        dd($request->all());
     }
 
     /**
@@ -291,7 +297,8 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
      */
     public function destroy(Product $product)
     {
-        $thumbnail = $product->thumbnail_image;
+        try {
+            $thumbnail = $product->thumbnail_image;
         $imagePaths = json_decode($product->image, true);
 
         // Delete the thumbnail image if it exists
@@ -299,13 +306,24 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
             $this->cloudinaryService->deleteImage($thumbnail);
         }
         // Delete all image paths
-        foreach ($imagePaths as $imagePath) {
-            $this->cloudinaryService->deleteImage($imagePath);  
-        }
+        // dd($imagePaths);
+        if ($imagePaths) {
+            if ( count($imagePaths) > 0) {
+                foreach ($imagePaths as $imagePath) {
+                    $this->cloudinaryService->deleteImage($imagePath);  
+                }
+            }
+       }
 
         // Delete the product from the database
         $product->delete();
 
         return back()->with('success', 'Product deleted successfully.');
+          
+        } catch (\Exception $e) {
+            if($e){
+                return redirect()->back()->withErrors('Faild to delete product');
+            }
+        }
     }
 }

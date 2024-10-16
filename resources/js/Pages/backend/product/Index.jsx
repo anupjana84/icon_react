@@ -29,32 +29,60 @@ const ProductTable = ({ product }) => {
     const openModal = (id) => {
         setIsModalOpen(true);
         setPostId(id);
+        setMessage({
+            visible: false,
+            description: "",
+            type: "",
+            title: "",
+        });
     };
     // console.log(product);
     const closeModal = () => setIsModalOpen(false);
 
     const handleDelete = (id) => {
-        destroy(`/products/${id}`);
-        router.on("success", () => {
-            setPostId(null);
-            closeModal();
-            setMessage({
-                visible: true,
-                description: "Product deleted successfully!",
-                type: "success",
-                title: "Success",
-            });
+        destroy(`/products/${id}`, {
+            onSuccess: () => {
+                setPostId(null);
+                closeModal();
+                setMessage({
+                    visible: true,
+                    description: "Product deleted successfully!",
+                    type: "success",
+                    title: "Success",
+                });
+            },
+
+            onError: () => {
+                setPostId(null);
+                closeModal();
+                setMessage({
+                    visible: true,
+                    description: "Failed to delete product!",
+                    type: "error",
+                    title: "Error",
+                });
+            },
         });
-        router.on("error", () => {
-            setPostId(null);
-            closeModal();
-            setMessage({
-                visible: true,
-                description: "Failed to delete product!",
-                type: "error",
-                title: "Error",
-            });
-        });
+        // router.on("success", () => {
+        //     setPostId(null);
+        //     closeModal();
+        //     setMessage({
+        //         visible: true,
+        //         description: "Product deleted successfully!",
+        //         type: "success",
+        //         title: "Success",
+        //     });
+        // });
+        // router.on("error", () => {
+        //     setPostId(null);
+        //     closeModal();
+        //     setMessage({
+        //         visible: true,
+        //         description: "Failed to delete product!",
+        //         type: "error",
+        //         title: "Error",
+        //     });
+        // });
     };
 
     return (
@@ -119,7 +147,7 @@ const ProductTable = ({ product }) => {
                                         <td className="py-3 px-6 text-center">
                                             ₹
                                             {Number(product.sale_price).toFixed(
-                                                2
+                                                0
                                             )}
                                         </td>
                                         <td className="py-3 px-6 text-center ">

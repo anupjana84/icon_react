@@ -13,7 +13,7 @@ class CompanyCntroller extends Controller
      */
     public function index()
     {
-        $company = Company::orderBy('created_at','desc')->paginate(10);
+        $company = Company::latest()->paginate(10);
         // dd($company);
         return Inertia::render('backend/company/Index',[
             'company' => $company,

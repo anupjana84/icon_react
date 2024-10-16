@@ -13,7 +13,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $category = Category::orderBy('created_at','desc')->paginate(10);
+        $category = Category::latest()->paginate(10);
         // dd($category);
         return Inertia::render('backend/category/Index',[
             'items' => $category,

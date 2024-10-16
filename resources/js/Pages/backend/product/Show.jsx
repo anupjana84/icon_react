@@ -1,23 +1,17 @@
 import React, { useState } from "react";
 import PageHeader from "../../../layout/components/pageHeader";
 import BarcodeComponent from "../../../layout/components/Barcode";
+import { formatDate } from "../../../helper/dateFormater";
 
 const ProductDetails = ({ product }) => {
     const [activeTab, setActiveTab] = useState("details");
     const [thumbnail, setThumbnail] = useState(product.thumbnail_image);
-
+    // console.log(product.available_from);
     // Function to handle tab switching
     const handleTabClick = (tab) => {
         setActiveTab(tab);
     };
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const day = String(date.getDate()).padStart(2, "0"); // Get day and pad with 0 if necessary
-        const month = String(date.getMonth() + 1).padStart(2, "0"); // Get month (0-indexed, so add 1) and pad
-        const year = date.getFullYear(); // Get full year
 
-        return `${day}/${month}/${year}`;
-    };
     const image = JSON.parse(product.image);
 
     return (
@@ -63,7 +57,7 @@ const ProductDetails = ({ product }) => {
                     {/* Right Section - Product Information */}
                     <div className="md:w-1/2 w-full">
                         <h1 className="text-3xl font-bold text-gray-800">
-                            {product.name}
+                            {product.category.name}
                         </h1>
                         <p className="text-sm text-gray-600 ">
                             Model: {product.model}
@@ -73,10 +67,11 @@ const ProductDetails = ({ product }) => {
                         </p>
                         <div className="my-4">
                             <p className="text-xl font-bold text-gray-900">
-                                Sale price: ₹{product.sale_price}
+                                Sale price: ₹{parseFloat(product.sale_price)}
                             </p>
                             <p className="text-xl font-bold text-gray-900">
-                                Purchase price: ₹{product.purchase_price}
+                                Purchase price: ₹
+                                {parseFloat(product.purchase_price)}
                             </p>
                             {/* {product.purchase_price && (
                                 <p className="text-sm text-gray-500 line-through">
@@ -85,7 +80,7 @@ const ProductDetails = ({ product }) => {
                             )} */}
                             {product.discount && (
                                 <p className="text-sm text-green-500">
-                                    Discount: {product.discount}%
+                                    Discount: {parseFloat(product.discount)}%
                                 </p>
                             )}
                             <span
@@ -103,14 +98,15 @@ const ProductDetails = ({ product }) => {
                         {/* Stock & Info */}
                         <div className="mt-4">
                             <p className="text-sm text-gray-600">
-                                HSN Code: {product.hsn_code ?? "N/A"}
+                                HSN Code: {product.category.hsn_code ?? "N/A"}
                             </p>
                             <p className="text-sm text-gray-600">
-                                GST: {product.product_gst ?? 0}%
+                                GST: {product.category.gst ?? 0}%
                             </p>
                             <p className="text-sm text-gray-600">
                                 Available From:{" "}
-                                {formatDate(product.available_from) ?? "N/A"}
+                                {formatDate(product.available_from || "") ||
+                                    "N/A"}
                             </p>
                             <p className="text-sm text-gray-600">
                                 Free Delivery: {product.free_delivery}
@@ -159,29 +155,33 @@ const ProductDetails = ({ product }) => {
                                     <ul className="text-sm text-gray-600 space-y-1">
                                         <li>
                                             <strong>Purchase Name:</strong>{" "}
-                                            {product.purchase_name}
+                                            {product.purchases[0].company.name}
                                         </li>
                                         <li>
                                             <strong>Purchase Address:</strong>{" "}
-                                            {product.purchase_address ??
+                                            {product.purchases[0].company
+                                                .address ??
                                                 "No purchase address"}
                                         </li>
                                         <li>
                                             <strong>Purchase Phone:</strong>{" "}
-                                            {product.purchase_phone ??
+                                            {product.purchases[0].company
+                                                .phone_number ??
                                                 "No purchease phone"}
                                         </li>
                                         <li>
                                             <strong>
                                                 Purchase Invoice No:
                                             </strong>{" "}
-                                            {product.purchase_invoice_no ??
+                                            {product.purchases[0]
+                                                .purchase_invoice_no ??
                                                 "No purchease invoice"}
                                         </li>
                                         <li>
                                             <strong>Purchase Date:</strong>{" "}
                                             {formatDate(
-                                                product.purchase_date
+                                                product.purchases[0]
+                                                    .purchase_date
                                             ) ?? "N/A"}
                                         </li>
                                         <li>
@@ -189,7 +189,8 @@ const ProductDetails = ({ product }) => {
                                                 Purchase Receive Date:
                                             </strong>{" "}
                                             {formatDate(
-                                                product.purchase_receive_date
+                                                product.purchases[0]
+                                                    .purchase_receive_date
                                             )}
                                         </li>
                                     </ul>
