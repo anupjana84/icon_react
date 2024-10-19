@@ -96,8 +96,15 @@ class CompanyCntroller extends Controller
      */
     public function destroy(string $id)
     {
-        $company = Company::find($id);
-        $company->delete();
-        return back()->with('success','Company deleted successfully.');
+        try {
+            $company = Company::find($id);
+            $company->delete();
+            return back()->with('success','Company deleted successfully.');
+        } catch (\Exception $e) {
+            if($e){
+                return redirect()->back()->withErrors('Faild to delete company');
+            }
+        }
+        
     }
 }

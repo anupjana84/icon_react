@@ -43,6 +43,14 @@ export default function Index({ company }) {
                     title: "Success",
                 });
             },
+            onError: () => {
+                setMessage({
+                    visible: true,
+                    description: "Failed to delete company!",
+                    type: "error",
+                    title: "Error",
+                });
+            },
         });
         // router.on("success", () => {
         //     setMessage({
