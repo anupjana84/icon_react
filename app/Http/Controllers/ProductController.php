@@ -284,11 +284,13 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
      */
     public function update(Request $request, Product $product)
     {
+        dd($request);
         dd($request->all());
 
     }
      
     public function updateProduct (Request $request, $id){
+        dd($request);
         dd($request->all());
     }
 

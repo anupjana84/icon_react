@@ -81,12 +81,12 @@ const ProductEditForm = ({ product }) => {
         };
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         data.image_url = formData.image_url;
         data.thumbnail = formData.thumbnail;
         setProducts(data);
-        await patch(`/products-update/${product.id}`, products);
+        patch(`/products/${product.id}`, products);
     };
 
     return (

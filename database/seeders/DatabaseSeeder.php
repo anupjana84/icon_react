@@ -1,23 +1,20 @@
 <?php
 
-namespace Database\Seeders;
-
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
-    public function run(): void
+    public function run()
     {
-        // User::factory(10)->create();
+        // // Create the different roles without email
+        // User::factory()->admin()->create();
+        // User::factory()->manager()->create();
+        // User::factory()->salesman()->create();
+        // User::factory()->regularUser()->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // // Optionally, you can create multiple users for a specific role
+        // User::factory()->count(5)->regularUser()->create();
     }
 }
+
