@@ -6,11 +6,13 @@ use App\Http\Middleware\RoleCheck;
 use App\Http\Middleware\LoginCheck;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CompanyCntroller;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\SalesmanController;
 
 
 
@@ -39,7 +41,9 @@ Route::middleware([AuthCheck::class])->group(function () {
     Route::resource('/products', ProductController::class);
     Route::resource('/items', CategoryController::class);
     Route::resource('/companies', CompanyCntroller::class);
+    Route::get('/salesmans', [SalesmanController::class, 'index']);
     });
+    Route::get('/users/{role?}', [UserController::class, 'index'])->name('users.index');
     Route::post('/create-multiple', [ProductController::class, 'storeChunk']);
     Route::get('/purchase/create', [PurchaseController::class, 'create']);
     Route::post('/purchase/store', [PurchaseController::class,'store']);

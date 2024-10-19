@@ -11,6 +11,8 @@ import {
     PackageSearch,
     ListChecks,
     Building2,
+    UserCog,
+    UserRoundPlus,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -35,7 +37,14 @@ const SIDEBAR_ITEMS = [
         color: "#22d3ee",
         href: "/products",
     },
-    { name: "Users", icon: Users, color: "#EC4899", href: "/" },
+    { name: "Users", icon: Users, color: "#EC4899", href: "/users" },
+    { name: "Managers", icon: UserCog, color: "#d946ef", href: "/users" },
+    {
+        name: "Salesmen",
+        icon: UserRoundPlus,
+        color: "#f43f5e",
+        href: "/salesmans",
+    },
     { name: "Sales", icon: DollarSign, color: "#10B981", href: "/about" },
     { name: "Orders", icon: ShoppingCart, color: "#F59E0B", href: "/" },
     { name: "Analytics", icon: TrendingUp, color: "#84cc16", href: "/about" },

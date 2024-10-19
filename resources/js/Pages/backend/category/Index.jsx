@@ -128,9 +128,7 @@ export default function Index({ items }) {
             )}
             {items.data.length <= 0 && (
                 <div className="flex justify-center items-center h-screen">
-                    <p className="text-center text-gray-600">
-                        No products found.
-                    </p>
+                    <p className="text-center text-gray-600">No Item found.</p>
                 </div>
             )}
 
