@@ -13,7 +13,8 @@ class Salesman extends Model
         'user_id',
         'point',
         'other_point',
-        'address'
+        'address',
+        'status'
     ];
 
     protected $table = 'salesmen';

@@ -91,9 +91,7 @@ export default function Index({ salesman }) {
                                     <th className="py-3 px-6 text-center">
                                         Status
                                     </th>
-                                    <th className="py-3 px-6 text-center">
-                                        WhatsApp Number
-                                    </th>
+
                                     <th className="py-3 px-6 text-center">
                                         Action
                                     </th>
@@ -135,14 +133,18 @@ export default function Index({ salesman }) {
                                                     : "Inactive"}
                                             </span>
                                         </td>
-                                        <td className="py-3 px-6 text-center">
-                                            {salesman.user.wpnumber}
-                                        </td>
+
                                         <td className="py-3 px-6 flex gap-2 justify-center">
                                             <button
-                                                onClick={() =>
-                                                    handleEditItem(salesman)
-                                                }
+                                                onClick={() => {
+                                                    handleEditItem(salesman);
+                                                    setMessage({
+                                                        visible: false,
+                                                        description: "",
+                                                        type: "",
+                                                        title: "",
+                                                    });
+                                                }}
                                                 className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
                                             >
                                                 <Pencil color="white" />

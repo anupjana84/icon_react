@@ -29,7 +29,11 @@ const PurchaseDetails = ({ purchases }) => {
 
     return (
         <main className="max-w-7xl mx-auto py-1 px-1 lg:px-1">
-            <PageHeader title="Purchase" link="/purchase" linkName="Back" />
+            <PageHeader
+                title="Purchase » Details"
+                link="/purchase"
+                linkName="Back"
+            />
             {/* Upper Section for Company and Purchase Details */}
             <div className="bg-white border border-gray-200 shadow-md rounded-lg p-6 mb-8">
                 <h2 className="text-2xl font-semibold mb-6 text-gray-800">

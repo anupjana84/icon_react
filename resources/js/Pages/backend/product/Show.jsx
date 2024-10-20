@@ -17,7 +17,7 @@ const ProductDetails = ({ product }) => {
     return (
         <main className="max-w-7xl mx-auto py-1 px-1 lg:px-1">
             <PageHeader
-                title="Product > Details"
+                title="Product » Details"
                 link="/products"
                 linkName="Back"
             />

@@ -83,7 +83,7 @@ class SalesmanController extends Controller
             'point' => $request->point,
             'other_point' => $request->other_point,
             'address' => $request->address,
-            'status' => $request->status || 1,  // Change status if needed. If null, it remains the same.  // If status is changed, it should trigger a notification to the salesman.  // Make sure to update the notification system to send the notification when status changes.  // Make sure to handle the case when the salesman is not found (i.e., when user with given id does not exist in the salesman table).  // Make sure to handle the case
+            'status' => $request->status,  // Change status if needed. If null, it remains the same.  // If status is changed, it should trigger a notification to the salesman.  // Make sure to update the notification system to send the notification when status changes.  // Make sure to handle the case when the salesman is not found (i.e., when user with given id does not exist in the salesman table).  // Make sure to handle the case
         ]);
         return back()->with('success', 'Salesman updated successfully');
     }

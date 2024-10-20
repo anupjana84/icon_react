@@ -18,7 +18,7 @@ const Create = ({ category, brands, company }) => {
         <>
             <main className=" mx-auto py-1 px-1 lg:px-1">
                 <PageHeader
-                    title="Product > Add"
+                    title="Product » Add"
                     link="/products"
                     linkName="Back"
                 />

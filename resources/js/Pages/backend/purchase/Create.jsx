@@ -8,7 +8,7 @@ export default function Create({ category, brands, company }) {
         <>
             <main className=" mx-auto py-1 px-1 lg:px-1">
                 <PageHeader
-                    title="Purchase > Add"
+                    title="Purchase » Add"
                     link="/purchase"
                     linkName="Back"
                 />

@@ -17,7 +17,7 @@ const Create = ({ category, brands, product }) => {
         <>
             <main className="max-w-7xl mx-auto py-1 px-1 lg:px-1">
                 <PageHeader
-                    title="Product > Edit"
+                    title="Product » Edit"
                     link="/products"
                     linkName="Back"
                 />
