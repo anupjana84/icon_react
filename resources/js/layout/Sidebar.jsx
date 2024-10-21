@@ -13,6 +13,7 @@ import {
     Building2,
     UserCog,
     UserRoundPlus,
+    Tag,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -42,6 +43,12 @@ const SIDEBAR_ITEMS = [
     {
         name: "Salesmen",
         icon: UserRoundPlus,
+        color: "#f43f5e",
+        href: "/salesmans",
+    },
+    {
+        name: "Customer",
+        icon: Tag,
         color: "#f43f5e",
         href: "/salesmans",
     },

@@ -89,6 +89,10 @@ class SalesmanController extends Controller
     }
 
     public function destroy($id){
+        $salesman = Salesman::where('user_id', $id)->first();
+        if($salesman){
+            $salesman->delete();
+        }
         $user = User::find($id);
         $user->delete();
         return back()->with('success', 'Salesman deleted successfully');
