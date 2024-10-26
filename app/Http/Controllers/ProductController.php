@@ -328,4 +328,16 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
             }
         }
     }
+
+    public function getProductByCode($code)
+    {
+        // Assuming 'code' is a unique identifier for the product in the database
+        $product = Product::where('code', $code)->with('category', 'brand')->first();
+
+        if ($product) {
+            return response()->json($product, 200);
+        } else {
+            return response()->json(['message' => 'Product not found'], 404);
+        }
+    }
 }

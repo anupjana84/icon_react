@@ -25,6 +25,7 @@ class Sale extends Model
         'invoice_number',
         'payment_status',
         'paid_amount',
+        'payment_method'
     ];
     // Define the relationship with the Customer model
     public function customer(){

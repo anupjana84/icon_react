@@ -50,9 +50,9 @@ const SIDEBAR_ITEMS = [
         name: "Customer",
         icon: Tag,
         color: "#f43f5e",
-        href: "/salesmans",
+        href: "/customers",
     },
-    { name: "Sales", icon: DollarSign, color: "#10B981", href: "/about" },
+    { name: "Sales", icon: DollarSign, color: "#10B981", href: "/sales" },
     { name: "Orders", icon: ShoppingCart, color: "#F59E0B", href: "/" },
     { name: "Analytics", icon: TrendingUp, color: "#84cc16", href: "/about" },
     { name: "Items", icon: ListChecks, color: "#16a34a", href: "/items" },
@@ -90,71 +90,101 @@ const Sidebar = () => {
         };
     }, []);
 
-    return (
-        <motion.div
-            className={`relative z-10 transition-all duration-300 ease-in-out flex-shrink-0 ${
-                isSidebarOpen ? "w-64" : "w-20"
-            } md:w-64`} // Default width on md screens
-            animate={{ width: isSidebarOpen ? 256 : 80 }}
-        >
-            <div className="h-full bg-gray-800 bg-opacity-50 backdrop-blur-md p-4 flex flex-col border-r border-gray-700">
-                <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="p-2 rounded-full hover:bg-gray-700 transition-colors max-w-fit"
-                >
-                    <Menu size={24} />
-                </motion.button>
+    // Inline style for custom scrollbar
+    const customScrollbarStyle = `
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            background-color: transparent;
+        }
 
-                <nav className="mt-8 flex-grow">
-                    {SIDEBAR_ITEMS.map((item) => {
-                        const isActive = url === item.href;
-                        return (
-                            <Link key={item.name} href={item.href}>
-                                <motion.div
-                                    className={`flex items-center p-4 text-sm font-medium rounded-lg transition-colors mb-2 ${
-                                        isActive
-                                            ? "bg-gray-700 text-white"
-                                            : "hover:bg-gray-700 text-gray-400"
-                                    }`}
-                                >
-                                    <item.icon
-                                        size={20}
-                                        style={{
-                                            color: item.color,
-                                            minWidth: "20px",
-                                        }}
-                                    />
-                                    <AnimatePresence>
-                                        {isSidebarOpen && (
-                                            <motion.span
-                                                className="ml-4 whitespace-nowrap"
-                                                initial={{
-                                                    opacity: 0,
-                                                    width: 0,
-                                                }}
-                                                animate={{
-                                                    opacity: 1,
-                                                    width: "auto",
-                                                }}
-                                                exit={{ opacity: 0, width: 0 }}
-                                                transition={{
-                                                    duration: 0.2,
-                                                    delay: 0.3,
-                                                }}
-                                            >
-                                                {item.name}
-                                            </motion.span>
-                                        )}
-                                    </AnimatePresence>
-                                </motion.div>
-                            </Link>
-                        );
-                    })}
-                </nav>
-            </div>
-        </motion.div>
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+    `;
+
+    return (
+        <>
+            <motion.div
+                className={`relative z-10 transition-all duration-300 ease-in-out flex-shrink-0 ${
+                    isSidebarOpen ? "w-64" : "w-20"
+                } md:w-64`}
+                animate={{ width: isSidebarOpen ? 256 : 80 }}
+            >
+                <div
+                    className="h-full bg-gray-800 bg-opacity-50 backdrop-blur-md py-4 pl-4 flex flex-col border-r border-gray-700 "
+                    style={{ maxHeight: "100vh" }}
+                >
+                    <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                        className="p-2 rounded-full hover:bg-gray-700 transition-colors max-w-fit"
+                    >
+                        <Menu size={24} />
+                    </motion.button>
+
+                    <nav className="mt-8 flex-grow overflow-y-auto custom-scrollbar">
+                        {SIDEBAR_ITEMS.map((item) => {
+                            const isActive = url === item.href;
+                            return (
+                                <Link key={item.name} href={item.href}>
+                                    <motion.div
+                                        className={`flex items-center p-4 text-sm font-medium rounded-lg transition-colors mb-2 ${
+                                            isActive
+                                                ? "bg-gray-700 text-white"
+                                                : "hover:bg-gray-700 text-gray-400"
+                                        }`}
+                                    >
+                                        <item.icon
+                                            size={20}
+                                            style={{
+                                                color: item.color,
+                                                minWidth: "20px",
+                                            }}
+                                        />
+                                        <AnimatePresence>
+                                            {isSidebarOpen && (
+                                                <motion.span
+                                                    className="ml-4 whitespace-nowrap"
+                                                    initial={{
+                                                        opacity: 0,
+                                                        width: 0,
+                                                    }}
+                                                    animate={{
+                                                        opacity: 1,
+                                                        width: "auto",
+                                                    }}
+                                                    exit={{
+                                                        opacity: 0,
+                                                        width: 0,
+                                                    }}
+                                                    transition={{
+                                                        duration: 0.2,
+                                                        delay: 0.3,
+                                                    }}
+                                                >
+                                                    {item.name}
+                                                </motion.span>
+                                            )}
+                                        </AnimatePresence>
+                                    </motion.div>
+                                </Link>
+                            );
+                        })}
+                    </nav>
+                </div>
+            </motion.div>
+        </>
     );
 };
 

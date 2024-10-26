@@ -6,11 +6,14 @@ use App\Http\Middleware\RoleCheck;
 use App\Http\Middleware\LoginCheck;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SaleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CompanyCntroller;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SalesmanController;
 
@@ -33,6 +36,9 @@ Route::get('/about', function () {
 });
 
 
+Route::get('/customers/search', [CustomerController::class, 'search'])->name('customers.search');
+Route::get('/products/{code}', [ProductController::class, 'getProductByCode']);
+
 
 Route::middleware([AuthCheck::class])->group(function () {
      
@@ -41,6 +47,8 @@ Route::middleware([AuthCheck::class])->group(function () {
     Route::resource('/products', ProductController::class);
     Route::resource('/items', CategoryController::class);
     Route::resource('/companies', CompanyCntroller::class);
+    Route::resource('/customers', CustomerController::class);
+    Route::resource('/sales', SaleController::class);
     Route::get('/salesmans', [SalesmanController::class, 'index']);
     Route::post('/salesmans', [SalesmanController::class,'store']);
     Route::put('/salesmans/{id}', [SalesmanController::class, 'update']);
@@ -53,7 +61,6 @@ Route::middleware([AuthCheck::class])->group(function () {
     Route::get('/purchase', [PurchaseController::class, 'index']);
     Route::get('/purchases/{company_id}/{date}', [PurchaseController::class, 'show']);
     Route::patch('/products-update/{id}', [ProductController::class, 'updateProduct']);
-   
 
     //logout
     Route::get('/logout', [AuthController::class, 'logout']);
