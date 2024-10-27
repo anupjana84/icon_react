@@ -49,6 +49,7 @@ Route::middleware([AuthCheck::class])->group(function () {
     Route::resource('/companies', CompanyCntroller::class);
     Route::resource('/customers', CustomerController::class);
     Route::resource('/sales', SaleController::class);
+    Route::get('/product-stocks/{role?}', [ProductController::class, 'stock']);
     Route::get('/salesmans', [SalesmanController::class, 'index']);
     Route::post('/salesmans', [SalesmanController::class,'store']);
     Route::put('/salesmans/{id}', [SalesmanController::class, 'update']);

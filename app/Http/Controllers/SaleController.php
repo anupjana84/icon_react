@@ -19,7 +19,7 @@ class SaleController extends Controller
      */
     public function index()
     {
-        $sales = Sale::with('customer', 'order', 'salesItems', 'salesPayment')->paginate(10);
+        $sales = Sale::with('customer', 'order', 'salesItems', 'salesPayment', 'salesItems.product')->latest()->paginate(10);
         // dd($sales);
         return Inertia::render('backend/sale/Index', [
             'sales' => $sales,

@@ -119,6 +119,7 @@ public function index()
                 'brand' => $row['brand'],
                 'model' => $row['model'],
                 'quantity' => $row['quantity'],
+                'purchase_qty'=>$row['quantity'],
                 'purchase_price' => $row['rate'],
                 'sale_price' => $row['saleRate'],
                 'point' => $row['point'],

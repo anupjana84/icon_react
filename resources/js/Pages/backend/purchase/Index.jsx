@@ -88,7 +88,7 @@ function Index({ purchase }) {
                                                     item.products
                                                         .purchase_price *
                                                         item.products
-                                                            .quantity || 0
+                                                            .purchase_qty || 0
                                                 )
                                             ); // Convert to a number
                                         }, 0);

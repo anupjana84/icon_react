@@ -10,7 +10,7 @@ import BarcodeComponent from "../../../layout/components/Barcode";
 import BarcodeScanner from "../../../layout/components/BarcodeScanner";
 // import PageHeader from "../../../layout/components/pageHeader";
 const ProductTable = ({ product }) => {
-    // console.log(product);
+    console.log(product);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [postId, setPostId] = useState(null);
     const [message, setMessage] = useState({

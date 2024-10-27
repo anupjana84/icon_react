@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\ProductDetails;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -37,7 +38,9 @@ class Product extends Model
         'brand',
         'purchase_name',
         'code',
-        'warranty'
+        'warranty',
+        'purchase_qty',
+        'details_id'
     ];
 
     public function category(){
@@ -49,5 +52,8 @@ class Product extends Model
 
     public function purchases(){
         return $this->hasMany(Purchase::class);
+    }
+    public function details(){
+        return $this->belongsTo(ProductDetails::class, 'details_id');
     }
 }

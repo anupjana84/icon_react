@@ -14,6 +14,7 @@ import {
     UserCog,
     UserRoundPlus,
     Tag,
+    Blocks,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -37,6 +38,12 @@ const SIDEBAR_ITEMS = [
         icon: ShoppingBag,
         color: "#22d3ee",
         href: "/products",
+    },
+    {
+        name: "Stocks",
+        icon: Blocks,
+        color: "#22d3ee",
+        href: "/product-stocks",
     },
     { name: "Users", icon: Users, color: "#EC4899", href: "/users" },
     { name: "Managers", icon: UserCog, color: "#d946ef", href: "/users" },
