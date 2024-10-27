@@ -8,6 +8,7 @@ use App\Models\Company;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use App\Services\CloudinaryService;
 use Illuminate\Container\Attributes\Storage;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
@@ -53,13 +54,48 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
      * Display a listing of the resource.
      */
     public function index()
-    {
+{
+    // $products = Product::with('brand', 'category', 'details')->latest()->paginate(10);
+    // dd($products);
+    $products = Product::with('brand', 'category', 'details')
+        ->selectRaw('brand, category, details_id, sale_price, SUM(quantity) as total_quantity')
+        ->groupBy('brand', 'category', 'sale_price', 'details_id')
+        ->paginate(10);
+    //   dd($products);
+    return Inertia::render('backend/product/Index', [
+        'product' => $products,
+    ]);
+}
 
-        
-        $product = Product::with('brand')->paginate(5);
+
+    public function stock($role = 'all'){
+
+        if($role == 'all'){
+            $product = Product::with('brand', 'category')->latest()->paginate(10);
+        }else if($role == 'empty'){
+        $product = Product::with('brand', 'category')->where('quantity', '=' , 0)->latest()->paginate(10);
+        }else if($role == 'new'){
+            $product = Product::with('brand', 'category')
+                ->where('created_at', '<=', Carbon::now()->subDays(5))
+                ->latest()
+                ->paginate(10);
+        } else if($role == 'low'){
+            $product = Product::with('brand', 'category')
+                ->where('quantity', '<', 5)
+                ->where('quantity', '!=', 0)
+                ->latest()
+                ->paginate(10);
+        }
+         else if($role == 'available'){
+            $product = Product::with('brand', 'category')
+                ->where('quantity', '>', 5)
+                ->latest()
+                ->paginate(10);
+        }
         // dd($product);
-        return Inertia::render('backend/product/Index', [
+        return Inertia::render('backend/product/Stock', [
             'product' => $product,
+            'selectedRole' => $role
         ]);
     }
 
@@ -81,42 +117,7 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
         ]);
     }
 
-
-//     public function store(Request $request)
-// {
-//     // Check if the thumbnail file exists in the request
-//     if ($request->hasFile('thumbnail')) {
-//         // Upload the file to Cloudinary with transformation and folder specification
-//         try {
-//             $uploadedFile = cloudinary()->upload($request->file('thumbnail')->getRealPath(), [
-//                 'folder' => 'uploads',
-//                 'transformation' => [
-//                     'width' => 400,
-//                     'height' => 400,
-//                     'crop' => 'fill'
-//                 ]
-//             ]);
-
-//             // Get the secure URL of the uploaded file
-//             $uploadedFileUrl = $uploadedFile->getSecurePath();
-//             $publicId = $uploadedFile->getPublicId();
-
-//             // Check if the file exists on Cloudinary
-//             $exists = cloudinary()->resource($publicId)->exists();
-
-//             // Debugging output
-//             dd([
-//                 'uploadedFileUrl' => $uploadedFileUrl,
-//                 'fileExists' => $exists
-//             ]);
-
-//         } catch (\Exception $e) {
-//             return response()->json(['error' => $e->getMessage()], 500);
-//         }
-//     } else {
-//         return response()->json(['error' => 'No thumbnail file uploaded'], 400);
-//     }
-// }
+    
 
 
     /**
