@@ -37,7 +37,7 @@ Route::get('/about', function () {
 
 
 Route::get('/customers/search', [CustomerController::class, 'search'])->name('customers.search');
-Route::get('/products/{code}', [ProductController::class, 'getProductByCode']);
+Route::get('/code/{code}', [ProductController::class, 'getProductByCode']);
 
 
 Route::middleware([AuthCheck::class])->group(function () {

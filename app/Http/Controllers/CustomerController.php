@@ -92,11 +92,10 @@ class CustomerController extends Controller
     public function search(Request $request)
     {
         // dd($request->all());
-        $name = $request->query('name');
         $phone = $request->query('phone');
         
         // Search for customer by name or phone
-        $customer = Customer::Where('phone', $phone)
+        $customer = Customer::with('salesman', 'salesman.user')->Where('phone', $phone)
                             ->first();
         // dd($customer);
         // Return customer data if found

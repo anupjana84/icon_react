@@ -117,7 +117,7 @@ const PurchaseDetails = ({ purchases }) => {
                                     GST
                                 </th>
                                 <th className="px-6 py-3 border-b border-gray-300">
-                                    Quantity
+                                    Purchase Quantity
                                 </th>
                                 <th className="px-6 py-3 border-b border-gray-300">
                                     Rate
@@ -162,7 +162,7 @@ const PurchaseDetails = ({ purchases }) => {
                                         {item.products.category.gst}%
                                     </td>
                                     <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
-                                        {item.products.quantity}
+                                        {item.products.purchase_qty}
                                     </td>
                                     <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
                                         ₹

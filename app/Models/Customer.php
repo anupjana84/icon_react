@@ -23,7 +23,7 @@ class Customer extends Model
     // Define the relationship with the Order model
     public function salesman()
     {
-        return $this->hasMany(Salesman::class);
+        return $this->belongsTo(Salesman::class);
     }
 }
 

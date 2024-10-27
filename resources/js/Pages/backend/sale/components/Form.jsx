@@ -42,8 +42,14 @@ export default function PurchaseForm({ brands, category }) {
         pin: "",
         payment: "",
         orderId: "",
+        online: "",
+        cash: "",
+        salesman: "",
+        gst: "",
+        finance: "",
         rows: [
             {
+                code: "",
                 category: "",
                 brand: "",
                 model: "",
@@ -63,6 +69,7 @@ export default function PurchaseForm({ brands, category }) {
                 })
                 .then((response) => {
                     if (response.data) {
+                        console.log(response.data);
                         // Auto-fill form if a customer is found
                         setData({
                             ...data,
@@ -71,6 +78,7 @@ export default function PurchaseForm({ brands, category }) {
                             wpnumber: response.data.wpnumber || "",
                             pin: response.data.pin || "",
                             custId: response.data.id || "",
+                            salesman: response.data.salesman || "",
                         });
                     } else {
                         // Only reset fields if no customer is found
@@ -80,6 +88,8 @@ export default function PurchaseForm({ brands, category }) {
                             address: "",
                             wpnumber: "",
                             pin: "",
+                            custId: "",
+                            salesman: "",
                         }));
                     }
                     setIsSearching(false);
@@ -117,7 +127,7 @@ export default function PurchaseForm({ brands, category }) {
         // Check if the field being updated is 'code' and length is 19 characters
         if (field === "code" && value.length === 19) {
             try {
-                const response = await axios.get(`/products/${value}`); // Fetch product by code
+                const response = await axios.get(`/code/${value}`); // Fetch product by code
                 const itemDetails = response.data;
                 // Automatically fill other fields if the item is found
                 if (itemDetails) {
@@ -145,7 +155,6 @@ export default function PurchaseForm({ brands, category }) {
                 updatedRows[index].saleRate,
                 updatedRows[index].quantity
             );
-            console.log(data);
         }
 
         // If the input is filled and it's the last row, add a new row
@@ -194,6 +203,7 @@ export default function PurchaseForm({ brands, category }) {
     //     // e.preventDefault();
     //     post("/purchase/store");
     // };
+    console.log(data);
 
     router.on("success", () => {
         setData({
@@ -203,6 +213,12 @@ export default function PurchaseForm({ brands, category }) {
             wpnumber: "",
             pin: "",
             payment: "",
+            orderId: "",
+            online: "",
+            cash: "",
+            salesman: "",
+            gst: "",
+            finance: "",
             rows: [
                 {
                     code: "",
@@ -228,7 +244,7 @@ export default function PurchaseForm({ brands, category }) {
     return (
         <div className="container mx-auto p-4 bg-white rounded-lg">
             {/* Additional Inputs */}
-            <div className="grid grid-cols-2 gap-y-1 gap-x-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-1 gap-x-6">
                 <div className="relative z-0 w-full mb-5 group">
                     <label
                         className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
@@ -363,32 +379,163 @@ export default function PurchaseForm({ brands, category }) {
                 <div className="relative z-0 w-full mb-5 group">
                     <label
                         className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                        htmlFor="payment"
+                        htmlFor="gst"
                     >
-                        Payment
+                        GST
                     </label>
                     <select
-                        id="payment"
-                        name="payment"
-                        value={data.payment}
-                        onChange={(e) => setData("payment", e.target.value)}
+                        id="gst"
+                        name="gst"
+                        value={data.gst}
+                        onChange={(e) => setData("gst", e.target.value)}
                         className={`w-full px-4 py-[10px] text-black border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                            errors.payment
+                            errors.gst
                                 ? "border-red-500 focus:ring-red-400"
                                 : "border-gray-300 focus:ring-blue-400"
                         }`}
                     >
-                        <option value="">Select Payment</option>
-                        <option value="cash">Cash</option>
-                        <option value="online">Online</option>
-                        {/* <option value="emi">EMI</option> */}
+                        <option value="">Select GST</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
                     </select>
-                    {errors.payment && (
+                    {errors.gst && (
                         <p className="text-red-500 text-sm mt-1">
-                            {errors.payment}
+                            {errors.gst}
                         </p>
                     )}
                 </div>
+
+                <div className="relative z-0 w-full group">
+                    <label
+                        className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
+                        htmlFor="cash"
+                    >
+                        Cash Payment
+                    </label>
+                    <input
+                        type="number"
+                        id="cash"
+                        name="cash"
+                        value={data.cash}
+                        onChange={(e) => setData("cash", e.target.value)}
+                        className={`w-full px-4 py-2 text-black border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                            errors.cash
+                                ? "border-red-500 focus:ring-red-400"
+                                : "border-gray-300 focus:ring-blue-400"
+                        }`}
+                        placeholder="Enter Cash Payment "
+                        min={0}
+                    />
+                    {errors.cash && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.cash}
+                        </p>
+                    )}
+                </div>
+                <div className="relative z-0 w-full group">
+                    <label
+                        className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
+                        htmlFor="online"
+                    >
+                        Online Payment
+                    </label>
+                    <input
+                        type="number"
+                        id="online"
+                        name="online"
+                        value={data.online}
+                        onChange={(e) => setData("online", e.target.value)}
+                        className={`w-full px-4 py-2 text-black border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                            errors.online
+                                ? "border-red-500 focus:ring-red-400"
+                                : "border-gray-300 focus:ring-blue-400"
+                        }`}
+                        placeholder="Enter Online Payment"
+                        min={0}
+                    />
+                    {errors.online && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.online}
+                        </p>
+                    )}
+                </div>
+                <div className="relative z-0 w-full mb-5 group">
+                    <label
+                        className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
+                        htmlFor="gst"
+                    >
+                        Finance
+                    </label>
+                    <select
+                        id="finance"
+                        name="finance"
+                        value={data.finance}
+                        onChange={(e) => setData("finance", e.target.value)}
+                        className={`w-full px-4 py-[10px] text-black border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                            errors.finance
+                                ? "border-red-500 focus:ring-red-400"
+                                : "border-gray-300 focus:ring-blue-400"
+                        }`}
+                    >
+                        <option value="">Select Finance</option>
+                        <option value="hdb_finance">HDB Finance</option>
+                        <option value="bajaj_finance">BAJAJ Finance</option>
+                    </select>
+                    {errors.finance && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.finance}
+                        </p>
+                    )}
+                </div>
+                {data.salesman && (
+                    <div className="relative z-0 w-full mb-5 group">
+                        <label
+                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
+                            htmlFor="gst"
+                        >
+                            Salesman
+                        </label>
+
+                        <div className="w-full h-[45px] px-4 py-2 text-black border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md flex space-x-4">
+                            <div className="flex-1">
+                                <input
+                                    disabled
+                                    type="text"
+                                    value={data.salesman.user.name}
+                                    placeholder="Name"
+                                    className="w-full h-full px-2 py-1 border rounded focus:outline-none"
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <input
+                                    disabled
+                                    type="text"
+                                    value={data.salesman.code}
+                                    placeholder="Code"
+                                    className="w-full h-full px-2 py-1 border rounded focus:outline-none"
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <input
+                                    disabled
+                                    type="number"
+                                    value={
+                                        data.salesman.point +
+                                        data.salesman.other_point
+                                    }
+                                    placeholder="Point"
+                                    className="w-full h-full px-2 py-1 border rounded focus:outline-none"
+                                />
+                            </div>
+                        </div>
+
+                        {errors.finance && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors.finance}
+                            </p>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* Dynamic Table */}
