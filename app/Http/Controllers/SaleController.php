@@ -66,7 +66,7 @@ class SaleController extends Controller
             'rows.*.productId' => 'required|integer|exists:products,id',
             'custId' => 'nullable|integer|exists:customers,id',
         ]);
-    //   dd($request->all());
+      dd($request->all());
         // Handle customer creation or fetching
         $customer = null;
     

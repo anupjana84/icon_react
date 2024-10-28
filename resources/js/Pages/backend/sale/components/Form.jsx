@@ -2,8 +2,10 @@ import { useForm, router } from "@inertiajs/react";
 import React, { useEffect, useRef, useState } from "react";
 import Alert from "../../../../layout/components/AlertMessage";
 import axios from "axios";
-export default function PurchaseForm({ brands, category }) {
+import { SalesModel } from "./Model";
+export default function PurchaseForm() {
     // console.log(company);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
     const [saved, setSeved] = useState(false);
     const [message, setMessage] = useState({
@@ -45,8 +47,11 @@ export default function PurchaseForm({ brands, category }) {
         online: "",
         cash: "",
         salesman: "",
-        gst: "",
+        gstNumber: "",
         finance: "",
+        discount: "",
+        total: "",
+        grandTotal: "",
         rows: [
             {
                 code: "",
@@ -58,9 +63,13 @@ export default function PurchaseForm({ brands, category }) {
                 saleRate: "",
                 point: "",
                 freeDelivery: "no",
+                warranty: "",
+                sl_no: "",
+                gst: 0,
             },
         ],
     });
+    // console.log(errors);
     useEffect(() => {
         if (isSearching) {
             axios
@@ -143,6 +152,9 @@ export default function PurchaseForm({ brands, category }) {
                         point: itemDetails.point,
                         freeDelivery: itemDetails.free_delivery,
                         productId: itemDetails.id || "",
+                        warranty: itemDetails.warranty,
+                        sl_no: itemDetails.sl_no || "",
+                        gst: itemDetails.category.gst,
                     };
                 }
             } catch (error) {
@@ -169,6 +181,8 @@ export default function PurchaseForm({ brands, category }) {
                 saleRate: "",
                 point: "",
                 freeDelivery: "no",
+                warranty: "",
+                sl_no: "",
             });
         }
 
@@ -183,63 +197,78 @@ export default function PurchaseForm({ brands, category }) {
         setData("rows", updatedRows);
     };
 
-    const handleSave = (e) => {
+    const handleSave = () => {
         // e.preventDefault();
 
         // Filter out the empty rows
         const filteredRows =
-            data.rows.length > 1 ? data.rows.slice(0, -1) : data.rows;
+            data.rows.length > 1
+                ? data.rows.filter((row) => row.code)
+                : data.rows;
 
         // Send the filtered data to the backend
-        console.log(data);
+        // console.log(data);
         setData({ ...data, rows: filteredRows });
         if (data.rows.length > 1) {
             setSeved(true);
+            setIsModalOpen(true);
         }
-        post("/sales");
+        // post("/sales");
     };
 
-    // const handelSubmit = () => {
-    //     // e.preventDefault();
-    //     post("/purchase/store");
-    // };
-    console.log(data);
+    const handelSubmit = (e) => {
+        e.preventDefault();
+        post("/sales", {
+            onSuccess: () => {
+                setMessage({
+                    visible: true,
+                    description: "Sales created successfully!",
+                    type: "success",
+                    title: "Success",
+                });
+                setIsModalOpen(false);
+                reset();
+                setSeved(false);
+            },
+        });
+    };
+    // console.log(data);
 
-    router.on("success", () => {
-        setData({
-            name: "",
-            phone: "",
-            address: "",
-            wpnumber: "",
-            pin: "",
-            payment: "",
-            orderId: "",
-            online: "",
-            cash: "",
-            salesman: "",
-            gst: "",
-            finance: "",
-            rows: [
-                {
-                    code: "",
-                    category: "",
-                    brand: "",
-                    model: "",
-                    quantity: "",
-                    rate: "",
-                    saleRate: "",
-                    point: "",
-                    freeDelivery: "no",
-                },
-            ],
-        });
-        setMessage({
-            visible: true,
-            description: "Product created successfully!",
-            type: "success",
-            title: "🎉 Success",
-        });
-    });
+    // router.on("success", () => {
+    //     setData({
+    //         name: "",
+    //         phone: "",
+    //         address: "",
+    //         wpnumber: "",
+    //         pin: "",
+    //         payment: "",
+    //         orderId: "",
+    //         online: "",
+    //         cash: "",
+    //         salesman: "",
+    //         gst: "",
+    //         finance: "",
+    //         rows: [
+    //             {
+    //                 code: "",
+    //                 category: "",
+    //                 brand: "",
+    //                 model: "",
+    //                 quantity: "",
+    //                 rate: "",
+    //                 saleRate: "",
+    //                 point: "",
+    //                 freeDelivery: "no",
+    //             },
+    //         ],
+    //     });
+    //     setMessage({
+    //         visible: true,
+    //         description: "Product created successfully!",
+    //         type: "success",
+    //         title: "🎉 Success",
+    //     });
+    // });
 
     return (
         <div className="container mx-auto p-4 bg-white rounded-lg">
@@ -376,7 +405,8 @@ export default function PurchaseForm({ brands, category }) {
                         </p>
                     )}
                 </div>
-                <div className="relative z-0 w-full mb-5 group">
+
+                {/* <div className="relative z-0 w-full mb-5 group">
                     <label
                         className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
                         htmlFor="gst"
@@ -404,7 +434,6 @@ export default function PurchaseForm({ brands, category }) {
                         </p>
                     )}
                 </div>
-
                 <div className="relative z-0 w-full group">
                     <label
                         className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
@@ -459,10 +488,37 @@ export default function PurchaseForm({ brands, category }) {
                         </p>
                     )}
                 </div>
+                <div className="relative z-0 w-full group">
+                    <label
+                        className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
+                        htmlFor="gstNumber"
+                    >
+                        GST Number
+                    </label>
+                    <input
+                        type="text"
+                        id="gstNumber"
+                        name="gstNumber"
+                        value={data.gstNumber}
+                        onChange={(e) => setData("gstNumber", e.target.value)}
+                        className={`w-full px-4 py-2 text-black border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                            errors.gstNumber
+                                ? "border-red-500 focus:ring-red-400"
+                                : "border-gray-300 focus:ring-blue-400"
+                        }`}
+                        placeholder="Enter GST Number"
+                        min={0}
+                    />
+                    {errors.gstNumber && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.gstNumber}
+                        </p>
+                    )}
+                </div>
                 <div className="relative z-0 w-full mb-5 group">
                     <label
                         className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                        htmlFor="gst"
+                        htmlFor="finance"
                     >
                         Finance
                     </label>
@@ -486,7 +542,7 @@ export default function PurchaseForm({ brands, category }) {
                             {errors.finance}
                         </p>
                     )}
-                </div>
+                </div> */}
                 {data.salesman && (
                     <div className="relative z-0 w-full mb-5 group">
                         <label
@@ -547,6 +603,7 @@ export default function PurchaseForm({ brands, category }) {
                     <thead>
                         <tr>
                             {[
+                                "SL. NO.",
                                 "CODE",
                                 "ITEM",
                                 "COMPANY",
@@ -555,7 +612,7 @@ export default function PurchaseForm({ brands, category }) {
                                 "RATE",
                                 "SALE RATE",
                                 "POINT",
-                                "DELIVERY",
+                                "WARRANTY",
                             ].map((header, idx) => (
                                 <th
                                     key={idx}
@@ -571,6 +628,25 @@ export default function PurchaseForm({ brands, category }) {
                         {data.rows.map((row, index) => (
                             <tr key={index} className="border-b">
                                 {/* SLNO - row number */}
+                                <td className="px-2 py-2 border-x">
+                                    <input
+                                        type="string"
+                                        value={row.sl_no}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                index,
+                                                "sl_no",
+                                                e.target.value
+                                            )
+                                        }
+                                        className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                                            errors[`rows.${index}.sl_no`]
+                                                ? "border-red-500 focus:ring-red-400"
+                                                : "border-gray-300 focus:ring-blue-400"
+                                        }`}
+                                        placeholder="SL No."
+                                    />
+                                </td>
                                 <td className="px-2 py-2 border-x">
                                     <input
                                         type="string"
@@ -737,25 +813,34 @@ export default function PurchaseForm({ brands, category }) {
                                         placeholder="Point"
                                     />
                                 </td>
+
                                 <td className="px-2 py-2 border-x">
                                     <select
-                                        value={row.freeDelivery}
+                                        value={row.warranty}
                                         onChange={(e) =>
                                             handleInputChange(
                                                 index,
-                                                "freeDelivery",
+                                                "warranty",
                                                 e.target.value
                                             )
                                         }
                                         className={`w-full px-2 py-[6px] cursor-not-allowed text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                                            errors[`rows.${index}.freeDelivery`]
+                                            errors[`rows.${index}.warranty`]
                                                 ? "border-red-500 focus:ring-red-400"
                                                 : "border-gray-300 focus:ring-blue-400"
                                         }`}
-                                        disabled
                                     >
-                                        <option value="no">No</option>
-                                        <option value="yes">Yes</option>
+                                        <option value="">Select</option>
+                                        <option value="0m">No Warranty</option>
+                                        <option value="1m">1 Month</option>
+                                        <option value="2m">2 Months</option>
+                                        <option value="3m">3 Month</option>
+                                        <option value="4m">4 Months</option>
+                                        <option value="5m">5 Months</option>
+                                        <option value="6m">6 Months</option>
+                                        <option value="1y">1 Year</option>
+                                        <option value="2y">2 Years</option>
+                                        <option value="3y">3 Years</option>
                                     </select>
                                 </td>
                             </tr>
@@ -764,63 +849,66 @@ export default function PurchaseForm({ brands, category }) {
                 </table>
             </div>
 
-            {!saved ? (
-                <div className="w-full">
-                    <button
-                        onClick={() => {
-                            handleSave();
-                        }}
-                        type="submit"
-                        className={`bg-blue-500 w-full text-white px-4 py-2 rounded-lg  hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300
+            {
+                !saved && (
+                    <div className="w-full">
+                        <button
+                            onClick={() => {
+                                handleSave();
+                            }}
+                            type="submit"
+                            className={`bg-blue-500 w-full text-white px-4 py-2 rounded-lg  hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300
                    `}
-                    >
-                        Save
-                    </button>
-                </div>
-            ) : (
-                <div className="w-full">
-                    <button
-                        onClick={() => {
-                            handleSave();
-                        }}
-                        type="submit"
-                        className={`bg-blue-500 w-full text-white px-4 py-2 rounded-lg ${
-                            processing
-                                ? "opacity-70 cursor-not-allowed"
-                                : "hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
-                        }`}
-                        disabled={processing}
-                    >
-                        {processing ? (
-                            <div className="flex items-center justify-center">
-                                <svg
-                                    className="animate-spin h-5 w-5 mr-2 text-white"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <circle
-                                        className="opacity-25"
-                                        cx="12"
-                                        cy="12"
-                                        r="10"
-                                        stroke="currentColor"
-                                        strokeWidth="4"
-                                    ></circle>
-                                    <path
-                                        className="opacity-75"
-                                        fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                    ></path>
-                                </svg>
-                                Uploading...
-                            </div>
-                        ) : (
-                            "Submit"
-                        )}
-                    </button>
-                </div>
-            )}
+                        >
+                            Save
+                        </button>
+                    </div>
+                )
+                // : (
+                // <div className="w-full">
+                //     <button
+                //         onClick={() => {
+                //             handleSave();
+                //         }}
+                //         type="submit"
+                //         className={`bg-blue-500 w-full text-white px-4 py-2 rounded-lg ${
+                //             processing
+                //                 ? "opacity-70 cursor-not-allowed"
+                //                 : "hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
+                //         }`}
+                //         disabled={processing}
+                //     >
+                //         {processing ? (
+                //             <div className="flex items-center justify-center">
+                //                 <svg
+                //                     className="animate-spin h-5 w-5 mr-2 text-white"
+                //                     xmlns="http://www.w3.org/2000/svg"
+                //                     fill="none"
+                //                     viewBox="0 0 24 24"
+                //                 >
+                //                     <circle
+                //                         className="opacity-25"
+                //                         cx="12"
+                //                         cy="12"
+                //                         r="10"
+                //                         stroke="currentColor"
+                //                         strokeWidth="4"
+                //                     ></circle>
+                //                     <path
+                //                         className="opacity-75"
+                //                         fill="currentColor"
+                //                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                //                     ></path>
+                //                 </svg>
+                //                 Uploading...
+                //             </div>
+                //         ) : (
+                //             "Submit"
+                //         )}
+                //     </button>
+                // </div>
+                // )
+            }
 
             {message.visible && (
                 <Alert
@@ -830,6 +918,19 @@ export default function PurchaseForm({ brands, category }) {
                     // onClose={handleClose}
                 />
             )}
+
+            <SalesModel
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setSeved(false);
+                }}
+                data={data}
+                setData={setData}
+                processing={processing}
+                errors={errors}
+                handelSubmit={handelSubmit}
+            />
         </div>
     );
 }
