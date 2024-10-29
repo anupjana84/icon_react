@@ -52,6 +52,7 @@ export default function PurchaseForm() {
         discount: "",
         total: "",
         grandTotal: "",
+
         rows: [
             {
                 code: "",
@@ -152,8 +153,7 @@ export default function PurchaseForm() {
                         point: itemDetails.point,
                         freeDelivery: itemDetails.free_delivery,
                         productId: itemDetails.id || "",
-                        warranty: itemDetails.warranty,
-                        sl_no: itemDetails.sl_no || "",
+                        warranty: "",
                         gst: itemDetails.category.gst,
                     };
                 }
@@ -229,6 +229,40 @@ export default function PurchaseForm() {
                 setIsModalOpen(false);
                 reset();
                 setSeved(false);
+                setData({
+                    name: "",
+                    phone: "",
+                    address: "",
+                    wpnumber: "",
+                    pin: "",
+                    payment: "",
+                    orderId: "",
+                    online: "",
+                    cash: "",
+                    salesman: "",
+                    gstNumber: "",
+                    finance: "",
+                    discount: "",
+                    total: "",
+                    grandTotal: "",
+
+                    rows: [
+                        {
+                            code: "",
+                            category: "",
+                            brand: "",
+                            model: "",
+                            quantity: "",
+                            rate: "",
+                            saleRate: "",
+                            point: "",
+                            freeDelivery: "no",
+                            warranty: "",
+                            sl_no: "",
+                            gst: 0,
+                        },
+                    ],
+                });
             },
         });
     };

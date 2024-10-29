@@ -52,10 +52,14 @@ class SaleController extends Controller
             'gst' => 'required|string|in:yes,no',
             'finance' => 'nullable|string|in:hdb_finance,bajaj_finance',
             'salesman' => 'nullable|array',
+            'total' => 'required|integer',
+            'discount' => 'nullable|numeric|min:0',
             'rows' => 'required|array|min:1',
             'rows.*.category' => 'required|string|max:100',
             'rows.*.brand' => 'required|string|max:100',
             'rows.*.model' => 'required|string|max:100',
+            'rows.*.sl_no' => 'required|string|max:100',
+            'rows.*.warranty' => 'required|string|max:100',
             'rows.*.quantity' => 'required|integer|min:1',
             'rows.*.rate' => 'required|numeric|min:0',
             'rows.*.saleRate' => 'required|numeric|min:0',
@@ -66,7 +70,7 @@ class SaleController extends Controller
             'rows.*.productId' => 'required|integer|exists:products,id',
             'custId' => 'nullable|integer|exists:customers,id',
         ]);
-      dd($request->all());
+    //   dd($request->all());
         // Handle customer creation or fetching
         $customer = null;
     
@@ -84,6 +88,28 @@ class SaleController extends Controller
             } else {
                 // Fetch the existing customer
                 $customer = Customer::findOrFail($request->custId);
+                // Prepare an array to hold updated fields
+                $updates = [];
+
+                // Check each field and add to updates if changed
+                if ($customer->address !== $request->address) {
+                    $updates['address'] = $request->address;
+                }
+                if ($customer->wpnumber !== $request->wpnumber) {
+                    $updates['wpnumber'] = $request->wpnumber;
+                }
+                if ($customer->name !== $request->name) {
+                    $updates['name'] = $request->name;
+                }
+                if ($customer->pin !== $request->pin) {
+                    $updates['pin'] = $request->pin;
+                }
+
+                // Update the customer only if there are changes
+                if (!empty($updates)) {
+                    $customer->update($updates);
+                }
+
             }
         }
     
@@ -94,6 +120,9 @@ class SaleController extends Controller
             'customer_id' => $customer ? $customer->id : null,
             'shipping_address' => $request->address,
             'shipping_pin' => $request->pin,
+            'total' => $request->total,
+            'discount' => $request->discount ?? 0,
+            'finance' => $request->finance,
         ]);
     
         $totalPoints = 0;
@@ -106,8 +135,8 @@ class SaleController extends Controller
                 'product_id' => $row['productId'],
                 'quantity' => $row['quantity'],
                 'price'=>$row['saleRate'],
-                'shipping_address' => $request->address,
-                'shipping_pin' => $request->pin,
+                'warranty' => $row['warranty'] ?? '',
+                'sl_no' => $row['sl_no']
             ]);
             Product::find($row['productId'])->update([
                 'quantity' => $row['productQuantity'] - $row['quantity'], // Update the product quantity

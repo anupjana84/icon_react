@@ -1,8 +1,5 @@
 import React from "react";
 import PageHeader from "../../../layout/components/pageHeader";
-import BarcodeScanner from "../../../layout/components/BarcodeScanner";
-import { SalesmanModal } from "../salesman/components/Form";
-import Alert from "../../../layout/components/AlertMessage";
 import { Link, useForm } from "@inertiajs/react";
 import { formatDate } from "../../../helper/dateFormater";
 import { ReceiptText } from "lucide-react";
@@ -68,11 +65,13 @@ export default function Index({ sales }) {
                                                 {sales.customer.phone}
                                             </td>
                                             <td className="py-3 px-6 text-center">
+                                                ₹
                                                 {parseFloat(
                                                     sales.sales_payment.amount
                                                 )}
                                             </td>
                                             <td className="py-3 px-6 text-center">
+                                                ₹
                                                 {parseFloat(
                                                     sales.sales_items.reduce(
                                                         (accumulator, item) => {
@@ -82,7 +81,7 @@ export default function Index({ sales }) {
                                                             );
                                                         },
                                                         0
-                                                    )
+                                                    ) - sales.discount
                                                 )}
                                             </td>
                                             <td className="py-3 px-6 text-center">

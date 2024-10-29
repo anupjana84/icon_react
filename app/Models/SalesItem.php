@@ -17,6 +17,8 @@ class SalesItem extends Model
         'quantity',
         'price',
         'total',
+        'warranty',
+        'sl_no'
     ];
 
     /**

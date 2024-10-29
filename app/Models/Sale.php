@@ -17,6 +17,8 @@ class Sale extends Model
         'shipping_pin',
         'invoice_number',
         'gst',
+        'gst_number',
+        'total'
     ];
     // Define the relationship with the Customer model
     public function customer(){
