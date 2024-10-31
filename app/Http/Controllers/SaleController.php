@@ -147,7 +147,7 @@ class SaleController extends Controller
         // Create the SalesPayment record
         $salesPayment = SalesPayment::create([
             'sale_id' => $sale->id, // Link to the Sale
-            'amount' => ($request->cash ?? 0) + ($request->online ?? 0), // Total amount from cash and online payments
+            'amount' => ($request->total ) - ($request->discount?? 0), // Total amount from cash and online payments
             'payment_date' => now(), // Use the current date or from the request if provided
             'online_payment' => $request->online,
             'cash_payment' => $request->cash,
@@ -180,7 +180,11 @@ class SaleController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $sale = Sale::with('customer', 'order', 'salesItems', 'salesPayment', 'salesItems.product', 'salesItems.product.category', 'salesItems.product.brand', 'salesItems.product.details')->findOrFail($id);
+
+        return Inertia::render('backend/sale/Show', [
+            'sale' => $sale,
+        ]);
     }
 
     /**
@@ -205,5 +209,12 @@ class SaleController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function invoice($id){
+        $sale = Sale::with('customer', 'order', 'salesItems', 'salesPayment', 'salesItems.product', 'salesItems.product.category', 'salesItems.product.brand', 'salesItems.product.details')->findOrFail($id);
+        return Inertia::render('backend/sale/InvoiceBill', [
+            'sale' => $sale,
+        ]);
     }
 }

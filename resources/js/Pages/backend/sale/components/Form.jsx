@@ -67,6 +67,7 @@ export default function PurchaseForm() {
                 warranty: "",
                 sl_no: "",
                 gst: 0,
+                discount: 0,
             },
         ],
     });
@@ -139,6 +140,7 @@ export default function PurchaseForm() {
             try {
                 const response = await axios.get(`/code/${value}`); // Fetch product by code
                 const itemDetails = response.data;
+                console.log(itemDetails);
                 // Automatically fill other fields if the item is found
                 if (itemDetails) {
                     updatedRows[index] = {
@@ -155,6 +157,7 @@ export default function PurchaseForm() {
                         productId: itemDetails.id || "",
                         warranty: "",
                         gst: itemDetails.category.gst,
+                        discount: itemDetails.details.discount,
                     };
                 }
             } catch (error) {
@@ -245,7 +248,6 @@ export default function PurchaseForm() {
                     discount: "",
                     total: "",
                     grandTotal: "",
-
                     rows: [
                         {
                             code: "",
@@ -260,6 +262,7 @@ export default function PurchaseForm() {
                             warranty: "",
                             sl_no: "",
                             gst: 0,
+                            discount: 0,
                         },
                     ],
                 });

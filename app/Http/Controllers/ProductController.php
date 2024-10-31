@@ -334,8 +334,7 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
     {
         
         // Assuming 'code' is a unique identifier for the product in the database
-        $product = Product::where('code', $code)->with('category', 'brand')->first();
-
+        $product = Product::where('code', $code)->with('category', 'brand', 'details')->first();
         if ($product) {
             return response()->json($product, 200);
         } else {

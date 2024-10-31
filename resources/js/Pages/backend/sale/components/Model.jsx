@@ -22,13 +22,15 @@ export const SalesModel = ({
             let total = 0;
 
             data.rows.forEach((product) => {
-                const rate = product.rate || 0;
-                const gst = product.gst || 0;
-                const discount = product.discount || 0;
+                const rate = parseInt(product.rate || 0);
+                const gst = parseInt(product.gst || 0);
+                const discount = parseInt(product.discount || 0);
 
                 // Calculate product total with GST and discount, excluding delivery
                 const productTotal = parseInt(
-                    rate + (rate * gst) / 100 - (rate * discount) / 100
+                    parseInt(rate) +
+                        (rate * gst) / 100 -
+                        (rate * discount) / 100
                 );
 
                 total += productTotal;
@@ -79,13 +81,17 @@ export const SalesModel = ({
                             </thead>
                             <tbody>
                                 {data.rows.map((product, index) => {
-                                    const rate = product.rate;
-                                    const gst = product.gst;
-                                    const discount = product.discount || 0;
-                                    const total =
-                                        rate +
-                                        (rate * gst) / 100 -
-                                        (rate * discount) / 100;
+                                    const rate = parseInt(product.rate || 0);
+                                    const gst = parseInt(product.gst || 0);
+                                    const discount = parseInt(
+                                        product.discount || 0
+                                    );
+                                    // Calculate product total with GST and discount, excluding delivery
+                                    const total = parseInt(
+                                        parseInt(rate) +
+                                            (rate * gst) / 100 -
+                                            (rate * discount) / 100
+                                    );
 
                                     return (
                                         <tr
@@ -103,7 +109,7 @@ export const SalesModel = ({
                                                 {gst}%
                                             </td>
                                             <td className="py-3 px-6 text-gray-700">
-                                                {discount}%
+                                                {parseInt(discount)}%
                                             </td>
                                             <td className="py-3 px-6 text-gray-900 font-semibold">
                                                 ₹{parseInt(total)}

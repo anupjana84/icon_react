@@ -67,21 +67,21 @@ export default function Index({ sales }) {
                                             <td className="py-3 px-6 text-center">
                                                 ₹
                                                 {parseFloat(
-                                                    sales.sales_payment.amount
+                                                    parseInt(
+                                                        sales.sales_payment
+                                                            .cash_payment
+                                                    ) +
+                                                        parseInt(
+                                                            sales.sales_payment
+                                                                .online_payment ||
+                                                                0
+                                                        )
                                                 )}
                                             </td>
                                             <td className="py-3 px-6 text-center">
                                                 ₹
                                                 {parseFloat(
-                                                    sales.sales_items.reduce(
-                                                        (accumulator, item) => {
-                                                            return (
-                                                                accumulator +
-                                                                item.total
-                                                            );
-                                                        },
-                                                        0
-                                                    ) - sales.discount
+                                                    sales.sales_payment.amount
                                                 )}
                                             </td>
                                             <td className="py-3 px-6 text-center">
@@ -93,7 +93,16 @@ export default function Index({ sales }) {
                                             </td>
 
                                             <td className="py-3 px-6 flex gap-2 justify-center">
-                                                <Link className="bg-blue-500 w-14 hover:bg-blue-600 text-white rounded-md px-4 py-2 transition duration-300 ease-in-out flex items-center">
+                                                <Link
+                                                    href={`sales/${sales.id}`}
+                                                    className="bg-blue-500 w-14 hover:bg-blue-600 text-white rounded-md px-4 py-2 transition duration-300 ease-in-out flex items-center"
+                                                >
+                                                    <ReceiptText color="white" />
+                                                </Link>
+                                                <Link
+                                                    href={`sales/${sales.id}/invoice`}
+                                                    className="bg-blue-500 w-14 hover:bg-blue-600 text-white rounded-md px-4 py-2 transition duration-300 ease-in-out flex items-center"
+                                                >
                                                     <ReceiptText color="white" />
                                                 </Link>
                                             </td>
