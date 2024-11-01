@@ -4,6 +4,7 @@ import Spline from "@splinetool/react-spline";
 import LoginLayout from "./layouts/LoginLayout";
 import { Eye, EyeOff } from "lucide-react";
 import { color } from "framer-motion";
+import Alert from "../../layout/components/AlertMessage";
 
 const LoginPage = () => {
     const { data, setData, post, processing, errors } = useForm({
@@ -11,9 +12,16 @@ const LoginPage = () => {
         password: "",
     });
 
+    const [message, setMessage] = useState({
+        visible: false,
+        description: "",
+        type: "",
+        title: "",
+    });
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(data);
+        // console.log(data);
         post("/login");
     };
 
@@ -110,6 +118,14 @@ const LoginPage = () => {
                     </button>
                 </form>
             </div>
+            {message.visible && (
+                <Alert
+                    type={message.type} // You can change this to "error", "warning", or "info"
+                    title={message.title}
+                    description={message.description}
+                    // onClose={handleClose}
+                />
+            )}
         </div>
     );
 };

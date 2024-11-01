@@ -54,6 +54,7 @@ Route::middleware([AuthCheck::class])->group(function () {
     Route::post('/salesmans', [SalesmanController::class,'store']);
     Route::put('/salesmans/{id}', [SalesmanController::class, 'update']);
     Route::delete('/salesmans/{id}', [SalesmanController::class, 'destroy']);
+    Route::get('/products/details', [ProductController::class, 'show']);
     });
     Route::get('/users/{role?}', [UserController::class, 'index'])->name('users.index');
     Route::post('/create-multiple', [ProductController::class, 'storeChunk']);

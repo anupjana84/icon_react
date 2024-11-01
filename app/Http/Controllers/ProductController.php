@@ -62,6 +62,7 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
         ->groupBy('brand', 'category', 'sale_price', 'details_id')
         ->paginate(10);
     //   dd($products);
+    
     return Inertia::render('backend/product/Index', [
         'product' => $products,
     ]);
@@ -253,13 +254,38 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show(Request $request)
     {
-        $products = $product->load('category', 'brand', 'purchases', 'purchases.company');
-        // dd($product);
+        $brand = $request->query('brand');
+        $category = $request->query('item');
+        $rate = $request->query('rate');
+        $product = Product::with(['category', 'brand', 'purchases.company', 'details'])
+                            ->whereHas('brand', function ($query) use ($brand) {
+                                $query->where('name', $brand); // Assuming 'name' is the field in 'brands' table
+                            })
+                            ->whereHas('category', function ($query) use ($category) {
+                                $query->where('name', $category); // Assuming 'name' is the field in 'categories' table
+                            })
+                            ->where('sale_price', '=', $rate)
+                            ->get();
+                // dd($product);
 
+                $groupedProducts = $product->groupBy(function ($product) {
+                    // dd($product->brand);
+                    return 0;
+                })->map(function ($group) {
+                    return [
+                        'brand' => Brand::find($group->first()->brand),
+                        'category' => Category::find($group->first()->category),
+                        'details' => $group->first()->details,
+                        'sale_price' => $group->first()->sale_price,
+                        'purchases' => $group->flatMap->purchases, // Flatten and gather all purchases for the group
+                        'products'=>$group
+                    ];
+                });
+                // dd($groupedProducts);
         return Inertia::render('backend/product/Show', [
-            'product' => $products,
+            'product' => $groupedProducts,
         ]);
     }
 

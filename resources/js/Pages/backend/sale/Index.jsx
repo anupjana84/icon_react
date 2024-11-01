@@ -2,7 +2,7 @@ import React from "react";
 import PageHeader from "../../../layout/components/pageHeader";
 import { Link, useForm } from "@inertiajs/react";
 import { formatDate } from "../../../helper/dateFormater";
-import { ReceiptText } from "lucide-react";
+import { Printer, ReceiptText } from "lucide-react";
 
 export default function Index({ sales }) {
     const { get } = useForm();
@@ -101,9 +101,9 @@ export default function Index({ sales }) {
                                                 </Link>
                                                 <Link
                                                     href={`sales/${sales.id}/invoice`}
-                                                    className="bg-blue-500 w-14 hover:bg-blue-600 text-white rounded-md px-4 py-2 transition duration-300 ease-in-out flex items-center"
+                                                    className="bg-green-500 w-14 hover:bg-green-600 text-white rounded-md px-4 py-2 transition duration-300 ease-in-out flex items-center"
                                                 >
-                                                    <ReceiptText color="white" />
+                                                    <Printer color="white" />
                                                 </Link>
                                             </td>
                                         </tr>

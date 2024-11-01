@@ -58,11 +58,14 @@ class AuthController extends Controller
                 'phone' => ['The provided credentials are incorrect.'],
             ]);
         }
+        //   dd($user);
+        if ($user && $user->role !== 'admin') {
+        return back()->with('error', 'Invalid credentials');
+        }
+           // Log in the user
+           Auth::login($user);
 
-        // Log in the user
-        Auth::login($user);
-
-        return redirect()->route('products.index');
+           return redirect()->route('products.index');
     }
 
     /**

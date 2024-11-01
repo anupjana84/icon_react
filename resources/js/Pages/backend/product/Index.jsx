@@ -103,7 +103,7 @@ const ProductTable = ({ product }) => {
                                         Image
                                     </th>
                                     <th className="py-3 px-6 text-center">
-                                        Code
+                                        Name
                                     </th>
                                     <th className="py-3 px-6 text-center">
                                         Quantity
@@ -120,29 +120,30 @@ const ProductTable = ({ product }) => {
                                 </tr>
                             </thead>
                             <tbody className="text-gray-600 text-sm font-light">
-                                {product.data.map((product) => (
+                                {product.data.map((product, index) => (
                                     <tr
-                                        key={product.id}
+                                        key={index}
                                         className="border-b border-gray-200 hover:bg-gray-100"
                                     >
                                         <td className="py-3 px-6 text-left">
                                             <img
                                                 src={
-                                                    product.thumbnail_image ||
-                                                    "/thumbnail.png"
+                                                    product.details
+                                                        ? product.details
+                                                              .thumbnail_image ||
+                                                          "/thumbnail.png"
+                                                        : "/thumbnail.png"
                                                 }
-                                                alt={product.name}
+                                                alt={product.category.name}
                                                 className="h-16 w-16 object-cover"
                                             />
                                         </td>
                                         <td className="py-3 px-6 text-center">
-                                            <BarcodeComponent
-                                                code={product.code}
-                                                product={product}
-                                            />
+                                            {product.brand.name}-
+                                            {product.category.name}
                                         </td>
                                         <td className="py-3 px-6 text-center">
-                                            {product.quantity}
+                                            {product.total_quantity}
                                         </td>
                                         <td className="py-3 px-6 text-center">
                                             ₹
@@ -153,37 +154,27 @@ const ProductTable = ({ product }) => {
                                         <td className="py-3 px-6 text-center ">
                                             <span
                                                 className={`inline-block px-2 py-1 text-xs font-bold rounded-full
-                                        ${
-                                            product.status === "active"
-                                                ? "bg-green-200 text-green-600"
-                                                : "bg-red-200 text-red-600"
-                                        }`}
+                                                ${
+                                                    product.details &&
+                                                    product.details.status === 1
+                                                        ? "bg-green-200 text-green-600"
+                                                        : "bg-red-200 text-red-600"
+                                                }
+                                                `}
                                             >
-                                                {product.status}
+                                                {product.details &&
+                                                product.details.status === 1
+                                                    ? "active"
+                                                    : "inactive"}
                                             </span>
                                         </td>
                                         <td className="py-3 px-6 flex justify-center items-center gap-2 mt-4">
                                             <Link
-                                                href={`/products/${product.id}`}
+                                                href={`/products/details${`?brand=${product.brand.name}&item=${product.category.name}&rate=${product.sale_price}`}`}
                                                 className="bg-blue-500 w-14 hover:bg-blue-600 text-white rounded-md px-4 py-2 transition duration-300 ease-in-out flex items-center"
                                             >
                                                 <ReceiptText color="white" />
                                             </Link>
-
-                                            <Link
-                                                href={`/products/${product.id}/edit`}
-                                                className="bg-green-500 text-white rounded px-4 py-2 mr-2"
-                                            >
-                                                <Pencil color="white" />
-                                            </Link>
-                                            <button
-                                                onClick={() =>
-                                                    openModal(product.id)
-                                                }
-                                                className="bg-red-500 text-white rounded px-4 py-2"
-                                            >
-                                                <Trash2 color="white" />
-                                            </button>
                                         </td>
                                     </tr>
                                 ))}
