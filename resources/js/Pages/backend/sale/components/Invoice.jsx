@@ -235,7 +235,7 @@ const Invoice = ({ seller, buyer, items, discount, gstNumber, id }) => {
                     </div>
                     <div className="flex justify-between font-semibold  text-gray-700">
                         <span>Discount</span>
-                        <span>-₹{discount.toLocaleString()}</span>
+                        <span>-₹{parseInt(discount).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between font-bold text-xl text-pink-600">
                         <span>Total</span>

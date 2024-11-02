@@ -157,7 +157,7 @@ export default function PurchaseForm() {
                         productId: itemDetails.id || "",
                         warranty: "",
                         gst: itemDetails.category.gst,
-                        discount: itemDetails.details.discount,
+                        discount: itemDetails.details?.discount,
                     };
                 }
             } catch (error) {

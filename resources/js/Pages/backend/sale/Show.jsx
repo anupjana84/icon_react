@@ -163,11 +163,8 @@ export default function Show({ sale }) {
                                             {item.product.category.gst}%
                                         </td>
                                         <td className="p-4 text-gray-800 text-center">
-                                            {item.product.details
-                                                ? parseInt(
-                                                      item.product.details
-                                                          .discount
-                                                  )
+                                            {item.discount
+                                                ? parseInt(item.discount)
                                                 : 0}
                                             %
                                         </td>
@@ -179,11 +176,8 @@ export default function Show({ sale }) {
                                             {calculateTotal(
                                                 item.price,
                                                 item.product.category.gst,
-                                                item.product.details
-                                                    ? parseInt(
-                                                          item.product.details
-                                                              .discount
-                                                      )
+                                                item.discount
+                                                    ? parseInt(item.discount)
                                                     : 0,
                                                 item.quantity
                                             ).toLocaleString()}

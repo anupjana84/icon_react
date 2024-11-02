@@ -15,6 +15,7 @@ import {
     UserRoundPlus,
     Tag,
     Blocks,
+    HandCoins,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -45,6 +46,13 @@ const SIDEBAR_ITEMS = [
         color: "#22d3ee",
         href: "/product-stocks",
     },
+    { name: "Sales", icon: DollarSign, color: "#10B981", href: "/sales" },
+    {
+        name: "Expenses",
+        icon: HandCoins,
+        color: "#22d3ee",
+        href: "/expenses",
+    },
     { name: "Users", icon: Users, color: "#EC4899", href: "/users" },
     { name: "Managers", icon: UserCog, color: "#d946ef", href: "/users" },
     {
@@ -59,7 +67,6 @@ const SIDEBAR_ITEMS = [
         color: "#f43f5e",
         href: "/customers",
     },
-    { name: "Sales", icon: DollarSign, color: "#10B981", href: "/sales" },
     { name: "Orders", icon: ShoppingCart, color: "#F59E0B", href: "/" },
     { name: "Analytics", icon: TrendingUp, color: "#84cc16", href: "/about" },
     { name: "Items", icon: ListChecks, color: "#16a34a", href: "/items" },

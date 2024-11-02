@@ -123,6 +123,7 @@ class SaleController extends Controller
             'total' => $request->total,
             'discount' => $request->discount ?? 0,
             'finance' => $request->finance,
+            'gst_number' => $request->gstNumber,
         ]);
     
         $totalPoints = 0;
@@ -136,7 +137,8 @@ class SaleController extends Controller
                 'quantity' => $row['quantity'],
                 'price'=>$row['saleRate'],
                 'warranty' => $row['warranty'] ?? '',
-                'sl_no' => $row['sl_no']
+                'sl_no' => $row['sl_no'],
+                'discount' => $row['discount'] ?? 0,
             ]);
             Product::find($row['productId'])->update([
                 'quantity' => $row['productQuantity'] - $row['quantity'], // Update the product quantity

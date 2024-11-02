@@ -1,8 +1,7 @@
 // src/components/ProductForm.js
 
-import { useForm, router } from "@inertiajs/react";
+import { useForm } from "@inertiajs/react";
 import React, { useState } from "react";
-import { OctagonX } from "lucide-react";
 import Alert from "./components/AlertMessage";
 
 const ProductAddForm = ({ category, brands }) => {
@@ -12,11 +11,7 @@ const ProductAddForm = ({ category, brands }) => {
         type: "",
         title: "",
     });
-    const [formData, setFormData] = useState({
-        image_url: [],
-        image_url_thum: null,
-        thumbnail: "",
-    });
+
     const { data, setData, post, processing, errors, reset } = useForm({
         sale_price: "",
         purchase_price: "",
@@ -25,100 +20,24 @@ const ProductAddForm = ({ category, brands }) => {
         brand: "",
         model: "",
         point: "",
-        description: "",
-        free_delivery: "no",
-        discount: "",
-        image_url: [],
-        status: "active",
-        thumbnail: "",
-        warranty: "",
     });
 
     // console.log(brands);
 
-    const handleImagesChange = (event) => {
-        const files = Array.from(event.target.files);
-        setFormData((prevData) => ({
-            ...prevData,
-            image_url: [...prevData.image_url, ...files],
-        }));
-    };
-
-    const handleRemoveImage = (index) => {
-        setFormData((prevData) => ({
-            ...prevData,
-            image_url: prevData.image_url.filter((_, i) => i !== index),
-        }));
-    };
-
-    // const handleChange = (e) => {
-    //     const { name, value } = e.target;
-    //     setFormData({ ...formData, [name]: value });
-    // };
-
-    const handleThumbnailChange = (e) => {
-        const file = e.target.files[0];
-        // console.log(file);
-
-        // if (file.size > 1024 * 1024) {
-        //     errorMessage("File size must be less than 1MB");
-        //     return;
-
-        //     // setStatus('Invalid file address');
-        // }
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        // console.log(reader);
-        reader.onload = () => {
-            setFormData({
-                ...formData,
-                thumbnail: e.target.files[0],
-            });
-        };
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault();
-        data.image_url = formData.image_url;
-        data.thumbnail = formData.thumbnail;
-        console.log(data);
-
-        post("/products");
-        router.on("success", () => {
-            setFormData({
-                image_url: [],
-                image_url_thum: null,
-                thumbnail: "",
-            });
-            reset(); // Reset the form
-            setMessage({
-                visible: true,
-                description: "Product created successfully!",
-                type: "success",
-                title: "🎉 Success",
-            });
+        post("/products", {
+            onSuccess: () => {
+                reset(); // Reset the form
+                setMessage({
+                    visible: true,
+                    description: "Product created successfully!",
+                    type: "success",
+                    title: "🎉 Success",
+                });
+            },
         });
     };
-
-    // const handleImagesChange = (e) => {
-    //     const files = Array.from(e.target.files);
-    //     console.log(files);
-    //     // const reader = new FileReader();
-    //     // reader.readAsDataURL(files);
-    //     // console.log(reader)
-    //     // reader.onload = () => {
-
-    //     //     setFormData({
-    //     //         ...formData,
-    //     //         image_url: files,
-    //     //     });
-    //     // };
-    //     setFormData({
-    //         ...formData,
-    //         image_url: files, // Store the array of multiple images
-    //     });
-    // };
 
     return (
         <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
@@ -355,6 +274,7 @@ const ProductAddForm = ({ category, brands }) => {
                             }
                             className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
                         >
+                            <option value="">Select</option>
                             <option value="yes">Yes</option>
                             <option value="no">No</option>
                         </select>
@@ -365,296 +285,6 @@ const ProductAddForm = ({ category, brands }) => {
                         )}
                     </div>
                 </div>
-
-                <div className="grid md:grid-cols-2 md:gap-6">
-                    {/* Description */}
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label
-                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="description"
-                        >
-                            Description
-                        </label>
-                        <textarea
-                            id="description"
-                            name="description"
-                            value={data.description}
-                            onChange={(e) =>
-                                setData("description", e.target.value)
-                            }
-                            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                            placeholder="Description"
-                        />
-                        {errors.description && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.description}
-                            </p>
-                        )}
-                    </div>
-                    {/* Purchase Discount */}
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label
-                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="discount"
-                        >
-                            Discount
-                        </label>
-                        <input
-                            type="number"
-                            step="0.01"
-                            id="discount"
-                            name="discount"
-                            value={data.discount}
-                            onChange={(e) =>
-                                setData("discount", e.target.value)
-                            }
-                            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                            placeholder="Discount"
-                        />
-                        {errors.discount && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.discount}
-                            </p>
-                        )}
-                    </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 md:gap-6"></div>
-
-                {/* SKU */}
-                {/* <div className="mb-4">
-                    <label
-                        className="block text-gray-700 font-bold mb-2"
-                        htmlFor="sku"
-                    >
-                        SKU
-                    </label>
-                    <input
-                        type="text"
-                        id="sku"
-                        name="sku"
-                        value={formData.sku}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-                        placeholder="SKU"
-                    />
-                </div> */}
-
-                {/* Weight */}
-                {/* <div className="mb-4">
-                    <label
-                        className="block text-gray-700 font-bold mb-2"
-                        htmlFor="weight"
-                    >
-                        Weight
-                    </label>
-                    <input
-                        type="number"
-                        step="0.01"
-                        id="weight"
-                        name="weight"
-                        value={formData.weight}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-                        placeholder="Weight"
-                    />
-                </div> */}
-
-                {/* Color */}
-                {/* <div className="mb-4">
-                    <label
-                        className="block text-gray-700 font-bold mb-2"
-                        htmlFor="color"
-                    >
-                        Color
-                    </label>
-                    <input
-                        type="text"
-                        id="color"
-                        name="color"
-                        value={formData.color}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-                        placeholder="Color"
-                    />
-                </div> */}
-
-                <div className="grid md:grid-cols-2 md:gap-6">
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label
-                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="status"
-                        >
-                            Status
-                        </label>
-                        <select
-                            id="status"
-                            name="status"
-                            value={data.status}
-                            onChange={(e) => {
-                                setData("status", e.target.value);
-                            }}
-                            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                        >
-                            <option value="active" className="text-black">
-                                Active
-                            </option>
-                            <option value="inactive" className="text-black">
-                                Inactive
-                            </option>
-                        </select>
-                        {errors.status && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.status}
-                            </p>
-                        )}
-                    </div>
-
-                    <div className="relative z-0 w-full mb-5 group">
-                        <label
-                            className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                            htmlFor="warranty"
-                        >
-                            Warranty
-                        </label>
-                        <select
-                            id="status"
-                            name="warranty"
-                            value={data.warranty}
-                            onChange={(e) => {
-                                setData("warranty", e.target.value);
-                            }}
-                            className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md"
-                        >
-                            <option value="" className="text-black">
-                                Select Warranty
-                            </option>
-                            <option value="3 month" className="text-black">
-                                3 month
-                            </option>
-                            <option value="6 month" className="text-black">
-                                6 month
-                            </option>
-                            <option value="1 year" className="text-black">
-                                1 year
-                            </option>
-                            <option value="2 year" className="text-black">
-                                2 year
-                            </option>
-                            <option value="3 year" className="text-black">
-                                3 year
-                            </option>
-                            <option value="4 year" className="text-black">
-                                4 year
-                            </option>
-                        </select>
-                        {errors.warranty && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.warranty}
-                            </p>
-                        )}
-                    </div>
-                </div>
-
-                {/* Image URL */}
-
-                <div className="mb-6">
-                    <label
-                        className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                        htmlFor="thumbnail"
-                    >
-                        Image
-                    </label>
-
-                    <input
-                        type="file"
-                        id="thumbnail"
-                        name="thumbnail"
-                        onChange={handleThumbnailChange}
-                        className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md bg-white"
-                    />
-                    {errors.thumbnail && (
-                        <p className="text-red-500 text-sm mt-1">
-                            {errors.thumbnail}
-                        </p>
-                    )}
-                </div>
-                {formData.thumbnail && (
-                    <div className="mb-6">
-                        <h4 className="text-blue-600 font-bold mb-2">
-                            Thumbnail Image Preview:
-                        </h4>
-                        <img
-                            src={
-                                typeof formData.thumbnail === "string"
-                                    ? formData.thumbnail
-                                    : URL.createObjectURL(formData.thumbnail)
-                            }
-                            alt="Thumbnail Preview"
-                            className="w-32 h-32 object-cover rounded-lg shadow-lg transition-transform duration-200 transform hover:scale-105"
-                        />
-                    </div>
-                )}
-
-                <div className="mb-6">
-                    <label
-                        className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                        htmlFor="image_url"
-                    >
-                        Select Multiple Images
-                    </label>
-                    <input
-                        type="file"
-                        id="image_url"
-                        name="image_url"
-                        multiple
-                        onChange={handleImagesChange}
-                        className="w-full px-4 py-2 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ease-in-out shadow-sm hover:shadow-md bg-white"
-                    />
-                    {errors.image_url && (
-                        <p className="text-red-500 text-sm mt-1">
-                            {errors.image_url}
-                        </p>
-                    )}
-                </div>
-
-                {formData.image_url.length > 0 && (
-                    <div className="mb-6">
-                        <h4 className="text-red-500 font-bold mb-2">
-                            Selected Image Previews:
-                        </h4>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {formData.image_url.map((file, index) => (
-                                <div
-                                    key={index}
-                                    className="relative group m-auto"
-                                >
-                                    <img
-                                        src={URL.createObjectURL(file)}
-                                        alt={`Image ${index + 1}`}
-                                        className="w-24 h-24 object-cover rounded-lg shadow-lg transition-transform duration-200 transform group-hover:scale-105"
-                                    />
-                                    <button
-                                        className="absolute inset-0 flex items-center justify-center bg-red-500 text-white rounded-full opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
-                                        onClick={() => handleRemoveImage(index)}
-                                        style={{
-                                            width: "24px", // Set a specific width
-                                            height: "24px", // Set a specific height
-                                            fontSize: "16px", // Adjust font size
-                                            top: "50%", // Center vertically
-                                            left: "50%", // Center horizontally
-                                            transform: "translate(-50%, -50%)", // Offset to the center
-                                        }}
-                                    >
-                                        <OctagonX />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Status */}
 
                 {/* Submit Button */}
 

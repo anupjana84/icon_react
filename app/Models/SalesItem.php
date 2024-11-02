@@ -18,7 +18,8 @@ class SalesItem extends Model
         'price',
         'total',
         'warranty',
-        'sl_no'
+        'sl_no',
+        'discount'
     ];
 
     /**

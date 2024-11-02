@@ -11,6 +11,7 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CompanyCntroller;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
@@ -49,6 +50,7 @@ Route::middleware([AuthCheck::class])->group(function () {
     Route::resource('/companies', CompanyCntroller::class);
     Route::resource('/customers', CustomerController::class);
     Route::resource('/sales', SaleController::class);
+    Route::resource('/expenses', ExpenseController::class);
     Route::get('/product-stocks/{role?}', [ProductController::class, 'stock']);
     Route::get('/salesmans', [SalesmanController::class, 'index']);
     Route::post('/salesmans', [SalesmanController::class,'store']);

@@ -2,34 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Brand;
 use App\Models\Company;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use App\Services\CloudinaryService;
 use Illuminate\Container\Attributes\Storage;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ProductController extends Controller
 {
-    protected $cloudinaryService;
-
-    public function __construct(CloudinaryService $cloudinaryService)
-    {
-        $this->cloudinaryService = $cloudinaryService;
-    }
 
 
-private function generateBarcodeNumber($dateString, $companyName, $purchaseRate, $gstStatus)
+private function generateBarcodeNumber( $companyName, $purchaseRate, $gstStatus)
 {
     // Extract day, month, and year from the date
+    $dateString = Carbon::now()->toDateString(); // Today's date in 'Y-m-d'
     $date = new \DateTime($dateString);
-    $day = $date->format('d'); // e.g., "27"
-    $month = $date->format('m'); // e.g., "09"
-    $year = $date->format('Y'); // e.g., "2024"
+    $day = $date->format('d');
+    $month = $date->format('m');
+    $year = $date->format('Y');
 
     // Extract the first two letters of the company name
     $companyInitials = strtoupper(substr($companyName, 0, 2)); // e.g., "IC"
@@ -108,13 +103,11 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
     { 
         $category = Category::all();
         $brands = Brand::all();
-        $company = Company::all();
         // dd($company);
     //    return $category;
         return Inertia::render('backend/product/Create',[
             'category' => $category,
             'brands' => $brands,
-            'company' => $company
         ]);
     }
 
@@ -127,73 +120,61 @@ private function generateBarcodeNumber($dateString, $companyName, $purchaseRate,
     public function store(Request $request)
     {
     
-        dd($request->all());
         
     $request->validate([
-        'description' => 'nullable|string',
         'model' => 'required|string',
         'quantity' => 'required|integer',
         'point' => 'required|integer',
-        'free_delivery' => 'nullable',
-        'discount' => 'nullable|numeric',
-        'status' => 'nullable|string',
         'sale_price' => 'required|numeric',
         'purchase_price' => 'required|numeric',
-        'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'image_url' => 'nullable|array',
-        'image_url.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         'category' => 'required|exists:categories,id',
         'brand' => 'required|exists:brands,id',
-        'warranty' => 'nullable|date',
+        'free_delivery'=> 'required|string|in:yes,no'
     ]);
+    // dd($request->all());
     
 
-    $thumbnailPath = null;
-    $imagePaths = [];
+    // $thumbnailPath = null;
+    // $imagePaths = [];
 
 
-    // Handle thumbnail image upload
-    if ($request->hasFile('thumbnail')) {
-        $folderPath = 'icon_computer/product_images/thumbnail';
-        $thumbnail = $this->cloudinaryService->uploadImage($request->file('thumbnail'), $folderPath);
-        $thumbnailPath = $thumbnail;
-    }
+    // // Handle thumbnail image upload
+    // if ($request->hasFile('thumbnail')) {
+    //     $folderPath = 'icon_computer/product_images/thumbnail';
+    //     $thumbnail = $this->cloudinaryService->uploadImage($request->file('thumbnail'), $folderPath);
+    //     $thumbnailPath = $thumbnail;
+    // }
 
-    // Handle multiple image uploads
-    if ($request->hasFile('image_url')) {
-        foreach ($request->file('image_url') as $image) {
-            $folderPath = 'icon_computer/product_images/images';
-            $image_url = $this->cloudinaryService->uploadImage($image, $folderPath);
-            // Store the path without adding $baseDir again
-            $imagePaths[] =$image_url; 
-        }
-    }
+    // // Handle multiple image uploads
+    // if ($request->hasFile('image_url')) {
+    //     foreach ($request->file('image_url') as $image) {
+    //         $folderPath = 'icon_computer/product_images/images';
+    //         $image_url = $this->cloudinaryService->uploadImage($image, $folderPath);
+    //         // Store the path without adding $baseDir again
+    //         $imagePaths[] =$image_url; 
+    //     }
+    // }
 
 // dd($imagePaths);
 
     // dd($imagePaths);
 
     // Generate barcode number
-    // $barcodeNumber = $this->generateBarcodeNumber($request->pruchase_receive_date, $request->pruchase_name, $request->purchase_price, $request->product_gst);
+    $barcodeNumber = $this->generateBarcodeNumber( 'IconComputer', $request->purchase_price, true);
     // dd($barcodeNumber);
 
     // Create a new product with all the data including image paths
     $product = Product::create([
         
-        'description' => $request->description,
         'model' => $request->model,
         'quantity' => $request->quantity,
         'point' => $request->point,
         'free_delivery' => $request->free_delivery,
-        'discount' => $request->discount,
-        'status' => $request->status,
         'sale_price' => $request->sale_price,
         'purchase_price' => $request->purchase_price,
-        'thumbnail_image' => $thumbnailPath, // Save thumbnail path
-        'image' => json_encode($imagePaths,  JSON_UNESCAPED_SLASHES), // Save image paths as JSON
         'category' => $request->category,
         'brand' => $request->brand,
-        'warranty'=> $request->warranty,  // Added new field for wear and tear. 
+        'code' => $barcodeNumber
     ]);
 
     // Redirect back with success message

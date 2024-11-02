@@ -18,7 +18,7 @@ class Sale extends Model
         'invoice_number',
         'gst',
         'gst_number',
-        'total'
+        'total',
     ];
     // Define the relationship with the Customer model
     public function customer(){
