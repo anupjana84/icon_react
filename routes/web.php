@@ -46,6 +46,7 @@ Route::middleware([AuthCheck::class])->group(function () {
     Route::middleware([RoleCheck::class . ':admin'])->group(function () {
     Route::resource('/brands', BrandController::class);
     Route::resource('/products', ProductController::class);
+    Route::get('/settings/product',[ProductController::class, 'allBarcode'] );
     Route::resource('/items', CategoryController::class);
     Route::resource('/companies', CompanyCntroller::class);
     Route::resource('/customers', CustomerController::class);
@@ -65,6 +66,9 @@ Route::middleware([AuthCheck::class])->group(function () {
     Route::get('/purchase', [PurchaseController::class, 'index']);
     Route::get('/purchases/{company_id}/{date}', [PurchaseController::class, 'show']);
     Route::patch('/products-update/{id}', [ProductController::class, 'updateProduct']);
+    Route::get('/settings/profile', fn() => Inertia::render('backend/settings/pages/ProfileSettings'));
+    
+    Route::get('/settings/payment', fn() => Inertia::render('backend/settings/pages/PaymentSettings'));
 
     //logout
     Route::get('/logout', [AuthController::class, 'logout']);

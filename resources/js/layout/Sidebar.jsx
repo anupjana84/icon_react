@@ -77,7 +77,12 @@ const SIDEBAR_ITEMS = [
         color: "#86198f",
         href: "/companies",
     },
-    { name: "Settings", icon: Settings, color: "#a3a3a3", href: "/" },
+    {
+        name: "Settings",
+        icon: Settings,
+        color: "#a3a3a3",
+        href: "/settings/profile",
+    },
 ];
 
 const Sidebar = () => {

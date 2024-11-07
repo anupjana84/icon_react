@@ -348,4 +348,44 @@ private function generateBarcodeNumber( $companyName, $purchaseRate, $gstStatus)
             return response()->json(['message' => 'Product not found'], 404);
         }
     }
+
+    public function allBarcode(Request $request){
+        // Get the selected date range from the request or default to 'all'
+        $dateRange = $request->input('date_range', 'all');
+
+        // Query the Product model based on the date range
+        $query = Product::query();
+
+        switch ($dateRange) {
+            case 'today':
+                $query->whereDate('created_at', Carbon::today());
+                break;
+                
+            case 'last_3_days':
+                $query->where('created_at', '>=', Carbon::now()->subDays(3));
+                break;
+
+            case 'last_1_week':
+                $query->where('created_at', '>=', Carbon::now()->subWeek());
+                break;
+
+            case 'last_1_month':
+                $query->where('created_at', '>=', Carbon::now()->subMonth());
+                break;
+
+            case 'all':
+            default:
+                // No additional filtering for "all"
+                break;
+        }
+
+        // Get the filtered products
+        $products = $query->with('brand', 'category')->get();
+
+        // Pass data to Inertia view
+        return Inertia::render('backend/settings/pages/ProductSettings', [
+            'products' => $products,
+            'dateRange' => $dateRange
+        ]);
+   }
 }

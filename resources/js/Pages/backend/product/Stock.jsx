@@ -64,7 +64,7 @@ const Stock = ({ product, selectedRole }) => {
                                         quantity
                                     </th>
                                     <th className="py-3 px-6 text-center">
-                                        purchase Price
+                                        Sale Price
                                     </th>
                                     <th className="py-3 px-6 text-center">
                                         point
