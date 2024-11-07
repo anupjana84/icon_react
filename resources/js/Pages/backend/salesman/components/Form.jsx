@@ -11,7 +11,6 @@ export const SalesmanModal = ({ isOpen, onClose, salesman, setMessage }) => {
         password: "",
         point: "",
         other_point: "",
-        status: "",
         wpnumber: "",
         status: "",
     });
@@ -28,7 +27,6 @@ export const SalesmanModal = ({ isOpen, onClose, salesman, setMessage }) => {
                 other_point: salesman.other_point || 0,
                 status: salesman.status || "",
                 wpnumber: salesman.user.wpnumber || "",
-                status: salesman.status,
             });
         } else if (isOpen && !salesman) {
             // Reset the form if we're creating a new item

@@ -5,12 +5,13 @@ namespace App\Models;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\ProductDetails;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, HasApiTokens;
     protected $fillable = [
         'name',
         'description',
