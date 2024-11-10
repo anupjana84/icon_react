@@ -394,7 +394,7 @@ private function generateBarcodeNumber( $companyName, $purchaseRate, $gstStatus)
         }
 
         // Get the filtered products
-        $products = $query->with('brand', 'category')->get();
+        $products = $query->with('brand', 'category')->paginate(21);
 
         // Pass data to Inertia view
         return Inertia::render('backend/settings/pages/ProductSettings', [

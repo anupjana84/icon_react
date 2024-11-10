@@ -9,7 +9,6 @@ class Purchase extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'product_id',
         'company_id',
         'purchase_date',
         'purchase_receive_date',
@@ -18,7 +17,7 @@ class Purchase extends Model
     ];
 
     public function products(){
-        return $this->belongsTo(Product::class, 'product_id');
+        return $this->hasMany(Product::class);
     }
     public function company(){
         return $this->belongsTo(Company::class);

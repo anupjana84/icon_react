@@ -2,7 +2,7 @@ import { useForm, router } from "@inertiajs/react";
 import React, { useEffect, useRef, useState } from "react";
 import Alert from "../components/AlertMessage";
 export default function PurchaseForm({ brands, category, company }) {
-    console.log(company);
+    // console.log(company);
     const [saved, setSeved] = useState(false);
     const [message, setMessage] = useState({
         visible: false,
@@ -73,23 +73,27 @@ export default function PurchaseForm({ brands, category, company }) {
             setSeved(false);
         }
 
-        // Remove the row if all values are empty
+        // Remove the row if all values are empty, except if it's the only row left
         const allFieldsEmpty = Object.values(updatedRows[index]).every(
             (val) => val === ""
         );
-        if (allFieldsEmpty) {
+        if (allFieldsEmpty && updatedRows.length > 1) {
             updatedRows.splice(index, 1);
         }
 
-        setData("rows", updatedRows);
+        // Update the rows state
+        setData((prevData) => ({ ...prevData, rows: updatedRows }));
     };
+    console.log(data);
 
     const handleSave = (e) => {
         // e.preventDefault();
 
         // Filter out the empty rows
         const filteredRows =
-            data.rows.length > 1 ? data.rows.slice(0, -1) : data.rows;
+            data.rows.length > 1
+                ? data.rows.filter((row) => row.category)
+                : data.rows;
 
         // Send the filtered data to the backend
         console.log(filteredRows);
@@ -389,7 +393,7 @@ export default function PurchaseForm({ brands, category, company }) {
 
             {/* Dynamic Table */}
             <div
-                className="overflow-x-auto max-h-[400px] hover:overflow-y-hidden"
+                className="overflow-x-auto  hover:overflow-y-hidden"
                 ref={tableRef}
             >
                 <table className=" bg-white border border-gray-200 mb-4 mt-4 min-w-[1100px]">

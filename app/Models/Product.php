@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Purchase;
 use App\Models\ProductDetails;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,7 @@ class Product extends Model
         'code',
         'purchase_qty',
         'details_id',
+        'purchase_id'
     ];
 
     public function category(){
@@ -33,11 +35,10 @@ class Product extends Model
     public function brand(){
         return $this->belongsTo(Brand::class, 'brand');
     }
-
-    public function purchases(){
-        return $this->hasMany(Purchase::class);
-    }
     public function details(){
         return $this->belongsTo(ProductDetails::class, 'details_id');
+    }
+    public function purchase(){
+        return $this->belongsTo(Purchase::class, 'purchase_id');
     }
 }

@@ -632,7 +632,7 @@ export default function PurchaseForm() {
 
             {/* Dynamic Table */}
             <div
-                className="overflow-x-auto max-h-[400px] hover:overflow-y-hidden"
+                className="overflow-x-auto  hover:overflow-y-hidden"
                 ref={tableRef}
             >
                 <table className=" bg-white border border-gray-200 mb-4 mt-4 min-w-[1100px]">

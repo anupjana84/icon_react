@@ -3,29 +3,29 @@ import { formatDate } from "../../../helper/dateFormater";
 import PageHeader from "../../../layout/components/pageHeader";
 
 const PurchaseDetails = ({ purchases }) => {
-    // console.log(purchases);
+    console.log(purchases);
     const tableRef = useRef(null);
 
-    useEffect(() => {
-        const handleWheel = (e) => {
-            // Prevent the default vertical scroll
-            e.preventDefault();
-            // Scroll horizontally
-            if (tableRef.current) {
-                tableRef.current.scrollLeft += e.deltaY;
-            }
-        };
+    // useEffect(() => {
+    //     const handleWheel = (e) => {
+    //         // Prevent the default vertical scroll
+    //         e.preventDefault();
+    //         // Scroll horizontally
+    //         if (tableRef.current) {
+    //             tableRef.current.scrollLeft += e.deltaY;
+    //         }
+    //     };
 
-        const tableElement = tableRef.current;
+    //     const tableElement = tableRef.current;
 
-        // Add wheel event listener
-        tableElement.addEventListener("wheel", handleWheel, { passive: false });
+    //     // Add wheel event listener
+    //     tableElement.addEventListener("wheel", handleWheel, { passive: false });
 
-        // Clean up the event listener on component unmount
-        return () => {
-            tableElement.removeEventListener("wheel", handleWheel);
-        };
-    }, []);
+    //     // Clean up the event listener on component unmount
+    //     return () => {
+    //         tableElement.removeEventListener("wheel", handleWheel);
+    //     };
+    // }, []);
 
     return (
         <main className="max-w-7xl mx-auto py-1 px-1 lg:px-1">
@@ -45,7 +45,7 @@ const PurchaseDetails = ({ purchases }) => {
                             Company Name:
                         </span>
                         <span className="text-black ml-2">
-                            {purchases[0].company.name}
+                            {purchases.company.name}
                         </span>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
@@ -53,7 +53,7 @@ const PurchaseDetails = ({ purchases }) => {
                             GST Number:
                         </span>
                         <span className="text-black ml-2">
-                            {purchases[0].company.gst_number}
+                            {purchases.company.gst_number}
                         </span>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
@@ -61,7 +61,7 @@ const PurchaseDetails = ({ purchases }) => {
                             Purchase Date:
                         </span>
                         <span className="text-black ml-2">
-                            {formatDate(purchases[0].purchase_date)}
+                            {formatDate(purchases.purchase_date)}
                         </span>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
@@ -69,7 +69,7 @@ const PurchaseDetails = ({ purchases }) => {
                             Receive Date:
                         </span>
                         <span className="text-black ml-2">
-                            {formatDate(purchases[0].purchase_receive_date)}
+                            {formatDate(purchases.purchase_receive_date)}
                         </span>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
@@ -77,13 +77,13 @@ const PurchaseDetails = ({ purchases }) => {
                             Invoice No:
                         </span>
                         <span className="text-black ml-2">
-                            {purchases[0].purchase_invoice_no}
+                            {purchases.purchase_invoice_no}
                         </span>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
                         <span className="font-medium text-gray-600">GST:</span>
                         <span className="text-black ml-2">
-                            {purchases[0].gst ? "Yes" : "No"}
+                            {purchases.gst ? "Yes" : "No"}
                         </span>
                     </div>
                 </div>
@@ -95,12 +95,15 @@ const PurchaseDetails = ({ purchases }) => {
                     Items List
                 </h2>
                 <div
-                    className="overflow-x-auto max-h-[400px] hover:overflow-y-hidden"
+                    className="overflow-x-auto  hover:overflow-y-hidden"
                     ref={tableRef}
                 >
                     <table className="min-w-full table-auto ">
                         <thead>
                             <tr className="bg-gray-200 text-black uppercase text-sm leading-normal">
+                                <th className="px-6 py-3 border-b border-gray-300">
+                                    Sl No.
+                                </th>
                                 <th className="px-6 py-3 border-b border-gray-300">
                                     Item
                                 </th>
@@ -140,7 +143,7 @@ const PurchaseDetails = ({ purchases }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {purchases.map((item, index) => (
+                            {purchases.products.map((item, index) => (
                                 <tr
                                     key={index}
                                     className={`hover:bg-indigo-100 transition-colors duration-200 ${
@@ -150,51 +153,47 @@ const PurchaseDetails = ({ purchases }) => {
                                     }`}
                                 >
                                     <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
-                                        {item.products.category.name}
+                                        {index + 1}
                                     </td>
                                     <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
-                                        {item.products.brand.name}
+                                        {item.category.name}
                                     </td>
                                     <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
-                                        {item.products.model}
+                                        {item.brand.name}
                                     </td>
                                     <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
-                                        {item.products.category.hsn_code}
+                                        {item.model}
                                     </td>
                                     <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
-                                        {item.products.category.gst}%
+                                        {item.category.hsn_code}
                                     </td>
                                     <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
-                                        {item.products.purchase_qty}
+                                        {item.category.gst}%
+                                    </td>
+                                    <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
+                                        {item.purchase_qty}
+                                    </td>
+                                    <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
+                                        ₹{parseFloat(item.purchase_price)}
+                                    </td>
+                                    <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
+                                        ₹{parseFloat(item.discount)}
+                                    </td>
+                                    <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
+                                        ₹{parseFloat(item.sale_price)}
                                     </td>
                                     <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
                                         ₹
-                                        {parseFloat(
-                                            item.products.purchase_price
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
-                                        ₹{parseFloat(item.products.discount)}
-                                    </td>
-                                    <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
-                                        ₹{parseFloat(item.products.sale_price)}
-                                    </td>
-                                    <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
-                                        ₹
-                                        {parseFloat(item.products.sale_price) +
-                                            (parseFloat(
-                                                item.products.sale_price
-                                            ) *
-                                                parseFloat(
-                                                    item.products.category.gst
-                                                )) /
+                                        {parseFloat(item.sale_price) +
+                                            (parseFloat(item.sale_price) *
+                                                parseFloat(item.category.gst)) /
                                                 100}
                                     </td>
                                     <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
-                                        {item.products.point}
+                                        {item.point}
                                     </td>
                                     <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
-                                        {item.products.free_delivery}
+                                        {item.free_delivery}
                                     </td>
                                 </tr>
                             ))}

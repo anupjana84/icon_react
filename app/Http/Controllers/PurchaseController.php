@@ -46,40 +46,20 @@ class PurchaseController extends Controller
 public function index()
 {
     // Fetch and group the purchases
-    $groupedPurchases = Purchase::with('products', 'company', 'products.category')
+    $purchases = Purchase::with('products', 'company', 'products.category')
         ->orderBy('purchase_receive_date', 'desc')
-        ->get()
-        ->groupBy(function ($item) {
-            return $item->purchase_receive_date . '-' . $item->company_id;
-        });
-
-    // Get the current page from the request (default is 1)
-    $currentPage = request()->get('page', 1);
-
-    // Define how many items you want to display per page
-    $perPage = 10;
-
-    // Slice the grouped data to get only the items for the current page
-    $currentItems = $groupedPurchases->slice(($currentPage - 1) * $perPage, $perPage)->all();
-
-    // Create a paginator instance
-    $paginatedItems = new LengthAwarePaginator(
-        $currentItems,
-        $groupedPurchases->count(), // Total number of items
-        $perPage,
-        $currentPage,
-        ['path' => request()->url(), 'query' => request()->query()]
-    );
-
+        ->paginate(10);
+       
     // Return the paginated items to your Inertia view
     return Inertia::render('backend/purchase/Index', [
-        'purchase' => $paginatedItems,
+        'purchase' => $purchases,
     ]);
 }
     public function create(){
-        $category = Category::all();
-        $brands = Brand::all();
-        $company = Company::all();
+        $category = Category::orderBy('name', 'asc')->get();
+        $brands = Brand::orderBy('name', 'asc')->get();
+        $company = Company::orderBy('name', 'asc')->get();
+
         // dd($company);
     //    return $category;
         return Inertia::render('backend/purchase/Create',[
@@ -89,9 +69,10 @@ public function index()
         ]);
     }
     public function store(Request $request){
+        // dd($request->all());
         $request->validate([
             'company' => 'required|exists:companies,id',
-            'purchase_invoice_no' => 'required|string',
+            'purchase_invoice_no' => 'required|string|unique:purchases,purchase_invoice_no',
             'purchase_date' => 'required|date',
             'purchase_receive_date' => 'required|date',
             'gst' => 'required',
@@ -107,14 +88,16 @@ public function index()
         ]);
         // dd($request->all());
 
-        collect($request->rows)->each(function($row) use ($request) {
-            $purchase = Purchase::create([
-                'company_id' => $request->company,
-                'purchase_invoice_no' => $request->purchase_invoice_no,
-                'purchase_date' => $request->purchase_date,
-                'purchase_receive_date' => $request->purchase_receive_date,
-                'gst' => $request->gst === 'yes' ? 1 : 0,
-            ]);
+        $purchase = Purchase::create([
+            'company_id' => $request->company,
+            'purchase_invoice_no' => $request->purchase_invoice_no,
+            'purchase_date' => $request->purchase_date,
+            'purchase_receive_date' => $request->purchase_receive_date,
+            'gst' => $request->gst === 'yes' ? 1 : 0,
+        ]);
+        // dd($purchase);
+
+        collect($request->rows)->each(function($row) use ($request,$purchase ) {
             $product = Product::create([
                 'category' => $row['category'],
                 'brand' => $row['brand'],
@@ -132,17 +115,15 @@ public function index()
                     $row['rate'],
                     $request->gst === 'yes' ? 1 : 0
                 ),
+                'purchase_id' => $purchase->id,
             ]);
-        
-            // Associate the product with the purchase
-            $purchase->product_id = $product->id;
-            $purchase->save();
         });
 
         return back()->with('success','Purchase Created Successfully!');
     }
-    public function show($company_id, $date){
-        $purchase = Purchase::with('products', 'company', 'products.category', 'products.brand')->where('company_id', $company_id)->where('purchase_receive_date', $date)->get();
+    public function show($id){
+        $purchase = Purchase::with('products', 'company', 'products.category', 'products.brand')->where('id', $id)->first();
+        // dd($purchase);
         return Inertia::render('backend/purchase/Show',[
             'purchases' => $purchase
         ]);
