@@ -6,6 +6,7 @@ import BarcodeComponent from "../../../layout/components/Barcode";
 // import PageHeader from "../../../layout/components/pageHeader";
 const Stock = ({ product, selectedRole }) => {
     const [role, setRole] = useState(selectedRole);
+    const [showTooltip, setShowTooltip] = useState(false);
     console.log(role);
     const { get } = useForm();
 
@@ -38,6 +39,8 @@ const Stock = ({ product, selectedRole }) => {
                                     Available Stock{" "}
                                 </option>
                                 <option value="low">Low Stock</option>
+                                <option value="six_months">6 Months Old</option>
+                                <option value="one_year">1 Year Old</option>
                             </select>
                         </div>
                     </div>

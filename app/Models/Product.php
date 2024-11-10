@@ -13,35 +13,18 @@ class Product extends Model
 {
     use HasFactory, HasApiTokens;
     protected $fillable = [
-        'name',
-        'description',
         'model',
         'quantity',
-        'phone',
-        'hsn_code',
-        'product_gst',
         'point',
         'free_delivery',
-        'purchase_address',
-        'purchase_date',
-        'purchase_receive_date',
         'discount',
-        'status',
         'sale_price',
         'purchase_price',
-        'purchase_phone',
-        'purchase_gst',
-        'purchase_invoice_no',
-        'available_from',
-        'thumbnail_image',
-        'image',
         'category',
         'brand',
-        'purchase_name',
         'code',
-        'warranty',
         'purchase_qty',
-        'details_id'
+        'details_id',
     ];
 
     public function category(){

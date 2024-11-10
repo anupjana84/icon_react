@@ -53,9 +53,10 @@ private function generateBarcodeNumber( $companyName, $purchaseRate, $gstStatus)
     // $products = Product::with('brand', 'category', 'details')->latest()->paginate(10);
     // dd($products);
     $products = Product::with('brand', 'category', 'details')
-        ->selectRaw('brand, category, details_id, sale_price, SUM(quantity) as total_quantity')
-        ->groupBy('brand', 'category', 'sale_price', 'details_id')
-        ->paginate(10);
+    ->selectRaw('brand, category, model, details_id, SUM(quantity) as total_quantity')
+    ->groupBy('brand', 'category', 'model', 'details_id')
+    ->paginate(10);
+
     //   dd($products);
     
     return Inertia::render('backend/product/Index', [
@@ -68,11 +69,14 @@ private function generateBarcodeNumber( $companyName, $purchaseRate, $gstStatus)
 
         if($role == 'all'){
             $product = Product::with('brand', 'category')->latest()->paginate(10);
-        }else if($role == 'empty'){
-        $product = Product::with('brand', 'category')->where('quantity', '=' , 0)->latest()->paginate(10);
-        }else if($role == 'new'){
+        } else if($role == 'empty'){
             $product = Product::with('brand', 'category')
-                ->where('created_at', '<=', Carbon::now()->subDays(5))
+                ->where('quantity', '=', 0)
+                ->latest()
+                ->paginate(10);
+        } else if($role == 'new'){
+            $product = Product::with('brand', 'category')
+                ->where('created_at', '>=', Carbon::now()->subDays(5))
                 ->latest()
                 ->paginate(10);
         } else if($role == 'low'){
@@ -81,10 +85,19 @@ private function generateBarcodeNumber( $companyName, $purchaseRate, $gstStatus)
                 ->where('quantity', '!=', 0)
                 ->latest()
                 ->paginate(10);
-        }
-         else if($role == 'available'){
+        } else if($role == 'available'){
             $product = Product::with('brand', 'category')
                 ->where('quantity', '>', 5)
+                ->latest()
+                ->paginate(10);
+        } else if($role == 'six_months'){
+            $product = Product::with('brand', 'category')
+                ->where('created_at', '<=', Carbon::now()->subMonths(6))
+                ->latest()
+                ->paginate(10);
+        } else if($role == 'one_year'){
+            $product = Product::with('brand', 'category')
+                ->where('created_at', '<=', Carbon::now()->subYear())
                 ->latest()
                 ->paginate(10);
         }
@@ -239,7 +252,8 @@ private function generateBarcodeNumber( $companyName, $purchaseRate, $gstStatus)
     {
         $brand = $request->query('brand');
         $category = $request->query('item');
-        $rate = $request->query('rate');
+        $model = $request->query('model');
+        // dd( $brand, $category, $model);
         $product = Product::with(['category', 'brand', 'purchases.company', 'details'])
                             ->whereHas('brand', function ($query) use ($brand) {
                                 $query->where('name', $brand); // Assuming 'name' is the field in 'brands' table
@@ -247,10 +261,10 @@ private function generateBarcodeNumber( $companyName, $purchaseRate, $gstStatus)
                             ->whereHas('category', function ($query) use ($category) {
                                 $query->where('name', $category); // Assuming 'name' is the field in 'categories' table
                             })
-                            ->where('sale_price', '=', $rate)
+                            ->where('model', '=', $model)
                             ->get();
                 // dd($product);
-
+                  
                 $groupedProducts = $product->groupBy(function ($product) {
                     // dd($product->brand);
                     return 0;
@@ -259,7 +273,7 @@ private function generateBarcodeNumber( $companyName, $purchaseRate, $gstStatus)
                         'brand' => Brand::find($group->first()->brand),
                         'category' => Category::find($group->first()->category),
                         'details' => $group->first()->details,
-                        'sale_price' => $group->first()->sale_price,
+                        'model' => $group->first()->model,
                         'purchases' => $group->flatMap->purchases, // Flatten and gather all purchases for the group
                         'products'=>$group
                     ];

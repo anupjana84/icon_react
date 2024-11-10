@@ -79,10 +79,10 @@ const ProductDetails = ({ product }) => {
                         <p className="text-sm text-gray-600 ">
                             Brand: {product[0].brand.name}
                         </p>
+                        <p className="text-sm text-gray-600 ">
+                            Model: {product[0].model}
+                        </p>
                         <div className="my-4">
-                            <p className="text-xl font-bold text-gray-900">
-                                Sale price: ₹{parseFloat(product[0].sale_price)}
-                            </p>
                             {/* {product.purchase_price && (
                                 <p className="text-sm text-gray-500 line-through">
                                     Purchase Price: ₹{product.purchase_price}
@@ -164,10 +164,10 @@ const ProductDetails = ({ product }) => {
                                         <thead>
                                             <tr className="bg-gray-100 text-gray-700">
                                                 <th className="border border-gray-200 px-4 py-2">
-                                                    Model
+                                                    Price
                                                 </th>
                                                 <th className="border border-gray-200 px-4 py-2">
-                                                    Price
+                                                    Sale Price
                                                 </th>
                                                 <th className="border border-gray-200 px-4 py-2">
                                                     Quantity
@@ -185,12 +185,15 @@ const ProductDetails = ({ product }) => {
                                                         className="hover:bg-gray-50"
                                                     >
                                                         <td className="border border-gray-200 px-4 py-2 text-gray-700 text-center">
-                                                            {product.model}
+                                                            ₹
+                                                            {parseInt(
+                                                                product.purchase_price
+                                                            )}
                                                         </td>
                                                         <td className="border border-gray-200 px-4 py-2 text-gray-700 text-center">
                                                             ₹
                                                             {parseInt(
-                                                                product.purchase_price
+                                                                product.sale_price
                                                             )}
                                                         </td>
                                                         <td className="border border-gray-200 px-4 py-2 text-gray-700 text-center">

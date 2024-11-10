@@ -123,6 +123,9 @@ const PurchaseDetails = ({ purchases }) => {
                                     Rate
                                 </th>
                                 <th className="px-6 py-3 border-b border-gray-300">
+                                    Discount
+                                </th>
+                                <th className="px-6 py-3 border-b border-gray-300">
                                     Sale Rate
                                 </th>
                                 <th className="px-6 py-3 border-b border-gray-300">
@@ -169,6 +172,9 @@ const PurchaseDetails = ({ purchases }) => {
                                         {parseFloat(
                                             item.products.purchase_price
                                         )}
+                                    </td>
+                                    <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
+                                        ₹{parseFloat(item.products.discount)}
                                     </td>
                                     <td className="px-6 py-4 border-b text-center border-gray-300 text-black">
                                         ₹{parseFloat(item.products.sale_price)}

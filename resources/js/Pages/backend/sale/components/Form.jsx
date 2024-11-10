@@ -311,32 +311,6 @@ export default function PurchaseForm() {
         <div className="container mx-auto p-4 bg-white rounded-lg">
             {/* Additional Inputs */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-1 gap-x-6">
-                <div className="relative z-0 w-full mb-5 group">
-                    <label
-                        className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
-                        htmlFor="name"
-                    >
-                        Customer Name
-                    </label>
-                    <input
-                        type="text"
-                        id="name"
-                        value={data.name}
-                        onChange={(e) => setData("name", e.target.value)}
-                        className={`w-full px-4 py-2 text-black border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                            errors.name
-                                ? "border-red-500 focus:ring-red-400"
-                                : "border-gray-300 focus:ring-blue-400"
-                        }`}
-                        placeholder="Enter Customer Name"
-                    />
-                    {errors.name && (
-                        <p className="text-red-500 text-sm mt-1">
-                            {errors.name}
-                        </p>
-                    )}
-                </div>
-
                 <div className="relative z-0 w-full group">
                     <label
                         className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
@@ -360,6 +334,31 @@ export default function PurchaseForm() {
                     {errors.phone && (
                         <p className="text-red-500 text-sm mt-1">
                             {errors.phone}
+                        </p>
+                    )}
+                </div>
+                <div className="relative z-0 w-full mb-5 group">
+                    <label
+                        className="block text-gray-800 font-semibold mb-2 transition duration-200 ease-in-out transform group-focus-within:text-blue-500"
+                        htmlFor="name"
+                    >
+                        Customer Name
+                    </label>
+                    <input
+                        type="text"
+                        id="name"
+                        value={data.name}
+                        onChange={(e) => setData("name", e.target.value)}
+                        className={`w-full px-4 py-2 text-black border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                            errors.name
+                                ? "border-red-500 focus:ring-red-400"
+                                : "border-gray-300 focus:ring-blue-400"
+                        }`}
+                        placeholder="Enter Customer Name"
+                    />
+                    {errors.name && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.name}
                         </p>
                     )}
                 </div>

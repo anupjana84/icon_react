@@ -59,10 +59,14 @@ export default function Index({ sales }) {
                                                 {index + 1}.
                                             </td>
                                             <td className="py-3 px-6 text-center whitespace-nowrap">
-                                                {sales.customer.name}
+                                                {sales.customer
+                                                    ? sales.customer.name
+                                                    : "N/A"}
                                             </td>
                                             <td className="py-3 px-6 text-center">
-                                                {sales.customer.phone}
+                                                {sales.customer
+                                                    ? sales.customer?.phone
+                                                    : "N/A"}
                                             </td>
                                             <td className="py-3 px-6 text-center">
                                                 ₹

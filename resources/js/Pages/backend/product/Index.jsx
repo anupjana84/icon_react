@@ -109,7 +109,7 @@ const ProductTable = ({ product }) => {
                                         Quantity
                                     </th>
                                     <th className="py-3 px-6 text-center">
-                                        Sale Price
+                                        Model
                                     </th>
                                     <th className="py-3 px-6 text-center">
                                         Status
@@ -146,10 +146,7 @@ const ProductTable = ({ product }) => {
                                             {product.total_quantity}
                                         </td>
                                         <td className="py-3 px-6 text-center">
-                                            ₹
-                                            {Number(product.sale_price).toFixed(
-                                                0
-                                            )}
+                                            {product.model}
                                         </td>
                                         <td className="py-3 px-6 text-center ">
                                             <span
@@ -170,7 +167,7 @@ const ProductTable = ({ product }) => {
                                         </td>
                                         <td className="py-3 px-6 flex justify-center items-center gap-2 mt-4">
                                             <Link
-                                                href={`/products/details${`?brand=${product.brand.name}&item=${product.category.name}&rate=${product.sale_price}`}`}
+                                                href={`/products/details${`?brand=${product.brand.name}&item=${product.category.name}&model=${product.model}`}`}
                                                 className="bg-blue-500 w-14 hover:bg-blue-600 text-white rounded-md px-4 py-2 transition duration-300 ease-in-out flex items-center"
                                             >
                                                 <ReceiptText color="white" />

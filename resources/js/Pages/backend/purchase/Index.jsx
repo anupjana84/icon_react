@@ -65,7 +65,7 @@ function Index({ purchase }) {
                                         Receive Date
                                     </th>
                                     <th className="py-3 px-6 text-center">
-                                        Products
+                                        Invoice No.
                                     </th>
                                     <th className="py-3 px-6 text-center">
                                         Total Purchase
@@ -109,24 +109,10 @@ function Index({ purchase }) {
                                                 {date}
                                             </td>
                                             <td className="py-3 px-6 text-center">
-                                                {purchase.data.map(
-                                                    (item, index) => (
-                                                        <span
-                                                            key={
-                                                                item.products.id
-                                                            }
-                                                            className="mr-auto"
-                                                        >
-                                                            {index + 1}.{" "}
-                                                            {
-                                                                item.products
-                                                                    .category
-                                                                    .name
-                                                            }
-                                                            <br />
-                                                        </span>
-                                                    )
-                                                )}
+                                                {
+                                                    purchase.data[0]
+                                                        .purchase_invoice_no
+                                                }
                                             </td>
                                             <td className="py-3 px-6 text-center">
                                                 ₹
