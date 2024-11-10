@@ -48,6 +48,7 @@ export default function PurchaseForm({ brands, category, company }) {
                 saleRate: "",
                 point: "",
                 freeDelivery: "no",
+                discount: "",
             },
         ],
     });
@@ -67,6 +68,7 @@ export default function PurchaseForm({ brands, category, company }) {
                 saleRate: "",
                 point: "",
                 freeDelivery: "no",
+                discount: "",
             });
             setSeved(false);
         }
@@ -120,6 +122,7 @@ export default function PurchaseForm({ brands, category, company }) {
                     saleRate: "",
                     point: "",
                     freeDelivery: "no",
+                    discount: "",
                 },
             ],
         });
@@ -398,6 +401,7 @@ export default function PurchaseForm({ brands, category, company }) {
                                 "MODEL",
                                 "QUANTITY",
                                 "RATE",
+                                "DISCOUNT",
                                 "SALE RATE",
                                 "POINT",
                                 "DELIVERY",
@@ -534,6 +538,25 @@ export default function PurchaseForm({ brands, category, company }) {
                                                 : "border-gray-300 focus:ring-blue-400"
                                         }`}
                                         placeholder="Rate"
+                                    />
+                                </td>
+                                <td className="px-2 py-2 border-x">
+                                    <input
+                                        type="number"
+                                        value={row.discount}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                index,
+                                                "discount",
+                                                e.target.value
+                                            )
+                                        }
+                                        className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                                            errors[`rows.${index}.discount`]
+                                                ? "border-red-500 focus:ring-red-400"
+                                                : "border-gray-300 focus:ring-blue-400"
+                                        }`}
+                                        placeholder="Discount"
                                     />
                                 </td>
                                 <td className="px-2 py-2 border-x">
