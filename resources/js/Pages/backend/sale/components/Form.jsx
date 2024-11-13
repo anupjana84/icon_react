@@ -639,8 +639,9 @@ export default function PurchaseForm() {
                     <thead>
                         <tr>
                             {[
-                                "SL. NO.",
                                 "CODE",
+                                "SL. NO.",
+                                "WARRANTY",
                                 "ITEM",
                                 "COMPANY",
                                 "MODEL",
@@ -648,7 +649,6 @@ export default function PurchaseForm() {
                                 "RATE",
                                 "SALE RATE",
                                 "POINT",
-                                "WARRANTY",
                             ].map((header, idx) => (
                                 <th
                                     key={idx}
@@ -664,6 +664,25 @@ export default function PurchaseForm() {
                         {data.rows.map((row, index) => (
                             <tr key={index} className="border-b">
                                 {/* SLNO - row number */}
+                                <td className="px-2 py-2 border-x">
+                                    <input
+                                        type="string"
+                                        value={row.code}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                index,
+                                                "code",
+                                                e.target.value
+                                            )
+                                        }
+                                        className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                                            errors[`rows.${index}.code`]
+                                                ? "border-red-500 focus:ring-red-400"
+                                                : "border-gray-300 focus:ring-blue-400"
+                                        }`}
+                                        placeholder="Code"
+                                    />
+                                </td>
                                 <td className="px-2 py-2 border-x">
                                     <input
                                         type="string"
@@ -684,23 +703,43 @@ export default function PurchaseForm() {
                                     />
                                 </td>
                                 <td className="px-2 py-2 border-x">
-                                    <input
-                                        type="string"
-                                        value={row.code}
+                                    <select
+                                        value={row.warranty}
                                         onChange={(e) =>
                                             handleInputChange(
                                                 index,
-                                                "code",
+                                                "warranty",
                                                 e.target.value
                                             )
                                         }
-                                        className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                                            errors[`rows.${index}.code`]
+                                        className={`w-full px-2 py-[6px] cursor-not-allowed text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                                            errors[`rows.${index}.warranty`]
                                                 ? "border-red-500 focus:ring-red-400"
                                                 : "border-gray-300 focus:ring-blue-400"
                                         }`}
-                                        placeholder="Code"
-                                    />
+                                    >
+                                        <option value="">Select</option>
+                                        <option value="7 Day">7 Day</option>
+                                        <option value="1 Month">
+                                            1 Months
+                                        </option>
+                                        <option value="3 Month">
+                                            3 Months
+                                        </option>
+                                        <option value="6 Months">
+                                            6 Months
+                                        </option>
+                                        <option value="10 Months">
+                                            10 Months
+                                        </option>
+                                        <option value="1 Year">1 Year</option>
+                                        <option value="2 Years">2 Years</option>
+                                        <option value="3 Years">3 Years</option>
+                                        <option value="5 Years">5 Years</option>
+                                        <option value="Company Weranty">
+                                            Company Weranty
+                                        </option>
+                                    </select>
                                 </td>
                                 <td className="px-2 py-2 border-x">
                                     <input
@@ -848,36 +887,6 @@ export default function PurchaseForm() {
                                         disabled
                                         placeholder="Point"
                                     />
-                                </td>
-
-                                <td className="px-2 py-2 border-x">
-                                    <select
-                                        value={row.warranty}
-                                        onChange={(e) =>
-                                            handleInputChange(
-                                                index,
-                                                "warranty",
-                                                e.target.value
-                                            )
-                                        }
-                                        className={`w-full px-2 py-[6px] cursor-not-allowed text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                                            errors[`rows.${index}.warranty`]
-                                                ? "border-red-500 focus:ring-red-400"
-                                                : "border-gray-300 focus:ring-blue-400"
-                                        }`}
-                                    >
-                                        <option value="">Select</option>
-                                        <option value="0m">No Warranty</option>
-                                        <option value="1m">1 Month</option>
-                                        <option value="2m">2 Months</option>
-                                        <option value="3m">3 Month</option>
-                                        <option value="4m">4 Months</option>
-                                        <option value="5m">5 Months</option>
-                                        <option value="6m">6 Months</option>
-                                        <option value="1y">1 Year</option>
-                                        <option value="2y">2 Years</option>
-                                        <option value="3y">3 Years</option>
-                                    </select>
                                 </td>
                             </tr>
                         ))}

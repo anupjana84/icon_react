@@ -10,7 +10,9 @@ use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Services\CloudinaryService;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Container\Attributes\Storage;
+use Illuminate\Pagination\LengthAwarePaginator;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ProductController extends Controller
@@ -254,7 +256,7 @@ private function generateBarcodeNumber( $companyName, $purchaseRate, $gstStatus)
         $category = $request->query('item');
         $model = $request->query('model');
         // dd( $brand, $category, $model);
-        $product = Product::with(['category', 'brand', 'purchases.company', 'details'])
+        $product = Product::with(['category', 'brand', 'purchase.company', 'details'])
                             ->whereHas('brand', function ($query) use ($brand) {
                                 $query->where('name', $brand); // Assuming 'name' is the field in 'brands' table
                             })
@@ -363,43 +365,54 @@ private function generateBarcodeNumber( $companyName, $purchaseRate, $gstStatus)
         }
     }
 
-    public function allBarcode(Request $request){
+    public function allBarcode(Request $request)
+    {
         // Get the selected date range from the request or default to 'all'
         $dateRange = $request->input('date_range', 'all');
-
+    
         // Query the Product model based on the date range
         $query = Product::query();
-
+    
         switch ($dateRange) {
             case 'today':
                 $query->whereDate('created_at', Carbon::today());
                 break;
-                
+                    
             case 'last_3_days':
                 $query->where('created_at', '>=', Carbon::now()->subDays(3));
                 break;
-
+    
             case 'last_1_week':
                 $query->where('created_at', '>=', Carbon::now()->subWeek());
                 break;
-
+    
             case 'last_1_month':
                 $query->where('created_at', '>=', Carbon::now()->subMonth());
                 break;
-
+    
             case 'all':
             default:
                 // No additional filtering for "all"
                 break;
         }
-
-        // Get the filtered products
-        $products = $query->with('brand', 'category')->paginate(21);
-
+    
+        // Get the filtered products and duplicate each product based on its quantity
+        $products = $query->with('brand', 'category')->get()->flatMap(function ($product) {
+            return array_fill(0, $product->quantity, $product);
+        });
+    
+        // Paginate the duplicated products manually
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $perPage = 24;
+        $currentProducts = $products->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        $paginatedProducts = new LengthAwarePaginator($currentProducts, $products->count(), $perPage, $currentPage);
+        // Correct the URL generation for pagination
+       $paginatedProducts->withPath(URL::route('settings.products'));
         // Pass data to Inertia view
         return Inertia::render('backend/settings/pages/ProductSettings', [
-            'products' => $products,
+            'products' => $paginatedProducts,
             'dateRange' => $dateRange
         ]);
-   }
+    }
+    
 }

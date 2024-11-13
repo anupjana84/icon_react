@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Purchase;
 use Illuminate\Http\Request;
+use App\Rules\SimilarInvoice;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class PurchaseController extends Controller
@@ -49,7 +50,7 @@ public function index()
     $purchases = Purchase::with('products', 'company', 'products.category')
         ->orderBy('purchase_receive_date', 'desc')
         ->paginate(10);
-       
+    //    dd($purchases);
     // Return the paginated items to your Inertia view
     return Inertia::render('backend/purchase/Index', [
         'purchase' => $purchases,
@@ -72,9 +73,15 @@ public function index()
         // dd($request->all());
         $request->validate([
             'company' => 'required|exists:companies,id',
-            'purchase_invoice_no' => 'required|string|unique:purchases,purchase_invoice_no',
+            'purchase_invoice_no' => 'required|string|',
+            'purchase_invoice_no' => [
+                'required',
+                'unique:purchases,purchase_invoice_no',
+                'string',
+                new SimilarInvoice($request->purchase_date),
+            ],
             'purchase_date' => 'required|date',
-            'purchase_receive_date' => 'required|date',
+            'purchase_receive_date' => 'required|date|after_or_equal:purchase_date',
             'gst' => 'required',
             'rows.*.category' => 'required|exists:categories,id',
             'rows.*.brand' => 'required|exists:brands,id',

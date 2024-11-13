@@ -46,7 +46,7 @@ Route::middleware([AuthCheck::class])->group(function () {
     Route::middleware([RoleCheck::class . ':admin'])->group(function () {
     Route::resource('/brands', BrandController::class);
     Route::resource('/products', ProductController::class);
-    Route::get('/settings/product',[ProductController::class, 'allBarcode'] );
+    Route::get('/settings/product',[ProductController::class, 'allBarcode'])->name('settings.products');
     Route::resource('/items', CategoryController::class);
     Route::resource('/companies', CompanyCntroller::class);
     Route::resource('/customers', CustomerController::class);

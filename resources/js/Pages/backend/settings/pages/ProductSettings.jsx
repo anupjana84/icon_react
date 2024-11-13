@@ -4,6 +4,8 @@ import { useForm } from "@inertiajs/react";
 import Barcode from "react-barcode";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { Inertia } from "@inertiajs/inertia";
+import { Link } from "@inertiajs/react";
 
 const dateOptions = [
     { label: "All", value: "all" },
@@ -56,7 +58,12 @@ export default function ProductSettings({ products, dateRange }) {
     };
 
     const handlePageChange = (url) => {
-        get(url);
+        if (url) {
+            Inertia.visit(url, {
+                preserveState: true, // Preserve the state to avoid full page reload
+                preserveScroll: true, // Optionally preserve the scroll position
+            });
+        }
     };
 
     return (
@@ -91,11 +98,11 @@ export default function ProductSettings({ products, dateRange }) {
                         ref={invoiceRef}
                         className="w-[1000px] bg-white p-4 rounded-lg shadow-lg "
                     >
-                        <div className="grid grid-cols-3 gap-1">
+                        <div className="grid grid-cols-4 gap-1">
                             {products.data.length > 0 ? (
-                                products.data.map((product) => (
+                                products.data.map((product, index) => (
                                     <div
-                                        key={product.id}
+                                        key={index}
                                         className="flex flex-col items-center justify-center  p-1 border border-gray-600"
                                     >
                                         <h4 className="text-black">
@@ -110,13 +117,13 @@ export default function ProductSettings({ products, dateRange }) {
                                             value={product.code}
                                             id={`barcode-${product.id}`}
                                             format="CODE128"
-                                            width={1.3}
+                                            width={0.9}
                                             height={40}
                                             displayValue={true}
                                             textColor="#FFFFFF"
                                             textPosition="bottom"
                                             font="Arial"
-                                            fontSize="14"
+                                            fontSize={14}
                                             fontOptions="bold"
                                         />
                                     </div>
@@ -129,22 +136,46 @@ export default function ProductSettings({ products, dateRange }) {
                         </div>
                     </div>
                     {products.data.length > 0 && (
-                        <div className="flex justify-center items-center mt-4">
-                            {products.links.map((link, index) => (
-                                <button
-                                    key={index}
-                                    className={`px-4 py-2 mx-1 border ${
-                                        link.active
-                                            ? "bg-indigo-500 text-white"
-                                            : "bg-white text-indigo-500"
-                                    } rounded hover:bg-indigo-600 hover:text-white`}
-                                    onClick={() => handlePageChange(link.url)}
-                                    disabled={!link.url}
-                                    dangerouslySetInnerHTML={{
-                                        __html: link.label,
-                                    }}
-                                />
-                            ))}
+                        <div className="flex justify-center items-center mt-6 space-x-2">
+                            {/* Previous Button */}
+                            {products.prev_page_url ? (
+                                <Link
+                                    href={products.prev_page_url}
+                                    className="px-6 py-2 text-sm font-medium text-indigo-600 bg-white border border-indigo-500 rounded-lg shadow-md transition-all duration-300 hover:bg-indigo-500 hover:text-white hover:shadow-lg"
+                                >
+                                    Previous
+                                </Link>
+                            ) : (
+                                <span className="px-6 py-2 text-sm font-medium text-gray-400 bg-white border border-gray-300 rounded-lg shadow-md cursor-not-allowed">
+                                    Previous
+                                </span>
+                            )}
+
+                            {/* Current Page and Total Pages */}
+                            <span
+                                className={`px-4 py-2 text-sm font-medium ${
+                                    products.current_page === 1
+                                        ? "text-indigo-600"
+                                        : "text-gray-700"
+                                }`}
+                            >
+                                Page {products.current_page} of{" "}
+                                {products.last_page}
+                            </span>
+
+                            {/* Next Button */}
+                            {products.next_page_url ? (
+                                <Link
+                                    href={products.next_page_url}
+                                    className="px-6 py-2 text-sm font-medium text-indigo-600 bg-white border border-indigo-500 rounded-lg shadow-md transition-all duration-300 hover:bg-indigo-500 hover:text-white hover:shadow-lg"
+                                >
+                                    Next
+                                </Link>
+                            ) : (
+                                <span className="px-6 py-2 text-sm font-medium text-gray-400 bg-white border border-gray-300 rounded-lg shadow-md cursor-not-allowed">
+                                    Next
+                                </span>
+                            )}
                         </div>
                     )}
 
