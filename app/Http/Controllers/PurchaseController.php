@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\Purchase;
 use Illuminate\Http\Request;
 use App\Rules\SimilarInvoice;
+use Illuminate\Validation\Rule;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class PurchaseController extends Controller
@@ -73,7 +74,6 @@ public function index()
         // dd($request->all());
         $request->validate([
             'company' => 'required|exists:companies,id',
-            'purchase_invoice_no' => 'required|string|',
             'purchase_invoice_no' => [
                 'required',
                 'unique:purchases,purchase_invoice_no',
@@ -111,7 +111,7 @@ public function index()
                 'model' => $row['model'],
                 'quantity' => $row['quantity'],
                 'purchase_qty'=>$row['quantity'],
-                'purchase_price' => $row['rate']-$row['discount'],
+                'purchase_price' => $row['rate'],
                 'discount' => $row['discount'],
                 'sale_price' => $row['saleRate'],
                 'point' => $row['point'],
@@ -119,7 +119,7 @@ public function index()
                 'code' => $this->generateBarcodeNumber(
                     $request->purchase_receive_date,
                     $request->company,
-                    $row['rate'],
+                    $row['rate']-$row['discount'],
                     $request->gst === 'yes' ? 1 : 0
                 ),
                 'purchase_id' => $purchase->id,
@@ -134,5 +134,85 @@ public function index()
         return Inertia::render('backend/purchase/Show',[
             'purchases' => $purchase
         ]);
+    }
+    public function update(Request $request, $id){
+        // dd($request->all());
+        $request->validate([
+            'company_id' => 'required|exists:companies,id',
+            'purchase_invoice_no' => [
+                'required',
+                Rule::unique('purchases')->ignore($id),
+               'string',
+               new SimilarInvoice($request->purchase_date, $id),
+            ],
+            'purchase_date' => 'required|date',
+            'purchase_receive_date' => 'required|date|after_or_equal:purchase_date',
+            'gst' => 'required',
+        ]);
+        // dd($request->all());
+        $purchase = Purchase::find($id);
+        $purchase->update([
+            'company_id' => $request->company_id,
+            'purchase_invoice_no' => $request->purchase_invoice_no,
+            'purchase_date' => $request->purchase_date,
+            'purchase_receive_date' => $request->purchase_receive_date, 
+            'gst' => $request->gst,
+        ]);
+        // dd($purchase->with('products')->first()->products);
+        collect($purchase->with('products')->first()->products)->each(function($row) use ($request) {
+            $product = Product::find($row['id'])->update([
+                'code' => $this->generateBarcodeNumber(
+                    $request->purchase_receive_date,
+                    $request->company_id,
+                    $row['purchase_price']-$row['discount'],
+                    $request->gst === 'yes' ? 1 : 0
+                ),
+            ]);
+            // dd($product);
+        });
+        return back()->with('success', 'Purchase successfully updated');
+    }
+
+    public function updateProduct(Request $request, $id)
+    {
+        // dd($request->all());
+
+        $request->validate([
+            'model' => 'required|string',
+            'quantity' => 'required|integer',
+            'point' => 'required|integer',
+            'sale_price' => 'required|numeric',
+            'purchase_price' => 'required|numeric',
+            'category' => 'required|exists:categories,id',
+            'brand' => 'required|exists:brands,id',
+            'free_delivery'=> 'required|string|in:yes,no'
+        ]);
+        // dd($request->all());
+        $product = Product::find($id)->with('purchase','purchase.company')->first();
+        // dd($product);
+        $company = $product->purchase->company->id;
+        $date = $product->purchase->purchase_receive_date;
+        $gst = $product->purchase->gst;
+
+        // dd($product, $date, $gst, $company);
+        $prod = Product::find($id);
+        $prod->update([
+           'model' => $request->model,
+            'quantity' => $request->quantity,
+            'purchase_qty' => $request->quantity,
+            'discount' => $request->discount,  // Assume no discount for now. Update if required.  // TODO: Add discount calculation.
+            'point' => $request->point,
+           'sale_price' => $request->sale_price,
+            'purchase_price' => $request->purchase_price ,
+            'category' => $request->category,
+            'brand' => $request->brand,
+            'free_delivery'=> $request->free_delivery,
+            'code' => $this->generateBarcodeNumber($date,
+             $company,
+             ( $request->purchase_price - $request->discount), 
+              $gst),
+        ]);
+
+        return back()->with('success', 'Product successfully updated');
     }
 }

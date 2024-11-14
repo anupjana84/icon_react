@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Brand;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Validator;
+use Inertia\Inertia;
+use App\Models\Brand;
+use App\Models\Category;
+use Illuminate\Http\Request;
+
 class BrandController extends Controller
 {
     /**
@@ -73,5 +75,16 @@ class BrandController extends Controller
         $brand = Brand::find($brand);
         $brand->delete();
         return back();
+    }
+
+    public function getAll(){
+        $category = Category::orderBy('name', 'asc')->get();
+        $brands = Brand::orderBy('name', 'asc')->get();
+        return response()-> json(
+            [
+                'category' => $category,
+                'brands' => $brands,
+            ], 200
+            );
     }
 }

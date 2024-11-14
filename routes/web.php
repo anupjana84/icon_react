@@ -42,7 +42,6 @@ Route::get('/code/{code}', [ProductController::class, 'getProductByCode']);
 Route::get('/sales/{id}/invoice', [SaleController::class, 'invoice']);
 
 Route::middleware([AuthCheck::class])->group(function () {
-     
     Route::middleware([RoleCheck::class . ':admin'])->group(function () {
     Route::resource('/brands', BrandController::class);
     Route::resource('/products', ProductController::class);
@@ -58,6 +57,8 @@ Route::middleware([AuthCheck::class])->group(function () {
     Route::put('/salesmans/{id}', [SalesmanController::class, 'update']);
     Route::delete('/salesmans/{id}', [SalesmanController::class, 'destroy']);
     Route::get('/products/details', [ProductController::class, 'show']);
+    Route::get('/all-companies', [CompanyCntroller::class, 'companies']);
+    Route::get('/all-brands-items', [BrandController::class, 'getAll']);
     });
     Route::get('/users/{role?}', [UserController::class, 'index'])->name('users.index');
     Route::post('/create-multiple', [ProductController::class, 'storeChunk']);
@@ -65,6 +66,8 @@ Route::middleware([AuthCheck::class])->group(function () {
     Route::post('/purchase/store', [PurchaseController::class,'store']);
     Route::get('/purchase', [PurchaseController::class, 'index']);
     Route::get('/purchases/{id}/', [PurchaseController::class, 'show']);
+    Route::put('/purchases/{id}', [PurchaseController::class, 'update']);
+    Route::put('/purchases-product/{id}', [PurchaseController::class, 'updateProduct']);
     Route::patch('/products-update/{id}', [ProductController::class, 'updateProduct']);
     Route::get('/settings/profile', fn() => Inertia::render('backend/settings/pages/ProfileSettings'));
     

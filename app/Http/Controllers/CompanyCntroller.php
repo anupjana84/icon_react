@@ -107,4 +107,9 @@ class CompanyCntroller extends Controller
         }
         
     }
+
+    public function companies(){
+        $company = Company::orderBy('name', 'asc')->get();
+        return response()->json($company, 200);
+    }
 }

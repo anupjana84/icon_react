@@ -86,16 +86,16 @@ const SIDEBAR_ITEMS = [
 ];
 
 const Sidebar = () => {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { url } = usePage();
 
-    // Handle window resize to collapse sidebar on md screen
+    // Handle window resize to keep sidebar open on xl screen and above
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth >= 768) {
-                setIsSidebarOpen(true); // Sidebar stays open on md and above
+            if (window.innerWidth >= 1700) {
+                setIsSidebarOpen(true); // Sidebar stays open on xl and above
             } else {
-                setIsSidebarOpen(false); // Sidebar collapses below md
+                setIsSidebarOpen(false); // Sidebar closes below xl
             }
         };
 
@@ -109,101 +109,74 @@ const Sidebar = () => {
         };
     }, []);
 
-    // Inline style for custom scrollbar
-    const customScrollbarStyle = `
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-            background-color: transparent;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background-color: rgba(255, 255, 255, 0.6);
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 4px;
-        }
-    `;
-
     return (
-        <>
-            <motion.div
-                className={`relative z-10 transition-all duration-300 ease-in-out flex-shrink-0 ${
-                    isSidebarOpen ? "w-64" : "w-20"
-                } md:w-64`}
-                animate={{ width: isSidebarOpen ? 256 : 80 }}
+        <motion.div
+            className={`relative z-10 transition-all duration-300 ease-in-out flex-shrink-0 ${
+                isSidebarOpen ? "w-64" : "w-20"
+            } xl:w-64`}
+            animate={{ width: isSidebarOpen ? 256 : 80 }}
+            onMouseEnter={() =>
+                window.innerWidth < 1700 && setIsSidebarOpen(true)
+            }
+            onMouseLeave={() =>
+                window.innerWidth < 1700 && setIsSidebarOpen(false)
+            }
+        >
+            <div
+                className="h-full bg-gray-800 bg-opacity-50 backdrop-blur-md py-4 pl-4  flex flex-col border-r border-gray-700"
+                style={{ maxHeight: "100vh" }}
             >
-                <div
-                    className="h-full bg-gray-800 bg-opacity-50 backdrop-blur-md py-4 pl-4 flex flex-col border-r border-gray-700 "
-                    style={{ maxHeight: "100vh" }}
-                >
-                    <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="p-2 rounded-full hover:bg-gray-700 transition-colors max-w-fit"
-                    >
-                        <Menu size={24} />
-                    </motion.button>
-
-                    <nav className="mt-8 flex-grow overflow-y-auto custom-scrollbar">
-                        {SIDEBAR_ITEMS.map((item) => {
-                            const isActive = url === item.href;
-                            return (
-                                <Link key={item.name} href={item.href}>
-                                    <motion.div
-                                        className={`flex items-center p-4 text-sm font-medium rounded-lg transition-colors mb-2 ${
-                                            isActive
-                                                ? "bg-gray-700 text-white"
-                                                : "hover:bg-gray-700 text-gray-400"
-                                        }`}
-                                    >
-                                        <item.icon
-                                            size={20}
-                                            style={{
-                                                color: item.color,
-                                                minWidth: "20px",
-                                            }}
-                                        />
-                                        <AnimatePresence>
-                                            {isSidebarOpen && (
-                                                <motion.span
-                                                    className="ml-4 whitespace-nowrap"
-                                                    initial={{
-                                                        opacity: 0,
-                                                        width: 0,
-                                                    }}
-                                                    animate={{
-                                                        opacity: 1,
-                                                        width: "auto",
-                                                    }}
-                                                    exit={{
-                                                        opacity: 0,
-                                                        width: 0,
-                                                    }}
-                                                    transition={{
-                                                        duration: 0.2,
-                                                        delay: 0.3,
-                                                    }}
-                                                >
-                                                    {item.name}
-                                                </motion.span>
-                                            )}
-                                        </AnimatePresence>
-                                    </motion.div>
-                                </Link>
-                            );
-                        })}
-                    </nav>
-                </div>
-            </motion.div>
-        </>
+                <nav className="mt-8 flex-grow hover:overflow-y-auto custom-scrollbar pr-4">
+                    {SIDEBAR_ITEMS.map((item) => {
+                        const isActive = url === item.href;
+                        return (
+                            <Link key={item.name} href={item.href}>
+                                <motion.div
+                                    className={`flex items-center p-4 text-sm font-medium rounded-lg transition-colors mb-2 ${
+                                        isActive
+                                            ? "bg-gray-700 text-white"
+                                            : "hover:bg-gray-700 text-gray-400"
+                                    }`}
+                                >
+                                    <item.icon
+                                        size={20}
+                                        style={{
+                                            color: item.color,
+                                            minWidth: "20px",
+                                        }}
+                                    />
+                                    <AnimatePresence>
+                                        {isSidebarOpen && (
+                                            <motion.span
+                                                className="ml-4 whitespace-nowrap"
+                                                initial={{
+                                                    opacity: 0,
+                                                    width: 0,
+                                                }}
+                                                animate={{
+                                                    opacity: 1,
+                                                    width: "auto",
+                                                }}
+                                                exit={{
+                                                    opacity: 0,
+                                                    width: 0,
+                                                }}
+                                                transition={{
+                                                    duration: 0.2,
+                                                    delay: 0.3,
+                                                }}
+                                            >
+                                                {item.name}
+                                            </motion.span>
+                                        )}
+                                    </AnimatePresence>
+                                </motion.div>
+                            </Link>
+                        );
+                    })}
+                </nav>
+            </div>
+        </motion.div>
     );
 };
 
