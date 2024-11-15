@@ -2,11 +2,39 @@
 import React, { useRef } from "react";
 import computerImage from "../../../assets/imges/computer.png";
 import { toWords } from "number-to-words";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const Invoice = ({ seller, buyer, items, discount, gstNumber, id }) => {
     console.log(items);
     const invoiceRef = useRef();
+    const handleScreenshot = async () => {
+        if (invoiceRef.current) {
+            try {
+                // Capture the screenshot of the element
+                const canvas = await html2canvas(invoiceRef.current, {
+                    scale: 2, // Improve screenshot resolution
+                    backgroundColor: "#ffffff", // Ensure white background
+                });
 
+                // Create a PDF from the canvas
+                const pdf = new jsPDF("p", "mm", "a4"); // Set the page size to A4
+                const imgData = canvas.toDataURL("image/png");
+
+                // Get the dimensions of the canvas
+                const imgWidth = 210; // A4 width in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                // Add the image to the PDF, and adjust the scale accordingly
+                pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+
+                // Save the PDF as a file
+                pdf.save("invoice.pdf");
+            } catch (error) {
+                console.error("Error capturing screenshot:", error);
+            }
+        }
+    };
     const handlePrint = () => {
         const printContent = invoiceRef.current;
         const originalContents = document.body.innerHTML;
@@ -80,41 +108,26 @@ const Invoice = ({ seller, buyer, items, discount, gstNumber, id }) => {
         }
     };
     return (
-        <div
-            ref={invoiceRef}
-            className="relative max-w-2xl mx-auto  bg-white rounded-xl shadow-lg border border-gray-300 w-[800px]"
-        >
-            {/* Watermark */}
-            <div className="absolute inset-0 flex items-center pb-20 justify-center pointer-events-none z-0">
-                <h1
-                    className="text-8xl text-pink-100 font-caveat font-bold opacity-40"
-                    style={{ transform: "rotate(-25deg)" }}
-                >
-                    Icon Computer
-                </h1>
-            </div>
-            <div className="w-full h-full p-8  z-20">
+        <div className="relative max-w-2xl mx-auto  bg-white rounded-xl shadow-lg  w-[800px]">
+            <div ref={invoiceRef} className="w-full h-full p-4  z-20">
                 <div>
                     <p className="flex justify-between">
                         <span className="text-gray-700  ">
-                            Invoice No: {id}
+                            Invoice No: {id} <br />
+                            Fer. No:
                         </span>
                         <span className="text-gray-700 ml-2">
                             Date:{" "}
                             {new Date(items[0].created_at).toLocaleDateString()}
                         </span>
                     </p>
-                    <h1 className="text-4xl font-bold text-center text-pink-600 mb-2">
-                        Invoice
-                    </h1>
                 </div>
 
-                <div className="mb-3 flex justify-between ">
-                    <div>
-                        <img width={100} src={computerImage} alt="" />
-                    </div>
+                <div className="mb-3 flex justify-center ">
                     <div className="flex justify-center flex-col items-center">
-                        <p className="text-gray-700 ">{seller.name}</p>
+                        <p className="text-gray-700 text-xl font-semibold ">
+                            {seller.name}
+                        </p>
                         <p className="text-gray-700">{seller.address}</p>
                         <p className="text-gray-700">Phone: {seller.phone}</p>
                         <p className="text-gray-700">
@@ -123,16 +136,12 @@ const Invoice = ({ seller, buyer, items, discount, gstNumber, id }) => {
                         <p className="text-gray-700">State: {seller.state}</p>
                         <p className="text-gray-700">Email: {seller.email}</p>
                     </div>
-
-                    <div>
-                        <img width={100} src={computerImage} alt="" />
-                    </div>
                 </div>
 
                 {buyer && (
                     <div className="mb-2 flex justify-center flex-col items-center">
-                        <h3 className="text-xl font-semibold text-pink-500">
-                            Buyer
+                        <h3 className="text-lg font-semibold text-gray-700 ">
+                            Bill To:
                         </h3>
                         <p className="text-gray-700">Name: {buyer.name}</p>
                         <p className="text-gray-700">
@@ -148,50 +157,57 @@ const Invoice = ({ seller, buyer, items, discount, gstNumber, id }) => {
                 )}
 
                 <table className="min-w-full border border-gray-300">
-                    <thead className="">
+                    <thead className="text-gray-700">
                         <tr>
-                            <th className="p-4 border-b text-center text-pink-600 max-w-[100px]">
+                            <th className="p-2 border-b text-center  ">
                                 Product
                             </th>
-                            <th className="p-4 border-b text-center text-pink-600">
+                            <th className="p-2 border-b text-center ">
                                 HSN/SAC
                             </th>
-
-                            <th className="p-4 border-b text-center text-pink-600">
-                                GST
-                            </th>
-                            <th className="p-4 border-b text-center text-pink-600">
-                                discount
-                            </th>
-                            <th className="p-4 border-b text-center text-pink-600">
-                                Quantity
-                            </th>
-                            <th className="p-4 border-b  text-pink-600 text-center">
+                            <th className="p-2 border-b text-center ">price</th>
+                            <th className="p-2 border-b text-center ">Qty</th>
+                            <th className="p-2 border-b   text-center">
                                 Total
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         {items.map((item, index) => (
-                            <tr
-                                key={index}
-                                className="border-b hover:bg-pink-50"
-                            >
-                                <td className="p-4 text-gray-700 max-w-[100px] ">
+                            <tr key={index} className="border-b">
+                                <td className="p-2 text-gray-700 ">
                                     {item.product.brand.name}-
-                                    {item.product.category.name} <br />
-                                    {""}
-                                    {renderWarranty(item)} <br />
+                                    {item.product.category.name}
+                                    <br />
+                                    {item.product.code}
+                                    <br />
                                     {item.sl_no}
+                                    <br />
+                                    {renderWarranty(item)}
                                 </td>
-                                <td className="p-4 text-gray-700 text-center">
+                                <td className="p-2 text-gray-700 text-center ">
                                     {item.product.category.hsn_code}
                                 </td>
 
-                                <td className="p-4 text-gray-700 text-center">
-                                    {item.product.category.gst}%
-                                </td>
-                                <td className="p-4 text-gray-700 text-center">
+                                {/* <td className="p-4 text-gray-700 text-center">
+                                    {parseInt(
+                                        item.product.details
+                                            ? item.product.details.discount
+                                            : 0
+                                    )}
+                                    %
+                                </td> */}
+                                <td className="p-2 text-gray-700 text-center">
+                                    price: ₹
+                                    {parseInt(item.price).toLocaleString()}{" "}
+                                    <br />
+                                    GST:{" "}
+                                    {parseInt(
+                                        item.product.category.gst
+                                    ).toLocaleString()}
+                                    %
+                                    <br />
+                                    Discount:{" "}
                                     {parseInt(
                                         item.product.details
                                             ? item.product.details.discount
@@ -199,18 +215,13 @@ const Invoice = ({ seller, buyer, items, discount, gstNumber, id }) => {
                                     )}
                                     %
                                 </td>
-                                <td className="p-4 text-gray-700 text-center">
-                                    {item.quantity}
+                                <td className="p-2 text-gray-700 text-center">
+                                    {item.quantity} pcs
                                 </td>
-                                <td className="p-4 text-gray-700">
-                                    <div className=" h-[50%] border-b pb-2">
-                                        price: ₹
-                                        {parseInt(item.price).toLocaleString()}{" "}
-                                    </div>
-                                    <br />
-                                    <div className="h-[50%]">
-                                        Total: ₹
-                                        {calculateTotal(
+                                <td className="p-2 text-gray-700">
+                                    ₹
+                                    {parseInt(
+                                        calculateTotal(
                                             item.price,
                                             item.product.category.gst,
                                             item.product.details
@@ -220,60 +231,44 @@ const Invoice = ({ seller, buyer, items, discount, gstNumber, id }) => {
                                                   )
                                                 : 0,
                                             item.quantity
-                                        ).toLocaleString()}
-                                    </div>
+                                        )
+                                    ).toLocaleString()}
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
 
-                <div className="border-t pt-4 border-b mb-4">
+                <div className="border-t pt-1 border-b mb-1">
                     <div className="flex justify-between font-semibold text-gray-700">
                         <span>Subtotal</span>
-                        <span>₹{grandTotal.toLocaleString()}</span>
+                        <span>₹{parseInt(grandTotal).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between font-semibold  text-gray-700">
                         <span>Discount</span>
                         <span>-₹{parseInt(discount).toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between font-bold text-xl text-pink-600">
+                    <div className="flex justify-between font-bold text-xl text-gray-700">
                         <span>Total</span>
-                        <span>₹{totalAfterDiscount.toLocaleString()}</span>
+                        <span>
+                            ₹{parseInt(totalAfterDiscount).toLocaleString()}
+                        </span>
                     </div>
                 </div>
-                <div className="flex justify-between text-gray-700 wifull mb-2">
-                    {toWords(totalAfterDiscount) + " " + "rupees"}
+                <div className="flex text-lg font-bold justify-between text-gray-700 wifull mb-2">
+                    {toWords(parseInt(totalAfterDiscount)) + " " + "rupees"}
                 </div>
 
-                <div className="w-full flex">
-                    <div className="text-center text-pink-600 w-[70%] text-sm font-semibold">
-                        <p>
-                            {`শর্তাবলী- 1) কোন কারণে কোন ফেরত নেই. 2) যেকোনো
-                            পরিষেবায় 15 থেকে 45 দিন সময় লাগবে। 3) পরিষেবাতে
-                            জমা দিয়ে আইডি নম্বর নিতে হবে। 4) পরিষেবাতে জমা
-                            দেওয়া পণ্যগুলি অবশ্যই 90 দিনের মধ্যে সরবরাহ করতে
-                            হবে। 5) বিলিং করার পরে পণ্য ফেরত বা বিনিময় নেই। 6)
-                            কোন ভাঙ্গা, ফাটল পণ্য পরিষেবা প্রদান করা হয় না. 7)
-                            বিল অফ লেডিং ছাড়া কোন সেবা প্রদান করা হবে না. 8)
-                            আমি সম্পূর্ণরূপে জানি এবং আমার পণ্য বুঝতে.`}
-                        </p>
-                    </div>
+                <div className="w-full flex justify-end">
                     <div className="w-[30%] text-gray-700 flex justify-center items-center pt-10 ">
                         <p className="border-t"> Authorised Signetory</p>
-                    </div>
-                </div>
-
-                <div className="w-full flex justify-center">
-                    <div className=" text-pink-600 flex justify-center items-center pt-7 ">
-                        <p className="border-t"> {`ক্রেতার স্বাক্ষর`}</p>
                     </div>
                 </div>
             </div>
 
             <div className="absolute top-0 left-0 right-0 bottom-0 bg-black opacity-0 hover:opacity-25 flex justify-center items-center">
                 <button
-                    onClick={handlePrint}
+                    onClick={handleScreenshot}
                     className="text-white text-sm font-semibold px-4 py-2 rounded-md bg-pink-600 hover:bg-pink-700"
                 >
                     Print

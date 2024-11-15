@@ -7,7 +7,7 @@ import { PurchaseModal } from "./components/PurchaseModel";
 import { ProductModal } from "./components/ProductModel";
 
 const PurchaseDetails = ({ purchases }) => {
-    // console.log(purchases);
+    console.log(purchases);
     const tableRef = useRef(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);

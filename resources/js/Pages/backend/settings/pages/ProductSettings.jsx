@@ -57,14 +57,7 @@ export default function ProductSettings({ products, dateRange }) {
         }
     };
 
-    const handlePageChange = (url) => {
-        if (url) {
-            Inertia.visit(url, {
-                preserveState: true, // Preserve the state to avoid full page reload
-                preserveScroll: true, // Optionally preserve the scroll position
-            });
-        }
-    };
+    
 
     return (
         <SettingsPage>

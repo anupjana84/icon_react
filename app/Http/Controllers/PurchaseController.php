@@ -151,6 +151,26 @@ public function index()
         ]);
         // dd($request->all());
         $purchase = Purchase::find($id);
+        
+        // dd($purchase->purchase_receive_date, $request->purchase_receive_date);
+        if($purchase->purchase_receive_date != $request->purchase_receive_date ||
+        $purchase->company_id != $request->company_id ||
+        $purchase->gst != $request->gst) {
+            // dd($purchase->with('products')->first()->products);
+            // dd($request->purchase_receive_date, $request->company_id, $request->gst);
+            // dd($purchase->with('products')->first()->products);
+        collect($purchase->with('products')->first()->products)->each(function($row) use ($request) {
+            $product = Product::find($row['id'])->update([
+                'code' => $this->generateBarcodeNumber(
+                    $request->purchase_receive_date,
+                    $request->company_id,
+                    $row['purchase_price']-$row['discount'],
+                    $request->gst
+                ),
+            ]);
+            // dd($product);
+        });}
+
         $purchase->update([
             'company_id' => $request->company_id,
             'purchase_invoice_no' => $request->purchase_invoice_no,
@@ -158,24 +178,12 @@ public function index()
             'purchase_receive_date' => $request->purchase_receive_date, 
             'gst' => $request->gst,
         ]);
-        // dd($purchase->with('products')->first()->products);
-        collect($purchase->with('products')->first()->products)->each(function($row) use ($request) {
-            $product = Product::find($row['id'])->update([
-                'code' => $this->generateBarcodeNumber(
-                    $request->purchase_receive_date,
-                    $request->company_id,
-                    $row['purchase_price']-$row['discount'],
-                    $request->gst === 'yes' ? 1 : 0
-                ),
-            ]);
-            // dd($product);
-        });
         return back()->with('success', 'Purchase successfully updated');
     }
 
     public function updateProduct(Request $request, $id)
     {
-        // dd($request->all());
+        // dd($id);
 
         $request->validate([
             'model' => 'required|string',
@@ -188,14 +196,22 @@ public function index()
             'free_delivery'=> 'required|string|in:yes,no'
         ]);
         // dd($request->all());
-        $product = Product::find($id)->with('purchase','purchase.company')->first();
+        $product = Product::where('id',$id)->with('purchase','purchase.company')->first();
         // dd($product);
         $company = $product->purchase->company->id;
         $date = $product->purchase->purchase_receive_date;
         $gst = $product->purchase->gst;
 
-        // dd($product, $date, $gst, $company);
+        // dd($product->purchase_price,$request->purchase_price, $product->discount, $request->discount);
         $prod = Product::find($id);
+        if($product->purchase_price!= $request->purchase_price || $product->discount !== $request->discount){
+            // dd('true');
+            $product->code = $this->generateBarcodeNumber($date,
+             $company,
+             ( $request->purchase_price - $request->discount), 
+              $gst);
+              $product->save();
+        }
         $prod->update([
            'model' => $request->model,
             'quantity' => $request->quantity,
@@ -207,12 +223,7 @@ public function index()
             'category' => $request->category,
             'brand' => $request->brand,
             'free_delivery'=> $request->free_delivery,
-            'code' => $this->generateBarcodeNumber($date,
-             $company,
-             ( $request->purchase_price - $request->discount), 
-              $gst),
         ]);
-
         return back()->with('success', 'Product successfully updated');
     }
 }

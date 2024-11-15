@@ -201,27 +201,30 @@ export default function PurchaseForm() {
     };
 
     const handleSave = () => {
-        // e.preventDefault();
-
-        // Filter out the empty rows
+        // Filter rows to remove empty ones if there are multiple rows
         const filteredRows =
             data.rows.length > 1
                 ? data.rows.filter((row) => row.code)
                 : data.rows;
 
-        // Send the filtered data to the backend
-        // console.log(data);
+        // Update the data with filtered rows
         setData({ ...data, rows: filteredRows });
+
+        // Send a validation request to the backend
+        post("/sales-validate", data, {
+            preserveScroll: true,
+        });
         if (data.rows.length > 1) {
             setSeved(true);
             setIsModalOpen(true);
         }
-        // post("/sales");
     };
 
     const handelSubmit = (e) => {
         e.preventDefault();
-        post("/sales", {
+
+        // Final submission after discount has been applied
+        post("/sales", data, {
             onSuccess: () => {
                 setMessage({
                     visible: true,
@@ -230,8 +233,10 @@ export default function PurchaseForm() {
                     title: "Success",
                 });
                 setIsModalOpen(false);
-                reset();
                 setSeved(false);
+                reset(); // Reset Inertia form state if needed
+
+                // Reset data to the initial state
                 setData({
                     name: "",
                     phone: "",
@@ -267,8 +272,13 @@ export default function PurchaseForm() {
                     ],
                 });
             },
+            onError: (errors) => {
+                console.error("Submission errors:", errors);
+                // Handle submission errors if needed
+            },
         });
     };
+
     // console.log(data);
 
     // router.on("success", () => {

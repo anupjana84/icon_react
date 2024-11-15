@@ -306,10 +306,20 @@ private function generateBarcodeNumber( $companyName, $purchaseRate, $gstStatus)
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $product)
     {
-        dd($request);
-        dd($request->all());
+        $request->validate([
+            'model' => 'required|string',
+            'quantity' => 'required|integer',
+            'point' => 'required|integer',
+            'sale_price' => 'required|numeric',
+            'purchase_price' => 'required|numeric',
+            'category' => 'required|exists:categories,id',
+            'brand' => 'required|exists:brands,id',
+            'free_delivery'=> 'required|string|in:yes,no'
+        ]);
+        $product = Product::find($product);
+        
 
     }
      

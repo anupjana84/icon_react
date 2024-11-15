@@ -34,11 +34,50 @@ class SaleController extends Controller
         return Inertia::render('backend/sale/Create');
     }
 
+    public function validation(Request $request)
+{
+    $validatedData = $request->validate([
+        'name' => 'nullable|string|max:255|required_with:phone',
+        'phone' => 'nullable|numeric|digits_between:10,15|required_with:name',
+        'address' => 'nullable|string|max:500|required_with:name,phone',
+        'wpnumber' => 'nullable|numeric|digits_between:10,15',
+        'pin' => 'nullable|string|min:6|max:6|required_with:name,phone',
+        'salesman' => 'nullable|array',
+
+        // Ensures 'rows' is an array with at least one entry
+        'rows' => 'required|array|min:1',
+
+        // Validation for each item in the 'rows' array
+        'rows.*.category' => 'required|string|max:100',
+        'rows.*.brand' => 'required|string|max:100',
+        'rows.*.model' => 'required|string|max:100',
+        'rows.*.sl_no' => 'required|string|max:100',
+        'rows.*.warranty' => 'required|string|max:100',
+        'rows.*.quantity' => 'required|integer|min:1',
+        'rows.*.rate' => 'required|numeric|min:0',
+        'rows.*.saleRate' => 'required|numeric|min:0',
+        'rows.*.point' => 'nullable|numeric|min:0',
+        'rows.*.freeDelivery' => 'required|string|in:yes,no',
+        'rows.*.code' => 'required|string|max:50',
+        'rows.*.productQuantity' => 'required|integer|min:1',
+        'rows.*.productId' => 'required|integer|exists:products,id',
+
+        // Optional customer ID, which must exist in the customers table if provided
+        'custId' => 'nullable|integer|exists:customers,id',
+    ]);
+
+   return redirect()->back()->with('validated', true);
+
+}
+
+
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
+    //   dd($request->all());
+
         // Validate the incoming request
         $request->validate([
             'name' => 'nullable|string|max:255|required_with:phone',
@@ -209,9 +248,81 @@ class SaleController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
-    {
-        //
+{
+    // Retrieve the sale with related sales items, sales payment, and customer
+    $sale = Sale::where('id', $id)->with('salesItems', 'salesPayment', 'customer', 'salesItems.product', 'customer.salesman')->first();
+
+    // Check if the sale exists
+    if (!$sale) {
+        return back();
     }
+
+    // Loop through each sales item to update the product quantity
+    foreach ($sale->salesItems as $salesItem) {
+        $product = $salesItem->product;
+        // dd($product->quantity, $salesItem->quantity);
+        // Add back the quantity of the sales item to the product's stock
+        $product->quantity += $salesItem->quantity;
+        $product->save();
+    }
+
+    if ($sale->customer) {
+        $selsids = json_decode($sale->customer->sales_ids);
+        // Retrieve and decode the customer's sales IDs
+        $salesIds = json_decode($sale->customer->sales_ids, true);
+   
+        // Check if sales IDs exist and is an array
+        if (is_array($salesIds)) {
+            // Remove the specific sale ID from the array
+            $salesIds = array_filter($salesIds, function($saleId) use ($id) {
+                return $saleId != $id;
+            });
+            
+            // Re-index the array
+            $salesIds = array_values($salesIds);
+    
+            if (empty($salesIds)) {
+                // If salesIds is now empty, delete the customer
+                $sale->customer->delete();
+            } else {
+                // Otherwise, update the sales_ids field
+                $sale->customer->sales_ids = json_encode($salesIds);
+                $sale->customer->save();
+            }
+        }
+         // Get the customer's salesman
+         $salesman = $sale->customer->salesman;
+        // If the salesman exists and status is active
+        if ($salesman && $salesman->status) {
+            // Reduce the salesman's points
+            $totalPoints = 0;
+            foreach ($sale->salesItems as $salesItem) {
+                $product = $salesItem->product;
+                $pointsToReduce = $product->point * $salesItem->quantity;
+                $totalPoints += $pointsToReduce;
+            }
+            $salesman->point -= $totalPoints;
+            $salesman->save();
+        }
+    }
+
+    
+
+    // Delete the related sales payment
+    $sale->salesPayment()->delete();
+
+    // // Delete the related customer
+    // $sale->customer()->delete();
+
+    // Delete related sales items
+    $sale->salesItems()->delete();
+
+    // Delete the sale itself
+    $sale->delete();
+
+    return back()->with('success', 'Sale and related items deleted successfully.');
+}
+
 
     public function invoice($id){
         $sale = Sale::with('customer', 'order', 'salesItems', 'salesPayment', 'salesItems.product', 'salesItems.product.category', 'salesItems.product.brand', 'salesItems.product.details')->findOrFail($id);

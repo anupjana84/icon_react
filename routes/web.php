@@ -59,6 +59,7 @@ Route::middleware([AuthCheck::class])->group(function () {
     Route::get('/products/details', [ProductController::class, 'show']);
     Route::get('/all-companies', [CompanyCntroller::class, 'companies']);
     Route::get('/all-brands-items', [BrandController::class, 'getAll']);
+    Route::post('/sales-validate', [SaleController::class, 'validation']);
     });
     Route::get('/users/{role?}', [UserController::class, 'index'])->name('users.index');
     Route::post('/create-multiple', [ProductController::class, 'storeChunk']);
