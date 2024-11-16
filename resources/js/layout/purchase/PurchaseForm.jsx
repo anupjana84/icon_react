@@ -49,6 +49,7 @@ export default function PurchaseForm({ brands, category, company }) {
                 point: "",
                 freeDelivery: "no",
                 discount: "",
+                gst: "",
             },
         ],
     });
@@ -57,6 +58,15 @@ export default function PurchaseForm({ brands, category, company }) {
         const updatedRows = [...data.rows];
         updatedRows[index][field] = value;
 
+        if (field === "category") {
+            const selectedCategory = category.find(
+                (cat) => cat.id === parseInt(value)
+            );
+            console.log(typeof value, selectedCategory);
+            updatedRows[index].gst = selectedCategory
+                ? selectedCategory.gst
+                : 0; // Default GST to 0 if no category is selected
+        }
         // If the input is filled and it's the last row, add a new row
         if (value !== "" && index === updatedRows.length - 1) {
             updatedRows.push({
@@ -407,6 +417,8 @@ export default function PurchaseForm({ brands, category, company }) {
                                 "RATE",
                                 "DISCOUNT",
                                 "SALE RATE",
+                                "GST",
+                                "TOTAL",
                                 "POINT",
                                 "DELIVERY",
                             ].map((header, idx) => (
@@ -582,25 +594,52 @@ export default function PurchaseForm({ brands, category, company }) {
                                         placeholder="Sale Rate"
                                     />
                                 </td>
-                                {/* <td className="px-2 py-2 border-x">
-                                <input
-                                    type="number"
-                                    value={row.gst}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            index,
-                                            "gst",
-                                            e.target.value
-                                        )
-                                    }
-                                    className={`w-full px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                                        errors.gst
-                                            ? "border-red-500 focus:ring-red-400"
-                                            : "border-gray-300 focus:ring-blue-400"
-                                    }`}
-                                    placeholder="GST"
-                                />
-                            </td> */}
+                                <td className="px-2 py-2 border-x">
+                                    <input
+                                        type="number"
+                                        value={row.gst}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                index,
+                                                "gst",
+                                                e.target.value
+                                            )
+                                        }
+                                        disabled
+                                        className={`w-full  px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                                            errors.gst
+                                                ? "border-red-500 focus:ring-red-400"
+                                                : "border-gray-300 focus:ring-blue-400"
+                                        }`}
+                                        placeholder="GST"
+                                    />
+                                </td>
+                                <td className="px-2 py-2 border-x">
+                                    <input
+                                        type="number"
+                                        value={parseInt(
+                                            parseInt(row.saleRate) +
+                                                parseInt(
+                                                    row.saleRate * row.gst
+                                                ) /
+                                                    100
+                                        )}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                index,
+                                                "total",
+                                                e.target.value
+                                            )
+                                        }
+                                        disabled
+                                        className={`w-full  px-2 py-1 text-black border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
+                                            errors.gst
+                                                ? "border-red-500 focus:ring-red-400"
+                                                : "border-gray-300 focus:ring-blue-400"
+                                        }`}
+                                        placeholder="Total"
+                                    />
+                                </td>
                                 <td className="px-2 py-2 border-x">
                                     <input
                                         type="number"

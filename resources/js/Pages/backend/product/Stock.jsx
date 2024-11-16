@@ -103,8 +103,15 @@ const Stock = ({ product, selectedRole }) => {
                                         </td>
                                         <td className="py-3 px-6 text-center">
                                             ₹
-                                            {Number(product.sale_price).toFixed(
-                                                0
+                                            {parseInt(
+                                                parseInt(product.sale_price) +
+                                                    (parseInt(
+                                                        product.sale_price
+                                                    ) *
+                                                        parseInt(
+                                                            product.category.gst
+                                                        )) /
+                                                        100
                                             )}
                                         </td>
                                         <td className="py-3 px-6 text-center">

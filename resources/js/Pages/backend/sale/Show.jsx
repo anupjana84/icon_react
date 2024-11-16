@@ -1,15 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import PageHeader from "../../../layout/components/pageHeader";
+import { ProductEdit } from "./components/productEdit";
+import { Pencil } from "lucide-react";
+import Alert from "../../../layout/components/AlertMessage";
 
 export default function Show({ sale }) {
-    console.log(sale);
+    const [message, setMessage] = useState({
+        visible: false,
+        description: "",
+        type: "",
+        title: "",
+    });
+    // console.log(message);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    // console.log(sale);
     const calculateTotal = (price, gst, discount, quantity) => {
         // console.log(price, gst, discount, quantity);
         const gstAmount = (price * gst) / 100;
         const discountAmount = (price * discount) / 100;
         // console.log(gstAmount, discountAmount);
         const total = (parseInt(price) + gstAmount - discountAmount) * quantity;
-        return total;
+        return parseInt(total);
     };
     const grandTotal = sale.sales_items.reduce(
         (acc, item) =>
@@ -26,6 +37,9 @@ export default function Show({ sale }) {
             ),
         0
     );
+    const handleEditItem = () => {
+        setIsModalOpen(true);
+    };
     return (
         <main className=" max-w-7xl mx-auto py-1 px-1 lg:px-1">
             <PageHeader title="Sales » Details" link="/sales" linkName="Back" />
@@ -110,9 +124,25 @@ export default function Show({ sale }) {
 
                 {/* Product Details Section */}
                 <section className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
-                    <h2 className="text-3xl font-bold text-gray-700 mb-6 text-center">
-                        Product Details
-                    </h2>
+                    <div className="w-full flex justify-between gap-2 ">
+                        <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+                            Product Details
+                        </h2>
+                        <button
+                            onClick={() => {
+                                handleEditItem();
+                                setMessage({
+                                    visible: false,
+                                    description: "",
+                                    type: "",
+                                    title: "",
+                                });
+                            }}
+                            className="bg-green-500 text-white px-2 h-[40px] py-1 rounded hover:bg-green-600 transition"
+                        >
+                            <Pencil color="white" />
+                        </button>
+                    </div>
                     <div className="overflow-x-auto">
                         <table className="min-w-full text-left border-collapse">
                             <thead>
@@ -197,7 +227,7 @@ export default function Show({ sale }) {
                                         className="p-4 font-semibold text-gray-800"
                                     ></td>
                                     <td className="p-4 font-semibold text-gray-800 text-center">
-                                        ₹{grandTotal.toLocaleString()}
+                                        ₹{parseInt(grandTotal).toLocaleString()}
                                     </td>
                                 </tr>
                                 <tr className="bg-gray-100 w-full">
@@ -231,9 +261,9 @@ export default function Show({ sale }) {
                                     ></td>
                                     <td className="p-4 font-semibold text-green-500 text-center">
                                         ₹
-                                        {(
+                                        {parseInt(
                                             grandTotal -
-                                            parseInt(sale.discount ?? 0)
+                                                parseInt(sale.discount ?? 0)
                                         ).toLocaleString()}
                                     </td>
                                 </tr>
@@ -306,6 +336,21 @@ export default function Show({ sale }) {
                     </div>
                 </section>
             </div>
+            <ProductEdit
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                sale={sale}
+                setMessage={setMessage}
+            />
+
+            {message.visible && (
+                <Alert
+                    type={message.type} // You can change this to "error", "warning", or "info"
+                    title={message.title}
+                    description={message.description}
+                    // onClose={handleClose}
+                />
+            )}
         </main>
     );
 }

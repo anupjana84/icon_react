@@ -151,7 +151,7 @@ class SaleController extends Controller
 
             }
         }
-    
+        // dd('kkmgnrj');
         // Create the Sale record
         $sale = Sale::create([
             'order_id' => $request->orderId,
@@ -164,7 +164,7 @@ class SaleController extends Controller
             'finance' => $request->finance,
             'gst_number' => $request->gstNumber,
         ]);
-    
+        // dd('kkmgnrj');
         $totalPoints = 0;
         // Create SalesItem records
         foreach ($request->rows as $row) {
@@ -184,7 +184,7 @@ class SaleController extends Controller
             ]);
             $totalPoints += $points; // Update the total points for the customer
         }
-    
+        // dd('kkmgnrj');
         // Create the SalesPayment record
         $salesPayment = SalesPayment::create([
             'sale_id' => $sale->id, // Link to the Sale
@@ -211,7 +211,7 @@ class SaleController extends Controller
                 $salesman->save();
             }
         }
-    
+        // dd('kkmgnrj');
         return back()->with('success', 'Sales Created successfully');
     }
     
@@ -241,7 +241,72 @@ class SaleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // dd($request->all());
+        $request->validate([
+            'cash' => 'nullable|numeric|required_without_all:online',
+            'online' => 'nullable|numeric|required_without_all:cash',
+            'gst' => 'required|string|in:yes,no',
+            'gstNumber' => 'nullable|string|max:20',
+            'finance' => 'nullable|string|in:hdb_finance,bajaj_finance',
+            'total' => 'required|integer',
+            'discount' => 'nullable|numeric|min:0',
+            'items' => 'required|array|min:1',
+            'items.*.warranty' => 'required|string|max:100',
+            'items.*.quantity' => 'required|integer',
+            'items.*.price' => 'required|integer|min:1',
+            'custId' => 'nullable|integer|exists:customers,id',
+            'totalPoints' => 'required|integer',
+        ]);
+        $total = 0;
+        foreach ($request->items as $item){
+            $total += $item['total'];
+        }
+        // dd($total);
+        $sale = Sale::find($id)->with('customer', 'customer.salesman', 'salesItems','salesItems.product', 'salesPayment');
+        $sale->update([
+            'gst' => $request->gst,
+            'total' => $total,
+            'discount' => $request->discount,
+            'gst_number' => $request->gst_number
+        ]);
+        // Create new sales items
+        foreach ($request->items as $item) {
+            $sales_item = SalesItem::find($item['id']);
+            if ($sales_item) {
+                $sales_item->update([
+                    'warranty' => $item['warranty'],
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price'],
+                    // 'sl_no' => $item->sl_no,
+                    'discount' => $item['discount']
+                ]);
+            }
+        }
+
+        // Update sales payment
+        $salePayment = SalesPayment::where('sale_id', $id);
+        $salePayment->update([
+            'amount' => $total - $request->discount,
+            'online_payment' => $request->online,
+            'cash_payment' => $request->cash,
+            'finance' => $request->finance
+        ]);
+        if ($request->custId) {
+            $totalPoint =0;
+            foreach ($request->items as $item){
+                $totalPoint += $item['point'] * $item['quantity'];
+            }
+            // dd($prevPoints);
+        $customer = Customer::with('salesman')->where('id', $request->custId)->first();
+       $salesman = $customer->salesman()?->first();
+        // dd($salesman);
+        if($salesman){
+            $point = $salesman->point;
+            $salesman->point = ($point-$request->prevPoints)+$prevPoints;
+            $salesman->save();
+        }
+    }
+    return back()->with('success', 'Sale updated successfully');
     }
 
     /**
@@ -280,15 +345,9 @@ class SaleController extends Controller
             
             // Re-index the array
             $salesIds = array_values($salesIds);
-    
-            if (empty($salesIds)) {
-                // If salesIds is now empty, delete the customer
-                $sale->customer->delete();
-            } else {
-                // Otherwise, update the sales_ids field
-                $sale->customer->sales_ids = json_encode($salesIds);
-                $sale->customer->save();
-            }
+            // Otherwise, update the sales_ids field
+            $sale->customer->sales_ids = json_encode($salesIds);
+            $sale->customer->save();
         }
          // Get the customer's salesman
          $salesman = $sale->customer->salesman;

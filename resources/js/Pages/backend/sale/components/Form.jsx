@@ -71,7 +71,7 @@ export default function PurchaseForm() {
             },
         ],
     });
-    // console.log(errors);
+    console.log(errors);
     useEffect(() => {
         if (isSearching) {
             axios
@@ -140,7 +140,7 @@ export default function PurchaseForm() {
             try {
                 const response = await axios.get(`/code/${value}`); // Fetch product by code
                 const itemDetails = response.data;
-                console.log(itemDetails);
+                // console.log(itemDetails);
                 // Automatically fill other fields if the item is found
                 if (itemDetails) {
                     updatedRows[index] = {
@@ -222,100 +222,58 @@ export default function PurchaseForm() {
 
     const handelSubmit = (e) => {
         e.preventDefault();
-
+        // console.log("dfdf");
         // Final submission after discount has been applied
-        post("/sales", data, {
-            onSuccess: () => {
-                setMessage({
-                    visible: true,
-                    description: "Sales created successfully!",
-                    type: "success",
-                    title: "Success",
-                });
-                setIsModalOpen(false);
-                setSeved(false);
-                reset(); // Reset Inertia form state if needed
-
-                // Reset data to the initial state
-                setData({
-                    name: "",
-                    phone: "",
-                    address: "",
-                    wpnumber: "",
-                    pin: "",
-                    payment: "",
-                    orderId: "",
-                    online: "",
-                    cash: "",
-                    salesman: "",
-                    gstNumber: "",
-                    finance: "",
-                    discount: "",
-                    total: "",
-                    grandTotal: "",
-                    rows: [
-                        {
-                            code: "",
-                            category: "",
-                            brand: "",
-                            model: "",
-                            quantity: "",
-                            rate: "",
-                            saleRate: "",
-                            point: "",
-                            freeDelivery: "no",
-                            warranty: "",
-                            sl_no: "",
-                            gst: 0,
-                            discount: 0,
-                        },
-                    ],
-                });
-            },
-            onError: (errors) => {
-                console.error("Submission errors:", errors);
-                // Handle submission errors if needed
-            },
-        });
+        post("/sales", data);
     };
 
     // console.log(data);
 
-    // router.on("success", () => {
-    //     setData({
-    //         name: "",
-    //         phone: "",
-    //         address: "",
-    //         wpnumber: "",
-    //         pin: "",
-    //         payment: "",
-    //         orderId: "",
-    //         online: "",
-    //         cash: "",
-    //         salesman: "",
-    //         gst: "",
-    //         finance: "",
-    //         rows: [
-    //             {
-    //                 code: "",
-    //                 category: "",
-    //                 brand: "",
-    //                 model: "",
-    //                 quantity: "",
-    //                 rate: "",
-    //                 saleRate: "",
-    //                 point: "",
-    //                 freeDelivery: "no",
-    //             },
-    //         ],
-    //     });
-    //     setMessage({
-    //         visible: true,
-    //         description: "Product created successfully!",
-    //         type: "success",
-    //         title: "🎉 Success",
-    //     });
-    // });
+    router.on("success", () => {
+        setIsModalOpen(false);
+        setSeved(false);
+        setData({
+            name: "",
+            phone: "",
+            address: "",
+            wpnumber: "",
+            pin: "",
+            payment: "",
+            orderId: "",
+            online: "",
+            cash: "",
+            salesman: "",
+            gstNumber: "",
+            finance: "",
+            discount: "",
+            total: "",
+            grandTotal: "",
+
+            rows: [
+                {
+                    code: "",
+                    category: "",
+                    brand: "",
+                    model: "",
+                    quantity: "",
+                    rate: "",
+                    saleRate: "",
+                    point: "",
+                    freeDelivery: "no",
+                    warranty: "",
+                    sl_no: "",
+                    gst: 0,
+                    discount: 0,
+                },
+            ],
+        });
+        setMessage({
+            visible: true,
+            description: "Product created successfully!",
+            type: "success",
+            title: "🎉 Success",
+        });
+    });
 
     return (
         <div className="container mx-auto p-4 bg-white rounded-lg">

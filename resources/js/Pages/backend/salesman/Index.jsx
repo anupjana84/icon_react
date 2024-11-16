@@ -30,8 +30,6 @@ export default function Index({ salesman }) {
         setIsModalOpen(true);
     };
     const handleDelete = (id) => {
-        setPostId(null);
-        setIsOpen(false);
         destroy(`/salesmans/${id}`, {
             onSuccess: () => {
                 setPostId(null);
