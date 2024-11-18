@@ -615,7 +615,6 @@ export default function PurchaseForm() {
                                 "MODEL",
                                 "QUANTITY",
                                 "RATE",
-                                "SALE RATE",
                                 "POINT",
                             ].map((header, idx) => (
                                 <th
@@ -813,26 +812,6 @@ export default function PurchaseForm() {
                                         }`}
                                         disabled
                                         placeholder="Rate"
-                                    />
-                                </td>
-                                <td className="px-2 py-2 border-x">
-                                    <input
-                                        type="number"
-                                        value={parseFloat(row.saleRate)}
-                                        onChange={(e) =>
-                                            handleInputChange(
-                                                index,
-                                                "saleRate",
-                                                e.target.value
-                                            )
-                                        }
-                                        className={`w-full px-2 py-1 text-black cursor-not-allowed border focus:outline-none focus:ring-2 transition duration-200 ease-in-out shadow-sm hover:shadow-md ${
-                                            errors[`rows.${index}.saleRate`]
-                                                ? "border-red-500 focus:ring-red-400"
-                                                : "border-gray-300 focus:ring-blue-400"
-                                        }`}
-                                        disabled
-                                        placeholder="Sale Rate"
                                     />
                                 </td>
 

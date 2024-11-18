@@ -5,8 +5,10 @@ import { formatDate } from "../../../helper/dateFormater";
 import { Printer, ReceiptText, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import Alert from "../../../layout/components/AlertMessage";
+import { SalesModal } from "./components/QuickSale";
 
 export default function Index({ sales }) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [postId, setPostId] = useState(null);
     const [message, setMessage] = useState({
@@ -47,11 +49,31 @@ export default function Index({ sales }) {
     return (
         <>
             <main className="max-w-7xl mx-auto py-1 px-1 lg:px-1">
-                <PageHeader
-                    title="Sales"
-                    link="/sales/create"
-                    linkName="Add Sales"
-                />
+                <div className="flex-1 overflow-auto relative z-10 p-4">
+                    {/* Header Section */}
+                    <div className="mb-6 gap-3 flex flex-row items-center justify-between">
+                        {/* Dynamic Title */}
+                        <h3 className="text-xl font-semibold text-gray-100 w-25">
+                            Sales
+                        </h3>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => {
+                                    setIsModalOpen(true);
+                                }}
+                                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105"
+                            >
+                                {"Quick Sales"}
+                            </button>
+                            <Link
+                                href={"/sales/create"} // Adjust this path based on your routing
+                                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105"
+                            >
+                                {"Add Sales"}
+                            </Link>
+                        </div>
+                    </div>
+                </div>
 
                 {sales.data.length > 0 && (
                     <>
@@ -278,6 +300,12 @@ export default function Index({ sales }) {
                     </motion.div>
                 </motion.div>
             )}
+
+            <SalesModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                setMessage={setMessage}
+            />
         </>
     );
 }

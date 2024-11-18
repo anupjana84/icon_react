@@ -67,48 +67,51 @@ private function generateBarcodeNumber( $companyName, $purchaseRate, $gstStatus)
 }
 
 
-    public function stock($role = 'all'){
+public function stock($role = 'all', $start = null, $end = null)
+{
+    // Initialize query builder with relationships
+    $query = Product::with('brand', 'category');
 
-        if($role == 'all'){
-            $product = Product::with('brand', 'category')->latest()->paginate(10);
-        } else if($role == 'empty'){
-            $product = Product::with('brand', 'category')
-                ->where('quantity', '=', 0)
-                ->latest()
-                ->paginate(10);
-        } else if($role == 'new'){
-            $product = Product::with('brand', 'category')
-                ->where('created_at', '>=', Carbon::now()->subDays(5))
-                ->latest()
-                ->paginate(10);
-        } else if($role == 'low'){
-            $product = Product::with('brand', 'category')
-                ->where('quantity', '<', 5)
+    // Apply role-based filtering
+    if ($role !== 'nan') {
+        if ($role === 'all') {
+            $query->latest();
+        } elseif ($role === 'empty') {
+            $query->where('quantity', '=', 0)->latest();
+        } elseif ($role === 'new') {
+            $query->where('created_at', '>=', Carbon::now()->subDays(5))->latest();
+        } elseif ($role === 'low') {
+            $query->where('quantity', '<', 5)
                 ->where('quantity', '!=', 0)
-                ->latest()
-                ->paginate(10);
-        } else if($role == 'available'){
-            $product = Product::with('brand', 'category')
-                ->where('quantity', '>', 5)
-                ->latest()
-                ->paginate(10);
-        } else if($role == 'six_months'){
-            $product = Product::with('brand', 'category')
-                ->where('created_at', '<=', Carbon::now()->subMonths(6))
-                ->latest()
-                ->paginate(10);
-        } else if($role == 'one_year'){
-            $product = Product::with('brand', 'category')
-                ->where('created_at', '<=', Carbon::now()->subYear())
-                ->latest()
-                ->paginate(10);
+                ->latest();
+        } elseif ($role === 'available') {
+            $query->where('quantity', '>', 5)->latest();
+        } elseif ($role === 'six_months') {
+            $query->where('created_at', '<=', Carbon::now()->subMonths(6))->latest();
+        } elseif ($role === 'one_year') {
+            $query->where('created_at', '<=', Carbon::now()->subYear())->latest();
         }
-        // dd($product);
-        return Inertia::render('backend/product/Stock', [
-            'product' => $product,
-            'selectedRole' => $role
-        ]);
     }
+
+    // Apply date range filtering if both start and end are provided
+    if ($start && $end) {
+        $startDate = Carbon::parse($start)->startOfDay();
+        $endDate = Carbon::parse($end)->endOfDay();
+        $query->whereBetween('created_at', [$startDate, $endDate]);
+    }
+
+    // Execute the query and paginate results
+    $product = $query->paginate(10);
+
+    // Return the view with data
+    return Inertia::render('backend/product/Stock', [
+        'product' => $product,
+        'selectedRole' => $role,
+        'startDate2' => $start,
+        'endDate2' => $end,
+    ]);
+}
+
 
     /**
      * Show the form for creating a new resource.

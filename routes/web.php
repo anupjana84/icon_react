@@ -51,7 +51,7 @@ Route::middleware([AuthCheck::class])->group(function () {
     Route::resource('/customers', CustomerController::class);
     Route::resource('/sales', SaleController::class);
     Route::resource('/expenses', ExpenseController::class);
-    Route::get('/product-stocks/{role?}', [ProductController::class, 'stock']);
+    Route::get('/product-stocks/{role?}/{start?}/{end?}', [ProductController::class, 'stock']);
     Route::get('/salesmans', [SalesmanController::class, 'index']);
     Route::post('/salesmans', [SalesmanController::class,'store']);
     Route::put('/salesmans/{id}', [SalesmanController::class, 'update']);
@@ -60,6 +60,7 @@ Route::middleware([AuthCheck::class])->group(function () {
     Route::get('/all-companies', [CompanyCntroller::class, 'companies']);
     Route::get('/all-brands-items', [BrandController::class, 'getAll']);
     Route::post('/sales-validate', [SaleController::class, 'validation']);
+    Route::post('/quick-store', [SaleController::class, 'quickStore']);
     });
     Route::get('/users/{role?}', [UserController::class, 'index'])->name('users.index');
     Route::post('/create-multiple', [ProductController::class, 'storeChunk']);

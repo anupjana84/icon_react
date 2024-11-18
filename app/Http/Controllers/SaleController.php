@@ -76,7 +76,7 @@ class SaleController extends Controller
      */
     public function store(Request $request)
     {
-    //   dd($request->all());
+     //   dd($request->all());
 
         // Validate the incoming request
         $request->validate([
@@ -109,110 +109,131 @@ class SaleController extends Controller
             'rows.*.productId' => 'required|integer|exists:products,id',
             'custId' => 'nullable|integer|exists:customers,id',
         ]);
-    //   dd($request->all());
-        // Handle customer creation or fetching
-        $customer = null;
-    
-        if ($request->phone) {
-            if (is_null($request->custId)) {
-                // Create a new customer
-                $customer = Customer::create([
-                    'name' => $request->name,
-                    'phone' => $request->phone,
-                    'address' => $request->address,
-                    'wpnumber' => $request->wpnumber,
-                    'pin' => $request->pin,
-                    'sales_ids' => json_encode([]), // Initialize with an empty JSON array
+            //   dd($request->all());
+                // Handle customer creation or fetching
+                $customer = null;
+            
+                if ($request->phone) {
+                    if (is_null($request->custId)) {
+                        // Create a new customer
+                        $customer = Customer::create([
+                            'name' => $request->name,
+                            'phone' => $request->phone,
+                            'address' => $request->address,
+                            'wpnumber' => $request->wpnumber,
+                            'pin' => $request->pin,
+                            'sales_ids' => json_encode([]), // Initialize with an empty JSON array
+                        ]);
+                    } else {
+                        // Fetch the existing customer
+                        $customer = Customer::findOrFail($request->custId);
+                        // Prepare an array to hold updated fields
+                        $updates = [];
+
+                        // Check each field and add to updates if changed
+                        if ($customer->address !== $request->address) {
+                            $updates['address'] = $request->address;
+                        }
+                        if ($customer->wpnumber !== $request->wpnumber) {
+                            $updates['wpnumber'] = $request->wpnumber;
+                        }
+                        if ($customer->name !== $request->name) {
+                            $updates['name'] = $request->name;
+                        }
+                        if ($customer->pin !== $request->pin) {
+                            $updates['pin'] = $request->pin;
+                        }
+
+                        // Update the customer only if there are changes
+                        if (!empty($updates)) {
+                            $customer->update($updates);
+                        }
+
+                    }
+                }
+                // dd('kkmgnrj');
+                // Create the Sale record
+                $sale = Sale::create([
+                    'order_id' => $request->orderId,
+                    'gst' => $request->gst,
+                    'customer_id' => $customer ? $customer->id : null,
+                    'shipping_address' => $request->address,
+                    'shipping_pin' => $request->pin,
+                    'total' => $request->total,
+                    'discount' => $request->discount ?? 0,
+                    'finance' => $request->finance,
+                    'gst_number' => $request->gstNumber,
                 ]);
-            } else {
-                // Fetch the existing customer
-                $customer = Customer::findOrFail($request->custId);
-                // Prepare an array to hold updated fields
-                $updates = [];
-
-                // Check each field and add to updates if changed
-                if ($customer->address !== $request->address) {
-                    $updates['address'] = $request->address;
+                // dd('kkmgnrj');
+                $totalPoints = 0;
+                // Create SalesItem records
+                foreach ($request->rows as $row) {
+                    $points = $row['point'] * $row['quantity'];
+                    // Create the SalesItem
+                    $salesItem = SalesItem::create([
+                        'sale_id' => $sale->id, // Link to the Sale
+                        'product_id' => $row['productId'],
+                        'quantity' => $row['quantity'],
+                        'price'=>$row['saleRate'],
+                        'warranty' => $row['warranty'] ?? '',
+                        'sl_no' => $row['sl_no'],
+                        'discount' => $row['discount'] ?? 0,
+                    ]);
+                    Product::find($row['productId'])->update([
+                        'quantity' => $row['productQuantity'] - $row['quantity'], // Update the product quantity
+                    ]);
+                    $totalPoints += $points; // Update the total points for the customer
                 }
-                if ($customer->wpnumber !== $request->wpnumber) {
-                    $updates['wpnumber'] = $request->wpnumber;
+                // dd('kkmgnrj');
+                // Create the SalesPayment record
+                $salesPayment = SalesPayment::create([
+                    'sale_id' => $sale->id, // Link to the Sale
+                    'amount' => ($request->total ) - ($request->discount?? 0), // Total amount from cash and online payments
+                    'payment_date' => now(), // Use the current date or from the request if provided
+                    'online_payment' => $request->online,
+                    'cash_payment' => $request->cash,
+                    'finance' => $request->finance,
+                ]);
+            
+                // Update the customer's sales_ids with the new sale IDs
+                if ($customer) {
+                    $currentSalesIds = json_decode($customer->sales_ids, true) ?? [];
+                    $updatedSalesIds = array_unique(array_merge($currentSalesIds, [$sale->id])); // Store only the Sale ID
+                    $customer->sales_ids = json_encode($updatedSalesIds);
+                    $customer->save();
                 }
-                if ($customer->name !== $request->name) {
-                    $updates['name'] = $request->name;
+            
+                if (is_array($request->salesman) && !empty($request->salesman))  {
+                // dd($request->salesman['id']);
+                    $salesman = Salesman::findOrFail($request->salesman['id']);
+                    if ($salesman && $salesman->status){
+                        $salesman->point = $request->salesman['point'] + $totalPoints;
+                        $salesman->save();
+                    }
                 }
-                if ($customer->pin !== $request->pin) {
-                    $updates['pin'] = $request->pin;
-                }
-
-                // Update the customer only if there are changes
-                if (!empty($updates)) {
-                    $customer->update($updates);
-                }
-
-            }
-        }
-        // dd('kkmgnrj');
-        // Create the Sale record
-        $sale = Sale::create([
-            'order_id' => $request->orderId,
-            'gst' => $request->gst,
-            'customer_id' => $customer ? $customer->id : null,
-            'shipping_address' => $request->address,
-            'shipping_pin' => $request->pin,
-            'total' => $request->total,
-            'discount' => $request->discount ?? 0,
-            'finance' => $request->finance,
-            'gst_number' => $request->gstNumber,
-        ]);
-        // dd('kkmgnrj');
-        $totalPoints = 0;
-        // Create SalesItem records
-        foreach ($request->rows as $row) {
-            $points = $row['point'] * $row['quantity'];
-            // Create the SalesItem
-            $salesItem = SalesItem::create([
-                'sale_id' => $sale->id, // Link to the Sale
-                'product_id' => $row['productId'],
-                'quantity' => $row['quantity'],
-                'price'=>$row['saleRate'],
-                'warranty' => $row['warranty'] ?? '',
-                'sl_no' => $row['sl_no'],
-                'discount' => $row['discount'] ?? 0,
-            ]);
-            Product::find($row['productId'])->update([
-                'quantity' => $row['productQuantity'] - $row['quantity'], // Update the product quantity
-            ]);
-            $totalPoints += $points; // Update the total points for the customer
-        }
-        // dd('kkmgnrj');
-        // Create the SalesPayment record
-        $salesPayment = SalesPayment::create([
-            'sale_id' => $sale->id, // Link to the Sale
-            'amount' => ($request->total ) - ($request->discount?? 0), // Total amount from cash and online payments
-            'payment_date' => now(), // Use the current date or from the request if provided
-            'online_payment' => $request->online,
-            'cash_payment' => $request->cash,
-            'finance' => $request->finance,
-        ]);
-    
-        // Update the customer's sales_ids with the new sale IDs
-        if ($customer) {
-            $currentSalesIds = json_decode($customer->sales_ids, true) ?? [];
-            $updatedSalesIds = array_unique(array_merge($currentSalesIds, [$sale->id])); // Store only the Sale ID
-            $customer->sales_ids = json_encode($updatedSalesIds);
-            $customer->save();
-        }
-    
-        if (is_array($request->salesman) && !empty($request->salesman))  {
-        // dd($request->salesman['id']);
-            $salesman = Salesman::findOrFail($request->salesman['id']);
-            if ($salesman && $salesman->status){
-                $salesman->point = $request->salesman['point'] + $totalPoints;
-                $salesman->save();
-            }
-        }
-        // dd('kkmgnrj');
+                // dd('kkmgnrj');
         return back()->with('success', 'Sales Created successfully');
+    }
+
+    public function quickStore(Request $request ){
+        dd($request->all());
+        $request->validate([
+            'gst' => 'required|string|in:yes,no',
+            'total' => 'required|integer',
+            'discount' => 'nullable|numeric|min:0',
+            'payed' => 'required|numeric',
+            'rows' => 'required|array|min:1',
+            // Validation for each item in the 'rows' array
+            'rows.*.category' => 'required|string|max:100',
+            'rows.*.brand' => 'required|string|max:100',
+            'rows.*.model' => 'required|string|max:100',
+            'rows.*.quantity' => 'required|integer|min:1',
+            'rows.*.rate' => 'required|numeric|min:0',
+            'rows.*.saleRate' => 'required|numeric|min:0',
+            'rows.*.code' => 'required|string|max:50',
+            'rows.*.productQuantity' => 'required|integer|min:1',
+            'rows.*.productId' => 'required|integer|exists:products,id',
+        ]);
     }
     
 
